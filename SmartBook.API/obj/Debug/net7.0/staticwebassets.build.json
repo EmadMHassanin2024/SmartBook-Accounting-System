@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "77CkSHPpsZrQVf1kGIUnhxtSUZawPQOXj2OZ6GZG4os=",
+  "Source": "SmartBook.API",
+  "BasePath": "_content/SmartBook.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
