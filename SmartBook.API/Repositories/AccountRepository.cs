@@ -2,6 +2,10 @@
 using SmartBook.API.Data;
 using SmartBook.API.DTOs;
 using SmartBook.API.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 
 namespace SmartBook.API.Repositories
 {
@@ -14,7 +18,6 @@ namespace SmartBook.API.Repositories
             _context = context;
         }
 
-        // 1. كشف الحساب
         public async Task<AccountStatementResponse> GetAccountStatementAsync(int accountId, DateTime startDate, DateTime endDate)
         {
             var account = await _context.Accounts.FindAsync(accountId);
@@ -71,29 +74,8 @@ namespace SmartBook.API.Repositories
             return response;
         }
 
-        // 2. ميزان المراجعة
-        public async Task<IEnumerable<TrialBalanceDTO>> GetTrialBalanceAsync(DateTime targetDate)
-        {
-            return await _context.Accounts
-                .Select(a => new TrialBalanceDTO
-                {
-                    AccountName = a.AccountNameAr,
-                    Debit = a.JournalDetails
-                        .Where(jd => jd.Entry.EntryDate <= targetDate)
-                        .Sum(jd => jd.Debit ?? 0),
-                    Credit = a.JournalDetails
-                        .Where(jd => jd.Entry.EntryDate <= targetDate)
-                        .Sum(jd => jd.Credit ?? 0)
-                })
-                .Where(x => x.Debit != 0 || x.Credit != 0)
-                .ToListAsync();
-        }
-
-        // 3. الدوال الأخرى الأساسية
+     
         public async Task<Account?> GetAccountByIdAsync(int id) => await _context.Accounts.FindAsync(id);
-
-        public async Task<IEnumerable<Account>> GetAllAccountsAsync() =>
-            await _context.Accounts.OrderBy(a => a.AccountNameAr).AsNoTracking().ToListAsync();
 
         public async Task<Account?> GetAccountDetailsAsync(int id) =>
             await _context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.AccountId == id);
@@ -109,5 +91,22 @@ namespace SmartBook.API.Repositories
 
         public async Task<IEnumerable<Account>> GetAllAccountsWithDetailsAsync() =>
             await _context.Accounts.Include(a => a.JournalDetails).ToListAsync();
+
+        // هذه هي الدالة الموحدة والمطابقة للـ Interface
+        public async Task<IEnumerable<AccountDTO>> GetAllAccountsWithBalancesAsync()
+        {
+            return await _context.Accounts
+                .AsNoTracking()
+                .Select(a => new AccountDTO
+                {
+                    AccountId = a.AccountId,
+                    AccountCode = a.AccountCode,
+                    AccountNameAr = a.AccountNameAr,
+                    AccountType = (int)a.AccountType,
+                    CurrentBalance = (decimal)a.JournalDetails.Sum(jd => (jd.Debit ?? 0m) - (jd.Credit ?? 0m))
+                })
+                .OrderBy(a => a.AccountNameAr)
+                .ToListAsync();
+        }
     }
 }

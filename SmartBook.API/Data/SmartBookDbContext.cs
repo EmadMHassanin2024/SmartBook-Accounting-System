@@ -31,6 +31,7 @@ public partial class SmartBookDbContext : DbContext
     public virtual DbSet<ProductUnit> ProductUnits { get; set; }
     public virtual DbSet<AccountMapping> AccountMappings { get; set; }
  public DbSet<InventoryLog> InventoryLogs { get; set; }
+    public DbSet<AdjustmentEntry> Adjustments { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Server=HP\\SQLEXPRESS02;Database=SmartBookDB;Trusted_Connection=True;TrustServerCertificate=True;");

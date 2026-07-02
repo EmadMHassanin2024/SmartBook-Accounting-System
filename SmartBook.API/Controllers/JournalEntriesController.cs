@@ -70,13 +70,7 @@ namespace SmartBook.API.Controllers
             }
         }
 
-        [HttpGet("Ledger")]
-        public async Task<IActionResult> GetLedger(int accountId, DateTime from, DateTime to)
-        {
-            // هذا هو الرابط الذي سنختبره في Postman لاحقاً
-            var ledger = await _repo.GetAccountLedgerAsync(accountId, from, to);
-            return Ok(new { success = true, data = ledger }); // إرجاع القائمة داخل كائن لتطابق "المنطق الذكي" في Flutter
-        }
+      
 
     }
 }

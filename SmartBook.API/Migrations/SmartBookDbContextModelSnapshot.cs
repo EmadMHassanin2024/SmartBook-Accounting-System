@@ -111,6 +111,33 @@ namespace SmartBook.API.Migrations
                     b.ToTable("AccountMappings");
                 });
 
+            modelBuilder.Entity("SmartBook.API.Models.AdjustmentEntry", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Adjustments");
+                });
+
             modelBuilder.Entity("SmartBook.API.Models.CompanyProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -408,6 +435,9 @@ namespace SmartBook.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("JournalStatus")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferenceNo")
                         .HasMaxLength(50)

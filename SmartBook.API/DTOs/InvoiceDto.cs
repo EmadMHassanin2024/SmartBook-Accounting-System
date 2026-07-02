@@ -18,7 +18,7 @@
         public int? ContactId { get; set; }
 
         // وصف اختياري
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         public string ProductId { get; set; } = string.Empty;
 

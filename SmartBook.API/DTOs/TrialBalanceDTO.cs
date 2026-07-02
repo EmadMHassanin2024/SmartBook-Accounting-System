@@ -3,10 +3,11 @@
     public class TrialBalanceDTO
     {
 
-        public string AccountName { get; set; } = string.Empty;
-        public decimal Debit { get; set; }
-        public decimal Credit { get; set; }
-
-        public decimal Balance => Debit - Credit;
+        public string AccountCode { get; set; } // إضافة الكود
+        public string AccountName { get; set; }
+        public decimal TotalDebit { get; set; }
+        public decimal TotalCredit { get; set; }
+        public decimal BalanceDebit { get; set; }  // رصيد مدين
+        public decimal BalanceCredit { get; set; } // رصيد دائن
     }
 }

@@ -7,7 +7,10 @@
         Liability = 2,
         Equity = 3,
         Revenue = 4,
-        Expense = 5
+        Expense = 5,
+            CostOfSales,
+        OtherRevenue,
+        OtherExpense
 
 
     }

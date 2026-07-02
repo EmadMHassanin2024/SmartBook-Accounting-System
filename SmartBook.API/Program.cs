@@ -55,7 +55,12 @@ namespace SmartBook.API
             builder.Services.AddScoped<IContactRepository, ContactRepository>();
             builder.Services.AddScoped<IVoucherRepository, VoucherRepository>();
             builder.Services.AddScoped<IJournalRepository, JournalRepository>(); // مستودع القيود الجديد
+            builder.Services.AddScoped<IFinancialReportsRepository, FinancialReportsRepository>();
             builder.Services.AddScoped<PosService>();
+            // داخل ملف Program.cs
+            builder.Services.AddControllers();
+
+         
             // 6. إعداد المصادقة وحماية الـ API عن طريق الـ JWT Tokens
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
