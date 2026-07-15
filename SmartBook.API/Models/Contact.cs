@@ -6,7 +6,6 @@ namespace SmartBook.API.Models;
 public partial class Contact
 {
     public int ContactId { get; set; }
-
     public string Name { get; set; } = null!;
 
     public string? ContactType { get; set; }
@@ -25,5 +24,11 @@ public partial class Contact
 
     public virtual Account? Account { get; set; }
 
+    public decimal OpeningBalance { get; set; }
+    public decimal CurrentBalance { get; set; }
+
+
+
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+
 }

@@ -1,99 +1,102 @@
 import 'package:flutter/material.dart';
-
 import '../../../core/theme/app_colors.dart';
-
-import '../../finance/accounting/screens/account_statement_screen.dart';
 import '../models/contact_model.dart';
+import 'EditContactScreen.dart';
+
+
 class ContactCard extends StatelessWidget {
   final ContactModel contact;
+  // أضفت الـ VoidCallback للتحكم الخارجي إذا احتجتِ،
+  // ولكن سنستخدم navigator هنا مباشرة بناءً على طلبك
+  final VoidCallback? onEdit;
 
-  const ContactCard({super.key, required this.contact});
+  const ContactCard({super.key, required this.contact, this.onEdit});
 
   @override
   Widget build(BuildContext context) {
-    // تحديد لون الرصيد (أخضر إذا كان لنا، أحمر إذا كان علينا)
-    final Color balanceColor = contact.currentBalance >= 0
-        ? AppColors.successGreen
-        : AppColors.errorRed;
+    // منطق الحالة المحاسبية: المدين موجب، الدائن سالب
+    final bool isDebit = contact.currentBalance > 0;
+    final bool isCredit = contact.currentBalance < 0;
+
+    // الألوان: الأحمر للمدين (مستحقات)، الأخضر للدائن (إيجابي)
+    final Color balanceColor = isDebit ? AppColors.errorRed : (isCredit ? AppColors.successGreen : AppColors.textSecondary);
+    final String statusLabel = isDebit ? "مدين" : (isCredit ? "دائن" : "متوازن");
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-
-      child: InkWell(
-        onTap: () {
-          // الربط: الانتقال لصفحة كشف الحساب مع تمرير اسم العميل
-          /*
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AccountStatementScreen(accountName: contact.name),
-            ),
-          );
-
-           */
-        },
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.cardBg,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)
-            ],
-            // أضفت إطار خفيف جداً لتحسين المظهر عند النقر
-            border: Border.all(color: AppColors.dividerColor.withOpacity(0.5)),
-          ),
-          child: Row(
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CircleAvatar(
-                backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
-                child: Icon(
-                  contact.type == 'customer' ? Icons.person : Icons.store,
-                  color: AppColors.primaryBlue,
-                ),
-              ),
-              const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        contact.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)
-                    ),
-                    Text(
-                        "ضريبي: ${contact.taxNumber}",
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)
-                    ),
-                  ],
+                child: Text(
+                    contact.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
                 ),
               ),
+              // زر التعديل - معالج بشكل موحد
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.primaryBlue),
+                onPressed: () {
+                  // الانتقال لصفحة التعديل
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditContactScreen(contact: contact),
+                    ),
+                  );
+                },
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          ),
+          const Divider(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildDetailItem(Icons.phone, "جوال: ${contact.phone.isEmpty ? '---' : contact.phone}"),
+
+              // عرض الرصيد مع الحالة المحاسبية
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
-                      "الرصيد",
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 10)
+                  Text(
+                      "${contact.currentBalance.abs().toStringAsFixed(2)} ريال",
+                      style: TextStyle(color: balanceColor, fontWeight: FontWeight.bold, fontSize: 14)
                   ),
                   Text(
-                    "${contact.currentBalance.abs()} ريال",
-                    style: TextStyle(
-                        color: balanceColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14
-                    ),
-                  ),
-                  Text(
-                    contact.currentBalance >= 0 ? "لك" : "عليك",
-                    style: TextStyle(color: balanceColor, fontSize: 9),
+                      statusLabel,
+                      style: TextStyle(color: balanceColor, fontSize: 10, fontWeight: FontWeight.bold)
                   ),
                 ],
               ),
             ],
           ),
-        ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildDetailItem(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: AppColors.textSecondary),
+        const SizedBox(width: 6),
+        Text(
+            text,
+            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)
+        ),
+      ],
     );
   }
 }
