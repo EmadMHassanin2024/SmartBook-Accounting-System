@@ -116,4 +116,13 @@ class PosCubit extends Cubit<PosState> {
       emit(PosError(e.toString()));
     }
   }
+
+
+  int getQuantityInCart(ProductModel product) {
+    final item = _currentCart.firstWhere(
+          (i) => i.product.id == product.id,
+      orElse: () => CartItemModel(product: product, quantity: 0),
+    );
+    return item.quantity;
+  }
 }

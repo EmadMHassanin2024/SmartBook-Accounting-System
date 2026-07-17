@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_book/core/theme/app_colors.dart';
 import 'package:smart_book/features/pos/auth_exports.dart';
+
+// كارت المنتج. إذا لم يكن المنتج في السلة يظهر زر "أضف"،
+// وإذا تمت إضافته يتحول إلى أزرار تحكم بالكمية (+/-)
 
 class POSProductCard extends StatelessWidget {
   final ProductModel product;
@@ -10,7 +14,7 @@ class POSProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // التحقق مما إذا كان للمنتج صورة (بفرض وجود حقل image في الـ Model)
+    // التحقق مما إذا كان للمنتج صورة
     final bool hasImage = product.imagePath != null && product.imagePath!.isNotEmpty;
 
     return Card(
@@ -33,26 +37,19 @@ class POSProductCard extends StatelessWidget {
                       children: const [
                         Icon(Icons.add_a_photo_outlined, color: Colors.grey, size: 32),
                         SizedBox(height: 4),
-                        Text(
-                          "أضف صورة",
-                          style: TextStyle(color: Colors.grey, fontSize: 10),
-                        ),
+                        Text("أضف صورة", style: TextStyle(color: Colors.grey, fontSize: 10)),
                       ],
                     ),
                   ),
                 ),
-                // "المتبقي" يظهر فوق الصورة/الحاوية في الزاوية
                 Positioned(
                   top: 8,
                   left: 8,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(8)),
                     child: Text(
-                      "المتبقي: ${product.stock?.toInt() ?? 0}",
+                      "المتبقي: ${product.stock.toInt()}",
                       style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -64,16 +61,38 @@ class POSProductCard extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(product.name ?? "", style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
+                Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1),
                 Text("${product.price} ر.س", style: const TextStyle(color: AppColors.primaryBlue)),
                 const SizedBox(height: 5),
-                ElevatedButton(
-                  onPressed: onTap,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    minimumSize: const Size(double.infinity, 35),
-                  ),
-                  child: const Text("أضف", style: TextStyle(color: Colors.white)),
+                // استخدام BlocBuilder لضمان تحديث الأزرار والكمية فور تغييرها في السلة
+                BlocBuilder<PosCubit, PosState>(
+                  builder: (context, state) {
+                    final int quantityInCart = context.read<PosCubit>().getQuantityInCart(product);
+
+                    return quantityInCart > 0
+                        ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove, size: 20),
+                          onPressed: () => context.read<PosCubit>().decreaseCartItem(product),
+                        ),
+                        Text("$quantityInCart", style: const TextStyle(fontWeight: FontWeight.bold)),
+                        IconButton(
+                          icon: const Icon(Icons.add, size: 20),
+                          onPressed: product.stock > 0 ? () => context.read<PosCubit>().addToCart(product) : null,
+                        ),
+                      ],
+                    )
+                        : ElevatedButton(
+                      onPressed: onTap,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryBlue,
+                        minimumSize: const Size(double.infinity, 35),
+                      ),
+                      child: const Text("أضف", style: TextStyle(color: Colors.white)),
+                    );
+                  },
                 ),
               ],
             ),

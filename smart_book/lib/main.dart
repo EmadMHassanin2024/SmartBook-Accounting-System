@@ -26,6 +26,7 @@ import 'features/finance/income_statement/logic/income_statement_cubit.dart';
 import 'features/finance/repositories/FinancialReportsRepository.dart';
 
 import 'features/settings/logic/SettingsCubit.dart';
+import 'features/pos_configuration/logic/pos_configuration_cubit.dart';
 
 
 class MyHttpOverrides extends HttpOverrides {
@@ -55,6 +56,7 @@ class SmartBookApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<SettingsCubit>(create: (_) => SettingsCubit()),
+        BlocProvider<PosConfigurationCubit>(create: (_) => PosConfigurationCubit()),
         BlocProvider<AuthCubit>(create: (context) => AuthCubit(sl<TokenRepository>())),
         BlocProvider<IncomeStatementCubit>(
             create: (context) => IncomeStatementCubit(sl<IncomeStatementRepository>())

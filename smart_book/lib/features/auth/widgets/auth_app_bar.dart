@@ -15,15 +15,18 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.sizeOf(context).width < 320;
     return AppBar(
       backgroundColor: AppColors.cardBg,
       elevation: 0,
-      leadingWidth: 120,
+      leadingWidth: isCompact ? 56 : 96,
 
       // 🔹 زر اللغة
-      leading: BlocBuilder<SettingsCubit, Locale>(
+      leading: isCompact
+          ? null
+          : BlocBuilder<SettingsCubit, Locale>(
         builder: (context, locale) {
-          final String nextLanguage = locale.languageCode == 'ar' ? "EN" : "AR";
+          final String nextLanguage = locale.languageCode == 'ar' ? 'EN' : 'AR';
           return InkWell(
             onTap: () => context.read<SettingsCubit>().toggleLanguage(),
             child: Row(
@@ -31,7 +34,13 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
                 const SizedBox(width: 12),
                 const Icon(Icons.language, color: AppColors.primaryBlue, size: 20),
                 const SizedBox(width: 4),
-                Text(nextLanguage, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                Text(
+                  nextLanguage,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           );
@@ -39,20 +48,23 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
 
       // 🔹 العنوان
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            "SmartBook",
-            style: TextStyle(
-              color: primaryColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+      title: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'SmartBook',
+              style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Icon(Icons.account_balance_wallet, color: primaryColor, size: 28),
-        ],
+            const SizedBox(width: 8),
+            Icon(Icons.account_balance_wallet, color: primaryColor, size: 28),
+          ],
+        ),
       ),
       centerTitle: true,
 

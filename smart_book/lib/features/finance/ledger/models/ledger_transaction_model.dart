@@ -21,7 +21,7 @@ class LedgerTransaction extends Equatable {
 
 
   factory LedgerTransaction.fromJson(Map<String, dynamic> json) {
-    print("DEBUG LEDGER JSON: $json");
+    //print("DEBUG LEDGER JSON: $json");
     return LedgerTransaction(
       entryId: (json['entryId'] as num?)?.toInt() ?? 0,
       date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),

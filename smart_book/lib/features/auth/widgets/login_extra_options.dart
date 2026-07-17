@@ -3,8 +3,8 @@ import 'package:smart_book/l10n/app_localizations.dart';
 
 class LoginExtraOptions extends StatelessWidget {
   final Color primaryColor;
-  final bool isChecked; // القيمة الحالية
-  final ValueChanged<bool?> onChanged; // دالة التحديث
+  final bool isChecked;
+  final ValueChanged<bool?> onChanged;
 
   const LoginExtraOptions({
     super.key,
@@ -16,31 +16,65 @@ class LoginExtraOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // نرفع القيمة قليلاً لضمان مرونة أكبر
+        final isNarrow = constraints.maxWidth < 300;
+
+        final keepSignedIn = Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
               height: 24,
               width: 24,
               child: Checkbox(
-                value: isChecked, // ربط القيمة
-                onChanged: onChanged, // ربط التحديث
+                value: isChecked,
+                onChanged: onChanged,
                 activeColor: primaryColor,
               ),
             ),
             const SizedBox(width: 8),
-            Text(lang.keepMeSignedIn, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            Flexible(
+              child: Text(
+                lang.keepMeSignedIn,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                overflow: TextOverflow.ellipsis, // حل إضافي لمنع النص من الخروج
+              ),
+            ),
           ],
-        ),
-        TextButton(
-          onPressed: () { /* التنقل لنسيت كلمة المرور */ },
-          style: TextButton.styleFrom(padding: EdgeInsets.zero),
-          child: Text(lang.forgotPassword.toUpperCase(),
-              style: TextStyle(color: primaryColor, fontSize: 11, fontWeight: FontWeight.bold)),
-        ),
-      ],
+        );
+
+        final forgotPassword = TextButton(
+          onPressed: () {},
+          style: TextButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 4)),
+          child: Text(
+            lang.forgotPassword.toUpperCase(),
+            style: TextStyle(
+              color: primaryColor,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+
+        if (isNarrow) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [keepSignedIn, forgotPassword],
+          );
+        }
+
+        // في الشاشات العريضة، نستخدم Expanded لضمان توزيع المساحة
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: keepSignedIn), // يأخذ المساحة المتبقية
+            const SizedBox(width: 8), // مسافة فاصلة
+            forgotPassword, // يأخذ حجمه الطبيعي
+          ],
+        );
+      },
     );
   }
 }

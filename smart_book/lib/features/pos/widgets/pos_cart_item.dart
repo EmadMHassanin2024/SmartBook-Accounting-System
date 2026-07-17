@@ -1,6 +1,6 @@
 import 'package:smart_book/features/auth/auth_exports.dart';
 import 'package:smart_book/features/pos/auth_exports.dart';
-
+//عرض "سطر واحد" من الفاتورة. وظيفتها عرض اسم المنتج، كميته المختارة، إجمالي سعر السطر، وتوفر زر "حذف" لإزالة المنتج من السلة
 
 class POSCartItem extends StatelessWidget {
   final CartItemModel item;
