@@ -13,7 +13,7 @@ class BaseApiService {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token",
       },
-    ).timeout(const Duration(seconds: 15));
+    ).timeout(const Duration(seconds: 30));
   }
 
   // ميثود POST عامة
@@ -26,6 +26,6 @@ class BaseApiService {
         "Authorization": "Bearer $token",
       },
       body: jsonEncode(body),
-    ).timeout(const Duration(seconds: 15));
+    ).timeout(const Duration(seconds: 30));
   }
 }

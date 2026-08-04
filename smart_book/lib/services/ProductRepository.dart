@@ -2,7 +2,7 @@
 import 'dart:convert';
 import '../../../../core/network/base_api_service.dart';
 
-import '../features/pos/models/product_model.dart';
+import '../features/pos/data/models/product_model.dart';
 import 'AuthService.dart';
 
 class ProductRepository {
@@ -22,7 +22,7 @@ class ProductRepository {
     }
   }
 
-  // 2. إضافة صنف جديد
+  // 2. إضافة صنف جديد (تمت إضافة itemType لدعم استقلالية الأقسام)
   Future<bool> addProduct({
     required String name,
     required String barcode,
@@ -30,12 +30,14 @@ class ProductRepository {
     required double purchasePrice,
     required int stock,
     String unitName = "قطعة",
+    String itemType = "general", // 👈 استقبال نوع النشاط (restaurant أو pharmacy)
   }) async {
     final String token = await AuthService.getToken();
     final Map<String, dynamic> body = {
       "productNameAr": name,
       "barcode": barcode.isEmpty ? null : barcode,
       "totalStockQuantity": stock,
+      "itemType": itemType, // 👈 إرسال نوع النشاط فعلياً للسيرفر لضمان الاستقلالية التامة
       "productUnits": [{
         "unitName": unitName.isEmpty ? "قطعة" : unitName,
         "salePrice": price,
@@ -62,6 +64,7 @@ class ProductRepository {
     required double purchasePrice,
     required int stock,
     String unitName = "قطعة",
+    String itemType = "general", // 👈 يدعم التعديل أيضاً لو احتجته مستقبلاً
   }) async {
     final String token = await AuthService.getToken();
     final Map<String, dynamic> body = {
@@ -69,6 +72,7 @@ class ProductRepository {
       "productNameAr": name,
       "barcode": barcode.isEmpty ? null : barcode,
       "totalStockQuantity": stock,
+      "itemType": itemType,
       "productUnits": [{
         "unitName": unitName.isEmpty ? "قطعة" : unitName,
         "salePrice": price,

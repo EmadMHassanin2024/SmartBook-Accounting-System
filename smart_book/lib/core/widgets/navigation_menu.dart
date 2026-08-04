@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/dashboard/screens/main_dashboard_screen.dart';
-import '../../features/pos/screens/pos_screen.dart';
+import '../../features/pos/presentation/screens/pos_screen.dart';
 import '../../features/reports/screens/reports_menu_screen.dart';
 import '../../features/settings/screens/settings_main_screen.dart';
 import 'navigation_menu.dart'; // استيراد صفحة الإعدادات

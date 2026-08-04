@@ -11,7 +11,7 @@ export '../inventory/widgets/inventory_search_bar.dart';
 
 export '../inventory/screens/add_product_screen.dart';
 
-export '../pos/models/product_model.dart';
+export '../pos/data/models/product_model.dart';
 
 export '../inventory/logic/add_product_state.dart';
 export '../../../models/ ProductUnitModel.dart';

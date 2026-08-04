@@ -32,7 +32,7 @@ public partial class SmartBookDbContext : DbContext
     public virtual DbSet<AccountMapping> AccountMappings { get; set; }
  public DbSet<InventoryLog> InventoryLogs { get; set; }
     public DbSet<AdjustmentEntry> Adjustments { get; set; }
-
+    public DbSet<SystemConfiguration> SystemConfigurations { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Server=HP\\SQLEXPRESS02;Database=SmartBookDB;Trusted_Connection=True;TrustServerCertificate=True;");
 
@@ -41,6 +41,7 @@ public partial class SmartBookDbContext : DbContext
         // ====== Account Configuration ======
         modelBuilder.Entity<Account>(entity =>
         {
+            entity.ToTable("Accounts_New");
             entity.HasKey(e => e.AccountId);
 
             entity.HasIndex(e => e.AccountCode).IsUnique();
@@ -318,6 +319,14 @@ public partial class SmartBookDbContext : DbContext
         });
 
         // كود الـ Role اللي أنت أرسلته يظل كما هو تحتهم
+
+
+        // ====== mConfiguration ======
+        modelBuilder.Entity<SystemConfiguration>().HasData(
+            new SystemConfiguration { Id = 1, CompanyName = "Smart Book" }
+        );
+
+
 
 
         // ====== Account Mapping ======

@@ -20,6 +20,8 @@ namespace SmartBook.API.Models
         [Required]
         public decimal CostPrice { get; set; }
 
+        public string ItemType { get; set; } = "general";
+
         // علاقة مع جدول الوحدات
         public virtual ICollection<ProductUnit> ProductUnits { get; set; } = new List<ProductUnit>();
     }

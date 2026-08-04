@@ -78,7 +78,7 @@ namespace SmartBook.API.Migrations
 
                     b.HasIndex("ParentAccountId");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts_New", (string)null);
                 });
 
             modelBuilder.Entity("SmartBook.API.Models.AccountMapping", b =>
@@ -214,6 +214,9 @@ namespace SmartBook.API.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<decimal>("CurrentBalance")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -221,6 +224,9 @@ namespace SmartBook.API.Migrations
                     b.Property<string>("Name")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("OpeningBalance")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
@@ -462,6 +468,9 @@ namespace SmartBook.API.Migrations
                     b.Property<decimal>("CostPrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("ItemType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ProductNameAr")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -530,6 +539,45 @@ namespace SmartBook.API.Migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("SmartBook.API.Models.SystemConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnabledBusinessModules")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnabledCoreModules")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnabledFeatures")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemConfigurations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CompanyName = "Smart Book",
+                            UpdatedAt = new DateTime(2026, 8, 4, 2, 44, 26, 299, DateTimeKind.Utc).AddTicks(307)
+                        });
                 });
 
             modelBuilder.Entity("SmartBook.API.Models.User", b =>

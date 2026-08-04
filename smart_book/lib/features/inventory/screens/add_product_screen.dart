@@ -1,5 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_book/features/inventory/auth_exports.dart';
-
+import 'package:smart_book/features/inventory/extensions/inventory_extension_manager.dart';
+import '../../system_config/data/models/ business_module.dart';
+import '../../system_config/logic/system_configuration_cubit.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -11,11 +15,18 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // 💡 الآن الـ Controllers آمنة ومستقرة داخل الـ State ولا يمكن تصفيرها أثناء البناء
+  // الـ Controllers الأساسية (الثابتة لكل الأنشطة)
   late final TextEditingController _nameController;
   late final TextEditingController _barcodeController;
   late final TextEditingController _stockController;
   late final TextEditingController _reorderLevelController;
+
+  // متحكمات الحقول المتغيرة (تُمرر ديناميكياً للـ Extensions)
+  late final TextEditingController _expiryDateController;
+  late final TextEditingController _batchController;
+  late final TextEditingController _sizeController;
+  late final TextEditingController _colorController;
+  bool _isIngredient = false;
 
   @override
   void initState() {
@@ -24,16 +35,52 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _barcodeController = TextEditingController();
     _stockController = TextEditingController(text: "0");
     _reorderLevelController = TextEditingController(text: "5");
+
+    // تهيئة متحكمات الإضافات المتغيرة
+    _expiryDateController = TextEditingController();
+    _batchController = TextEditingController();
+    _sizeController = TextEditingController();
+    _colorController = TextEditingController();
   }
 
   @override
   void dispose() {
-    // 💡 تنظيف الذاكرة فور إغلاق الشاشة لمنع تسريب البيانات (Memory Leak)
     _nameController.dispose();
     _barcodeController.dispose();
     _stockController.dispose();
     _reorderLevelController.dispose();
+    _expiryDateController.dispose();
+    _batchController.dispose();
+    _sizeController.dispose();
+    _colorController.dispose();
     super.dispose();
+  }
+
+  // 🎯 دالة منتقي التاريخ الخاصة بالصيدليات والأغذية
+  Future<void> _selectExpiryDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        _expiryDateController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      });
+    }
+  }
+
+  // 💡 دالة لتحديد نوع النشاط الحالي ديناميكياً بناءً على إعدادات النظام
+  String _getCurrentActivityType(BuildContext context) {
+    final settings = context.read<SystemConfigurationCubit>().state.settings;
+
+    if (settings.hasBusinessModule(BusinessModule.pharmacy)) {
+      return 'pharmacy';
+    } else if (settings.hasBusinessModule(BusinessModule.restaurant)) {
+      return 'restaurant';
+    }
+    return 'general'; // القيمة الافتراضية إذا لم يتم اختيار نشاط محدد
   }
 
   void _onSave(BuildContext context, AddProductState state) {
@@ -45,10 +92,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
         return;
       }
 
+      final currentActivityType = _getCurrentActivityType(context);
+
       context.read<AddProductCubit>().submitProduct(
         name: _nameController.text.trim(),
         barcode: _barcodeController.text.trim(),
         stock: int.tryParse(_stockController.text.trim()) ?? 0,
+        expiryDate: _expiryDateController.text.trim().isNotEmpty ? _expiryDateController.text.trim() : null,
+        batchNumber: _batchController.text.trim().isNotEmpty ? _batchController.text.trim() : null,
+        isIngredient: _isIngredient,
+        size: _sizeController.text.trim().isNotEmpty ? _sizeController.text.trim() : null,
+        color: _colorController.text.trim().isNotEmpty ? _colorController.text.trim() : null,
+        itemType: currentActivityType,
       );
     }
   }
@@ -61,6 +116,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentActivityType = _getCurrentActivityType(context);
+
     return BlocListener<AddProductCubit, AddProductState>(
       listenWhen: (previous, current) => current is AddProductSuccess || current is AddProductError || current is AddProductLoading,
       listener: (context, state) {
@@ -73,7 +130,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
           );
         } else {
-          // 💡 تأمين الإغلاق: إذا كنا في حالة نجاح أو خطأ، نقوم بعمل pop للـ Loading Dialog أولاً بأمان
           if (Navigator.canPop(context)) {
             Navigator.pop(context);
           }
@@ -81,10 +137,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
           if (state is AddProductError) {
             _showSnackBar(context, state.message, Colors.red);
           } else if (state is AddProductSuccess) {
-            // تحديث قائمة المخزن الرئيسية في الخلفية
             context.read<InventoryCubit>().fetchProducts();
             _showSnackBar(context, "تم حفظ الصنف بنجاح وبدقة محاسبية! ✅", Colors.green);
-            Navigator.pop(context, true); // الرجوع لشاشة المخزن
+            Navigator.pop(context, true);
           }
         }
       },
@@ -106,8 +161,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  // 1. البيانات الأساسية
                   _buildSectionHeader("البيانات العامة", Icons.inventory_2),
-
                   BasicInfoCard(
                     nameController: _nameController,
                     barcodeController: _barcodeController,
@@ -118,10 +173,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   const SizedBox(height: 12),
                   _buildReorderField(),
 
+                  const SizedBox(height: 16),
+
+                  // 2. الجزء المتغير حسب النشاط
+                  InventoryExtensionManager.getExtensionWidget(
+                    activityType: currentActivityType,
+                    expiryController: _expiryDateController,
+                    batchController: _batchController,
+                    onSelectExpiry: () => _selectExpiryDate(context),
+                    isIngredient: _isIngredient,
+                    onIsIngredientChanged: (val) => setState(() => _isIngredient = val ?? false),
+                  ),
                   const SizedBox(height: 24),
+
+                  // 3. وحدات القياس والأسعار
                   _buildSectionHeader("وحدات القياس والأسعار", Icons.sell),
 
-                  // كروت الوحدات الذكية والمربوطة بالـ Key الديناميكي للتحديث الفوري
                   ...units.asMap().entries.map((entry) {
                     final index = entry.key;
                     final unit = entry.value;
@@ -193,7 +260,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Widget _buildAddUnitButton(BuildContext context) {
     return OutlinedButton.icon(
-      onPressed: () => context.read<AddProductCubit>().addUnit(),
+      onPressed: () {
+        // إضافة وحدة جديدة عبر الكيوبت
+        context.read<AddProductCubit>().addUnit();
+      },
       icon: const Icon(Icons.add),
       label: const Text("إضافة وحدة بيع أخرى (جملة)"),
       style: OutlinedButton.styleFrom(

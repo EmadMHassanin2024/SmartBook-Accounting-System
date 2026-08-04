@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:smart_book/features/settings/screens/users_list_screen.dart';
-import 'package:smart_book/features/pos_configuration/screens/pos_configuration_screen.dart';
 
 import 'company_profile_screen.dart';
 
@@ -24,15 +23,6 @@ class SettingsMainScreen extends StatelessWidget {
             icon: Icons.business,
             color: Colors.blue,
             destination: const CompanyProfileScreen(),
-          ),
-          const Divider(),
-          _buildSettingsTile(
-            context,
-            title: "تهيئة نقطة البيع",
-            subtitle: "تفعيل ميزات المتجر أو الصيدلية أو المطعم",
-            icon: Icons.tune,
-            color: Colors.indigo,
-            destination: const PosConfigurationScreen(),
           ),
           const Divider(),
           _buildSettingsTile(

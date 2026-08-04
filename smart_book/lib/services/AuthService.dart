@@ -15,7 +15,7 @@ class AuthService {
         Uri.parse('$_baseUrl/$endpoint'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(body),
-      ).timeout(const Duration(seconds: 10));
+      ).timeout(const Duration(seconds: 30));
     } catch (e) {
       // في حال فشل الاتصال، نعيد استجابة وهمية لمنع التطبيق من الانهيار
       return http.Response('{"error": "فشل الاتصال بالسيرفر"}', 500);

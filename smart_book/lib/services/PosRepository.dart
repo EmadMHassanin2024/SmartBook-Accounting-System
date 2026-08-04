@@ -1,8 +1,9 @@
 // lib/features/pos/data/repositories/pos_repository.dart
 import 'dart:convert';
 import '../../../../core/network/base_api_service.dart';
-import '../features/pos/models/cart_item_model.dart';
-import '../features/pos/models/product_model.dart';
+
+import '../features/pos/data/models/cart_item_model.dart';
+import '../features/pos/data/models/product_model.dart';
 import 'AuthService.dart';
 
 class PosRepository {

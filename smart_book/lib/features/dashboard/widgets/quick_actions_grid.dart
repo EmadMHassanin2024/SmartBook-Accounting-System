@@ -14,7 +14,8 @@ import '../../finance/income_statement/screens/income_statement_screen.dart';
 import '../../finance/journals/Screans/JournalListScreen.dart';
 
 import '../../invoices/screens/invoices_list_screen.dart';
-import '../../pos/screens/pos_screen.dart';
+import '../../pos/presentation/screens/pos_screen.dart';
+import '../../system_config/presentation/screens/system_config_screen.dart';
 
 class QuickActionsGrid extends StatelessWidget {
   const QuickActionsGrid( {super.key});
@@ -39,6 +40,14 @@ class QuickActionsGrid extends StatelessWidget {
         Icons.edit_note,  // أيقونة مناسبة للتسويات
         Colors.deepOrangeAccent, // لون مميز للتمييز عن باقي العمليات
         const AdjustmentListScreen(), // الشاشة التي قمنا بتطويرها
+      ),
+      // 🌟 إضافة شاشة إعدادات النظام هنا
+      _MenuItem(
+
+        "إعدادات النظام",            // 1. الترتيب الأول: String (اسم العنصر)
+        Icons.settings_applications, // 2. الترتيب الثاني: IconData
+        Colors.blueGrey.shade800,    // 3. الترتيب الثالث: Color
+        const SystemConfigurationScreen(), // 4. الترتيب الرابع: Widget (الشاشة)
       ),
     ];
 

@@ -1,7 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-
 import '../../../services/ProductRepository.dart';
-
 
 class AddProductCubit extends Cubit<AddProductState> {
   final ProductRepository productService;
@@ -58,11 +56,9 @@ class AddProductCubit extends Cubit<AddProductState> {
       double? newPurchasePrice = purchasePrice;
 
       // 🔥 2. تعديل الذكاء المحاسبي الصحيح (سعر القطعة × عدد القطع)
-      // إذا كان المستخدم يكتب الآن داخل وحدة جملة (index > 0) وقام بتعديل عامل التحويل
       if (index > 0 && conversionFactor != null) {
-        final baseUnit = updatedUnits[0]; // الوحدة الأساسية (القطعة فوق)
+        final baseUnit = updatedUnits[0]; // الوحدة الأساسية
 
-        // الحسبة المظبوطة: سعر الجملة = سعر القطعة فوق × عامل التحويل الجديد
         if (baseUnit.salePrice > 0) {
           newSalePrice = baseUnit.salePrice * newFactor;
         }
@@ -81,14 +77,12 @@ class AddProductCubit extends Cubit<AddProductState> {
       );
 
       // 🔥 3. التحديث التلقائي المتسلسل (النزولي)
-      // لو المستخدم رجع فوق وعدل سعر القطعة الأساسية (index == 0)، نلف على كل وحدات الجملة تحت ونعيد ضربها فوراً!
       if (index == 0) {
         final updatedBaseUnit = updatedUnits[0];
         for (int i = 1; i < updatedUnits.length; i++) {
           final currentSubUnit = updatedUnits[i];
           updatedUnits[i] = ProductUnitModel(
             unitName: currentSubUnit.unitName,
-            // إعادة الضرب الصحيح: السعر الأساسي الجديد × عامل تحويل الوحدة الفرعية
             salePrice: updatedBaseUnit.salePrice * currentSubUnit.conversionFactor,
             purchasePrice: updatedBaseUnit.purchasePrice * currentSubUnit.conversionFactor,
             conversionFactor: currentSubUnit.conversionFactor,
@@ -106,13 +100,19 @@ class AddProductCubit extends Cubit<AddProductState> {
     required String name,
     required String barcode,
     required int stock,
+    String? expiryDate,
+    String? batchNumber,
+    bool? isIngredient,
+    String? size,
+    String? color,
+    String itemType = 'general', // نوع النشاط المستلم من الشاشة
   }) async {
     // التقاط بيانات الوحدة الأساسية (الأولى دائمًا في المصفوفة)
     final baseUnit = state.units.first;
 
     emit(AddProductLoading(units: state.units));
     try {
-      // استدعاء السيرفيس المطور بالروابط الصحيحة وإرسال بيانات الوحدة الأساسية
+      // 💡 التعديل هنا: تمرير itemType إلى دالة الـ Repository ليتم حفظه بشكل صحيح
       bool success = await productService.addProduct(
         name: name,
         barcode: barcode,
@@ -120,6 +120,7 @@ class AddProductCubit extends Cubit<AddProductState> {
         purchasePrice: baseUnit.purchasePrice,
         stock: stock,
         unitName: baseUnit.unitName.trim().isEmpty ? "قطعة" : baseUnit.unitName.trim(),
+        itemType: itemType, // 👈 إرسال النوع الفعلي (restaurant أو pharmacy) للسيرفر
       );
 
       if (success) {

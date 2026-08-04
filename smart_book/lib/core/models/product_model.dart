@@ -1,3 +1,4 @@
+/*
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -94,3 +95,5 @@ class ProductModel extends Equatable {
     productUnits
   ];
 }
+
+ */

@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../../../core/constants/app_config.dart';
 import '../../../core/models/product_model.dart';
+import '../../pos/data/models/product_model.dart';
 import '../models/inventory_transaction.dart';
 
 class InventoryRepository {

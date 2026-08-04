@@ -1,20 +1,60 @@
-import 'package:smart_book/features/pos/auth_exports.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../services/PosRepository.dart';
+import '../../../core/models/product_model.dart';
+import '../../../core/packages.dart';
+
+import '../../system_config/data/models/ business_module.dart';
+import '../../system_config/data/models/system_settings_model.dart';
+import '../business_extension/pharmacy/pharmacy_extension.dart';
+import '../business_extension/restaurant/restaurant_extension.dart';
+import '../core/business_extension.dart';
+
+import '../../../services/InvoicePdfHelper.dart';
+import '../data/Repository/PosRepository.dart';
+import '../data/models/cart_item_model.dart';
+import '../data/models/product_model.dart';
+
+import 'PosState.dart';
 
 class PosCubit extends Cubit<PosState> {
-  final  PosRepository _posService;
+  final PosRepository _posService;
   final List<CartItemModel> _currentCart = [];
   List<ProductModel> _allProducts = [];
 
+  // النشاط التجاري النشط حالياً في الـ POS
+  BusinessExtension? activeExtension;
+
   PosCubit(this._posService) : super(PosInitial());
+
+  /// 🎯 التحديد التلقائي للنشاط بناءً على إعدادات النظام المحفوظة
+  void applySettingsExtension(SystemSettingsModel settings) {
+    if (settings.hasBusinessModule(BusinessModule.pharmacy)) {
+      activeExtension = PharmacyExtension();
+    } else if (settings.hasBusinessModule(BusinessModule.restaurant)) {
+      activeExtension = RestaurantExtension();
+    } else {
+      activeExtension = null; // متجر عام أو افتراضي بدون إضافات خاصة
+    }
+
+    // إذا كانت المنتجات محمّلة مسبقاً، نعيد تحديث الحالة لينعكس النشاط على الواجهة
+    if (_allProducts.isNotEmpty || _currentCart.isNotEmpty) {
+      _emitLoaded();
+    } else {
+      emit(PosExtensionChanged(activeExtension));
+    }
+  }
+
+  // 🎯 تعيين النشاط التجاري يدوياً إذا لزم الأمر
+  void setBusinessExtension(BusinessExtension extension) {
+    activeExtension = extension;
+    _emitLoaded();
+  }
 
   // 🎯 Getter للمنتجات المتاحة
   List<ProductModel> get availableProducts =>
       _allProducts.where((p) => p.stock > 0).toList();
 
   void _emitLoaded() {
-    
     emit(PosLoaded(
       cartItems: List.from(_currentCart),
       products: List.from(availableProducts),
@@ -35,7 +75,6 @@ class PosCubit extends Cubit<PosState> {
   void addToCart(ProductModel product) {
     if (product.stock <= 0) return;
 
-    // 1. تحديث أو إضافة المنتج للسلة
     final index = _currentCart.indexWhere((i) => i.product.id == product.id);
     if (index != -1) {
       _currentCart[index].quantity++;
@@ -43,7 +82,6 @@ class PosCubit extends Cubit<PosState> {
       _currentCart.add(CartItemModel(product: product, quantity: 1));
     }
 
-    // 2. تحديث المخزون في _allProducts باستخدام copyWith (النهج الصحيح)
     final productIndex = _allProducts.indexWhere((p) => p.id == product.id);
     if (productIndex != -1) {
       _allProducts[productIndex] = _allProducts[productIndex].copyWith(
@@ -58,7 +96,6 @@ class PosCubit extends Cubit<PosState> {
     final index = _currentCart.indexWhere((i) => i.product.id == product.id);
     if (index == -1) return;
 
-    // تحديث السلة والمخزون
     if (_currentCart[index].quantity > 1) {
       _currentCart[index].quantity--;
     } else {
@@ -80,7 +117,6 @@ class PosCubit extends Cubit<PosState> {
     if (index != -1) {
       final quantityToRemove = _currentCart[index].quantity;
 
-      // إعادة الكمية للمخزون
       final productIndex = _allProducts.indexWhere((p) => p.id == product.id);
       if (productIndex != -1) {
         _allProducts[productIndex] = _allProducts[productIndex].copyWith(
@@ -108,7 +144,7 @@ class PosCubit extends Cubit<PosState> {
         await InvoicePdfHelper.generateAndPrintReceipt(invoiceItems, finalTotal, paymentType);
         _currentCart.clear();
         emit(PosSuccess());
-        await fetchInventoryProducts(); // إعادة جلب المخزون الفعلي من السيرفر
+        await fetchInventoryProducts();
       } else {
         emit(PosError("فشل حفظ الفاتورة"));
       }
@@ -116,7 +152,6 @@ class PosCubit extends Cubit<PosState> {
       emit(PosError(e.toString()));
     }
   }
-
 
   int getQuantityInCart(ProductModel product) {
     final item = _currentCart.firstWhere(

@@ -12,7 +12,7 @@ import '../../features/finance/accounting/screens/payment_voucher_screen.dart';
 import '../../features/finance/journals/Screans/JournalListScreen.dart';
 import '../../features/inventory/screens/items_list_screen.dart';
 import '../../features/invoices/screens/invoices_list_screen.dart';
-import '../../features/pos/screens/pos_screen.dart';
+import '../../features/pos/presentation/screens/pos_screen.dart';
 import '../../features/finance/Account/screens/AccountsListScreen.dart';
 import '../../features/finance/TrialBalance/Screans/TrialBalanceScreen.dart';
 
