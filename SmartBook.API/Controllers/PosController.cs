@@ -17,24 +17,32 @@ namespace SmartBook.API.Controllers
                 _posService = posService;
             }
 
-            [HttpPost("save-invoice")]
-            public async Task<IActionResult> SaveInvoice([FromBody] InvoiceDto invoiceDto)
-            {
 
-            // يتحقق إذا كانت الفاتورة فارغة
-            // أو لا تحتوي على أي عناصر (Items)
-          
+        [HttpPost("save-invoice")]
+        public async Task<IActionResult> SaveInvoice([FromBody] InvoiceDto invoiceDto)
+        {
             if (invoiceDto == null || !invoiceDto.Items.Any())
-                    return BadRequest("بيانات الفاتورة فارغة");
+                return BadRequest("بيانات الفاتورة فارغة");
 
+            try
+            {
                 var result = await _posService.SaveInvoiceAndSyncStock(invoiceDto);
-
                 if (result)
                     return Ok(new { message = "تم حفظ الفاتورة وتحديث المخزن بنجاح" });
 
-                return StatusCode(500, "حدث خطأ أثناء معالجة الفاتورة أو نقص في المخزون");
+                return StatusCode(500, "حدث خطأ أثناء معالجة الفاتورة");
+            }
+            catch (Exception ex)
+            {
+                // 🔍 طباعة الخطأ كاملاً في الـ Console الخاص بالباك إند
+                Console.WriteLine($"❌ ERROR IN SAVE INVOICE: {ex.Message} -> {ex.InnerException?.Message}");
+
+                // 💡 إرجاع تفاصيل الخطأ للواجهة الأمامية لنراه بوضوح
+                return StatusCode(500, new { error = ex.Message, inner = ex.InnerException?.Message });
             }
         }
+
+    }
     
 
 

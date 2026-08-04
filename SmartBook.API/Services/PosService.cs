@@ -54,8 +54,8 @@ namespace SmartBook.API.Services
                         .FirstOrDefaultAsync(m => m.MovementType == "Sales");
 
                     // تعديل الأرقام لتطابق جدول الحسابات الخاص بك تماماً
-                    int cashAccountId = 1;                        // الصندوق من جدولك = 1
-                    int salesAccountId = mapping?.AccountId ?? 3; // المبيعات من جدولك = 3 (بدلاً من 4001)
+                    int cashAccountId = 4;                        // الصندوق من جدولك = 1
+                    int salesAccountId = mapping?.AccountId ?? 5; // المبيعات من جدولك = 3 (بدلاً من 4001)
 
                     var entry = new JournalEntry
                     {
