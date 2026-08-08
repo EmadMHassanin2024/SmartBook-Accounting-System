@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:smart_book/features/inventory/auth_exports.dart';
 import 'package:smart_book/features/inventory/extensions/inventory_extension_manager.dart';
-import '../../system_config/data/models/ business_module.dart';
-import '../../system_config/logic/system_configuration_cubit.dart';
+
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});

@@ -6,7 +6,7 @@ import '../../features/finance/income_statement/data/repositories/income_stateme
 import '../../features/finance/journals/repositories/JournalRepository.dart';
 import '../../features/finance/repositories/FinancialReportsRepository.dart';
 
-import '../../features/inventory/data/inventory_repository.dart';
+import '../../features/inventory/data/repository/inventory_repository.dart';
 import '../../features/inventory/logic/InventoryCubit.dart';
 import '../../features/inventory/logic/add_product_cubit.dart';
 
@@ -65,6 +65,8 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<SystemConfigurationRepository>(
         () => SystemConfigurationRepositoryImpl(),
   );
+
+
 
   //------------------------------------------------------------
   // Cubits

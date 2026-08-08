@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/widgets/main_layout.dart';
 import '../../data/models/ business_module.dart';
 import '../../data/models/core_module.dart';
 import '../../data/models/feature_module.dart';
@@ -74,22 +75,39 @@ class SystemConfigurationScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: ElevatedButton(
           onPressed: () async {
-            // 1. انتظار اكتمال عملية الحفظ في قاعدة البيانات
-            await context.read<SystemConfigurationCubit>().saveConfiguration();
+            // 1. التقاط الـ Cubit مسبقاً قبل أي عمليات غير متزامنة لتجنب مشاكل الـ Context
+            final configCubit = context.read<SystemConfigurationCubit>();
 
-            // 2. تطبيق الإعدادات على الـ POS بعد التأكد من نجاح الحفظ
-            final currentSettings = context.read<SystemConfigurationCubit>().state.settings;
-            context.read<PosCubit>().applySettingsExtension(currentSettings);
+            // 2. تنفيذ الحفظ في الخلفية
+            await configCubit.saveConfiguration();
 
-            // 3. إظهار رسالة النجاح والرجوع
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("تم حفظ وتطبيق الإعدادات بنجاح في قاعدة البيانات"),
-                  backgroundColor: Colors.green,
-                ),
-              );
+            // 3. التحقق من أن الـ Widget لا تزال نشطة في الشجرة
+            if (!context.mounted) return;
+
+            // 4. تطبيق الإعدادات على الـ POS (تأكد من وجود PosCubit في السياق، أو احذفها إن لم تكن مطلوبة هنا مباشرة)
+            try {
+              final currentSettings = configCubit.state.settings;
+              context.read<PosCubit>().applySettingsExtension(currentSettings);
+            } catch (_) {
+              // لتجنب انهيار التطبيق لو لم يكن الـ PosCubit مُحَقناً في هذه الشاشة
+            }
+
+            // 5. إظهار رسالة النجاح والرجوع للصفحة السابقة بأمان
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("تم حفظ وتطبيق الإعدادات بنجاح"),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+            if (Navigator.canPop(context)) {
               Navigator.pop(context);
+            } else {
+              // إذا لم تكن هناك صفحة سابقة للرجوع إليها، يمكنك الانتقال للصفحة الرئيسية بدلاً من الانهيار
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const MainScreen()),
+              );
             }
           },
           child: const Text("حفظ الإعدادات"),

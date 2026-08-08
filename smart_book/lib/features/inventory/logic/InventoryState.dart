@@ -1,5 +1,5 @@
-import 'package:equatable/equatable.dart';
-import '../../pos/data/models/product_model.dart';
+import 'package:smart_book/features/inventory/auth_exports.dart';
+
 
 abstract class InventoryState extends Equatable {
   const InventoryState();

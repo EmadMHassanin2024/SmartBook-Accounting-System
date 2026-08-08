@@ -1,11 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import '../../../core/di/service_locator.dart';
-import '../../finance/adjustments/logic/adjustment_cubit.dart';
-import '../../finance/adjustments/logic/adjustment_state.dart';
-import '../../system_config/data/models/ business_module.dart';
-import '../../system_config/logic/system_configuration_cubit.dart';
+
 
 
 class ItemsListScreen extends StatelessWidget {

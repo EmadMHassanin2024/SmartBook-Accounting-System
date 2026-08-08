@@ -1,7 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../services/ProductRepository.dart';
-
 class InventoryCubit extends Cubit<InventoryState> {
   final ProductRepository _productService;
 

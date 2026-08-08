@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../finance/adjustments/logic/adjustment_cubit.dart';
 import '../logic/InventoryState.dart';
 
-import '../presentation/pages/inventory_adjustment_screen.dart';
+import '../data/repository/inventory_adjustment_screen.dart';
 import '../widgets/item_card_widget.dart';
 
 class InventoryListView extends StatelessWidget {

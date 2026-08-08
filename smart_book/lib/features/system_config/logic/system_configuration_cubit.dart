@@ -1,9 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../data/models/ business_module.dart';
+
 import '../data/models/core_module.dart';
 import '../data/models/feature_module.dart';
 import '../data/repositories/SystemConfigurationRepository.dart';
+import '../data/repositories/system_configuration_repository.dart';
 import 'system_configuration_state.dart';
 
 class SystemConfigurationCubit
@@ -13,10 +15,11 @@ class SystemConfigurationCubit
   SystemConfigurationCubit(this._repository)
       : super(SystemConfigurationState.initial());
 
-  //==================================================
+  //============================================================
   // Company
-  //==================================================
+  //============================================================
 
+  /// تحديث اسم الشركة
   void updateCompanyName(String value) {
     emit(
       state.copyWith(
@@ -27,10 +30,14 @@ class SystemConfigurationCubit
     );
   }
 
-  //==================================================
+  //============================================================
   // Helpers
-  //==================================================
+  //============================================================
 
+  /// تبديل عنصر داخل قائمة.
+  ///
+  /// إذا كان العنصر موجودًا يتم حذفه،
+  /// وإذا لم يكن موجودًا تتم إضافته.
   List<T> _toggleItem<T>(
       List<T> items,
       T item,
@@ -46,10 +53,11 @@ class SystemConfigurationCubit
     return list;
   }
 
-  //==================================================
+  //============================================================
   // Core Modules
-  //==================================================
+  //============================================================
 
+  /// تفعيل / إلغاء موديول أساسي
   void toggleCoreModule(CoreModule module) {
     emit(
       state.copyWith(
@@ -63,8 +71,11 @@ class SystemConfigurationCubit
     );
   }
 
+  /// تفعيل موديول أساسي
   void enableCoreModule(CoreModule module) {
-    if (isCoreModuleEnabled(module)) return;
+    if (isCoreModuleEnabled(module)) {
+      return;
+    }
 
     final list = List<CoreModule>.from(
       state.settings.enabledCoreModules,
@@ -81,6 +92,7 @@ class SystemConfigurationCubit
     );
   }
 
+  /// إلغاء موديول أساسي
   void disableCoreModule(CoreModule module) {
     final list = List<CoreModule>.from(
       state.settings.enabledCoreModules,
@@ -97,19 +109,17 @@ class SystemConfigurationCubit
     );
   }
 
-  bool isCoreModuleEnabled(
-      CoreModule module,
-      ) {
+  /// هل الموديول الأساسي مفعل؟
+  bool isCoreModuleEnabled(CoreModule module) {
     return state.settings.enabledCoreModules.contains(module);
   }
 
-  //==================================================
+  //============================================================
   // Business Modules
-  //==================================================
+  //============================================================
 
-  void toggleBusinessModule(
-      BusinessModule module,
-      ) {
+  /// تفعيل / إلغاء نشاط تجاري
+  void toggleBusinessModule(BusinessModule module) {
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
@@ -122,10 +132,11 @@ class SystemConfigurationCubit
     );
   }
 
-  void enableBusinessModule(
-      BusinessModule module,
-      ) {
-    if (isBusinessModuleEnabled(module)) return;
+  /// تفعيل نشاط تجاري
+  void enableBusinessModule(BusinessModule module) {
+    if (isBusinessModuleEnabled(module)) {
+      return;
+    }
 
     final list = List<BusinessModule>.from(
       state.settings.enabledBusinessModules,
@@ -142,9 +153,8 @@ class SystemConfigurationCubit
     );
   }
 
-  void disableBusinessModule(
-      BusinessModule module,
-      ) {
+  /// إلغاء نشاط تجاري
+  void disableBusinessModule(BusinessModule module) {
     final list = List<BusinessModule>.from(
       state.settings.enabledBusinessModules,
     );
@@ -160,19 +170,17 @@ class SystemConfigurationCubit
     );
   }
 
-  bool isBusinessModuleEnabled(
-      BusinessModule module,
-      ) {
+  /// هل النشاط التجاري مفعل؟
+  bool isBusinessModuleEnabled(BusinessModule module) {
     return state.settings.enabledBusinessModules.contains(module);
   }
 
-  //==================================================
+  //============================================================
   // Features
-  //==================================================
+  //============================================================
 
-  void toggleFeature(
-      FeatureModule feature,
-      ) {
+  /// تفعيل / إلغاء خاصية إضافية
+  void toggleFeature(FeatureModule feature) {
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
@@ -185,10 +193,11 @@ class SystemConfigurationCubit
     );
   }
 
-  void enableFeature(
-      FeatureModule feature,
-      ) {
-    if (isFeatureEnabled(feature)) return;
+  /// تفعيل خاصية
+  void enableFeature(FeatureModule feature) {
+    if (isFeatureEnabled(feature)) {
+      return;
+    }
 
     final list = List<FeatureModule>.from(
       state.settings.enabledFeatures,
@@ -205,9 +214,8 @@ class SystemConfigurationCubit
     );
   }
 
-  void disableFeature(
-      FeatureModule feature,
-      ) {
+  /// إلغاء خاصية
+  void disableFeature(FeatureModule feature) {
     final list = List<FeatureModule>.from(
       state.settings.enabledFeatures,
     );
@@ -223,43 +231,54 @@ class SystemConfigurationCubit
     );
   }
 
-  bool isFeatureEnabled(
-      FeatureModule feature,
-      ) {
+  /// هل الخاصية مفعلة؟
+  bool isFeatureEnabled(FeatureModule feature) {
     return state.settings.enabledFeatures.contains(feature);
   }
 
-  //==================================================
+  //============================================================
   // Reset
-  //==================================================
+  //============================================================
 
+  /// إعادة الإعدادات للوضع الافتراضي
   void resetConfiguration() {
     emit(
       SystemConfigurationState.initial(),
     );
   }
 
-  //==================================================
+  //============================================================
   // Load
-  //==================================================
+  //============================================================
 
+  /// تحميل إعدادات النظام
   Future<void> loadConfiguration() async {
     emit(
       state.copyWith(
         isLoading: true,
+        errorMessage: null,
       ),
     );
 
     try {
-      // سيتم ربطها بالـ API لاحقاً
-      // final settings =
-      // await _repository.loadConfiguration();
+      final settings = await _repository.loadConfiguration();
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-        ),
-      );
+      if (settings != null) {
+        emit(
+          state.copyWith(
+            settings: settings,
+            isLoading: false,
+            errorMessage: null,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            isLoading: false,
+            errorMessage: null,
+          ),
+        );
+      }
     } catch (e) {
       emit(
         state.copyWith(
@@ -270,20 +289,37 @@ class SystemConfigurationCubit
     }
   }
 
-  //==================================================
+  //============================================================
   // Save
-  //==================================================
+  //============================================================
 
-
+  /// حفظ إعدادات النظام
   Future<void> saveConfiguration() async {
-    emit(state.copyWith(isLoading: true));
-    try {
-      // تأكد من استدعاء مستودع البيانات (Repository) لحفظ الـ state.settings في قاعدة البيانات SQL Server
-      await _repository.saveConfiguration(state.settings);
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null,
+      ),
+    );
 
-      emit(state.copyWith(isLoading: false));
+    try {
+      await _repository.saveConfiguration(
+        state.settings,
+      );
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: null,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

@@ -1,5 +1,5 @@
+import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../models/ ProductUnitModel.dart';
 
 abstract class AddProductState {
   final List<ProductUnitModel> units;

@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import 'pharmacy_extension_widget.dart';
-import 'restaurant_extension_widget.dart'; // 💡 استيراد كلاس المطعم
+
+import 'package:smart_book/features/inventory/auth_exports.dart';
 
 class InventoryExtensionManager {
   static Widget getExtensionWidget({

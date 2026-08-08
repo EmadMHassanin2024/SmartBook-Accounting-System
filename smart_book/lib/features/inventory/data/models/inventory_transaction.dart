@@ -1,4 +1,5 @@
-import 'package:equatable/equatable.dart';
+
+import 'package:smart_book/features/inventory/auth_exports.dart';
 
 class InventoryTransaction extends Equatable {
   final String productId;

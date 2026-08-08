@@ -1,1 +1,0 @@
-enum StockStatus { all, outOfStock, lowStock }
