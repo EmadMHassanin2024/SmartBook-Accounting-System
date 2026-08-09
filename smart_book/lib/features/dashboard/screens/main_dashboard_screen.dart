@@ -10,6 +10,11 @@ import '../../finance/accounting/models/voucher_model.dart';
 import '../../finance/accounting/screens/chart_of_accounts_screen.dart';
 import '../../finance/accounting/screens/payment_voucher_screen.dart';
 
+// الاستيرادات الخاصة بالشاشات المحاسبية المضافة للاختصارات
+import '../../finance/journals/Screans/JournalListScreen.dart';
+import '../../finance/Account/screens/AccountsListScreen.dart';
+import '../../finance/TrialBalance/Screans/TrialBalanceScreen.dart';
+
 import '../../inventory/auth_exports.dart';
 import '../../inventory/screens/items_list_screen.dart';
 
@@ -129,15 +134,12 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
   // ==================================================================
   // الاختصارات السريعة
   // ==================================================================
-
   Widget _buildQuickActions(BuildContext context) {
-
     final menuItems = <_MenuItem>[
 
       // --------------------------------------------------------------
       // الفواتير
       // --------------------------------------------------------------
-
       _MenuItem(
         title: "الفواتير",
         icon: Icons.receipt_long,
@@ -155,7 +157,6 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
       // --------------------------------------------------------------
       // المخزون
       // --------------------------------------------------------------
-
       _MenuItem(
         title: "المخزون",
         icon: Icons.inventory_2,
@@ -173,7 +174,6 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
       // --------------------------------------------------------------
       // العملاء
       // --------------------------------------------------------------
-
       _MenuItem(
         title: "العملاء",
         icon: Icons.people_alt,
@@ -191,7 +191,6 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
       // --------------------------------------------------------------
       // دليل الحسابات
       // --------------------------------------------------------------
-
       _MenuItem(
         title: "الدليل المحاسبي",
         icon: Icons.account_tree,
@@ -207,9 +206,59 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
       ),
 
       // --------------------------------------------------------------
+      // قيود اليومية
+      // --------------------------------------------------------------
+      _MenuItem(
+        title: "قيود اليومية",
+        icon: Icons.menu_book,
+        color: Colors.indigo,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const JournalListScreen(),
+            ),
+          );
+        },
+      ),
+
+      // --------------------------------------------------------------
+      // دفتر الأستاذ
+      // --------------------------------------------------------------
+      _MenuItem(
+        title: "دفتر الأستاذ",
+        icon: Icons.view_list,
+        color: Colors.brown,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const AccountsListScreen(),
+            ),
+          );
+        },
+      ),
+
+      // --------------------------------------------------------------
+      // ميزان المراجعة
+      // --------------------------------------------------------------
+      _MenuItem(
+        title: "ميزان المراجعة",
+        icon: Icons.account_balance,
+        color: Colors.blueGrey,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const TrialBalanceScreen(),
+            ),
+          );
+        },
+      ),
+
+      // --------------------------------------------------------------
       // سند قبض
       // --------------------------------------------------------------
-
       _MenuItem(
         title: "سند قبض",
         icon: Icons.add_card,
@@ -229,7 +278,6 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
       // --------------------------------------------------------------
       // سند صرف
       // --------------------------------------------------------------
-
       _MenuItem(
         title: "سند صرف",
         icon: Icons.payments,
@@ -249,24 +297,17 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
 
     return GridView.builder(
       shrinkWrap: true,
-
-      // مهم جدًا:
-      // لأن الصفحة نفسها SingleChildScrollView
+      // مهم جدًا: لأن الصفحة نفسها SingleChildScrollView
       physics: const NeverScrollableScrollPhysics(),
-
       itemCount: menuItems.length,
-
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
         mainAxisExtent: 65,
       ),
-
       itemBuilder: (context, index) {
-
         final item = menuItems[index];
-
         return _buildCompactMenuCard(
           context,
           title: item.title,
@@ -292,47 +333,35 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
 
     return InkWell(
       onTap: onTap,
-
       borderRadius: BorderRadius.circular(12),
-
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 8,
         ),
-
         decoration: BoxDecoration(
           color: Colors.white,
-
           borderRadius: BorderRadius.circular(12),
-
           border: Border.all(
             color: AppColors.dividerColor.withOpacity(0.6),
           ),
         ),
-
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-
           children: [
-
             Icon(
               icon,
               color: color,
               size: 28,
             ),
-
             const SizedBox(width: 12),
-
             Flexible(
               child: Text(
                 title,
-
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                   color: AppColors.textPrimary,
                 ),
-
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -349,13 +378,9 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
 // ======================================================================
 
 class _MenuItem {
-
   final String title;
-
   final IconData icon;
-
   final Color color;
-
   final VoidCallback onTap;
 
   const _MenuItem({

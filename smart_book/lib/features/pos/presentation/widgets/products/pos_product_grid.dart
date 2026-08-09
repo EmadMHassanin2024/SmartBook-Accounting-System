@@ -50,17 +50,7 @@ class POSProductGrid extends StatelessWidget {
                   },
                 ),
               ),
-              SizedBox(
-                height: 40,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    FilterChip(label: const Text("الكل"), onSelected: (_) {}),
-                    const SizedBox(width: 8),
-                    FilterChip(label: const Text("مواد غذائية"), onSelected: (_) {}),
-                  ],
-                ),
-              ),
+           
               Expanded(
                 child: filteredProducts.isEmpty
                     ? const Center(child: Text("لا توجد منتجات مسجلة في هذا القسم"))

@@ -99,7 +99,7 @@ class PrescriptionIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      tooltip: "Prescription",
+      tooltip: "الوصفة الطبية",
       icon: const Icon(
         Icons.receipt_long,
         color: Colors.teal,
@@ -110,7 +110,7 @@ class PrescriptionIcon extends StatelessWidget {
 }
 
 ///--------------------------------------------------------------
-/// بطاقة صغيرة لعرض معلومة
+/// بطاقة صغيرة لعرض معلومة (تم تعديلها لتتطابق مع اتجاه النصوص العربية وتصحيح الكلمات)
 ///--------------------------------------------------------------
 class PharmacyInfoTile extends StatelessWidget {
   final IconData icon;
@@ -128,30 +128,21 @@ class PharmacyInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-
         Icon(
           icon,
           size: 16,
           color: Colors.grey,
         ),
-
         const SizedBox(width: 6),
-
-        Text(
-          "$title : ",
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 11,
-          ),
-        ),
-
+        // استخدام تنسيق موحد يضمن عدم انعكاس الكلمات الإنجليزية بجانب العربية
         Expanded(
           child: Text(
-            value,
+            "$title: $value",
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: const TextStyle(
               fontSize: 11,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),

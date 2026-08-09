@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/models/product_model.dart';
 import '../../../core/packages.dart';
 
+
 import '../../system_config/data/models/ business_module.dart';
+
 import '../../system_config/data/models/system_settings_model.dart';
 import '../business_extension/pharmacy/pharmacy_extension.dart';
 import '../business_extension/restaurant/restaurant_extension.dart';
+import '../core/PaymentMethod.dart';
 import '../core/business_extension.dart';
 
 import '../../../services/InvoicePdfHelper.dart';
@@ -129,6 +132,35 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
+  /// 🎯 دالة الدفع الحديثة باستخدام PaymentMethod المنبثقة
+  Future<void> checkoutWithMethod(PaymentMethod method) async {
+    if (_currentCart.isEmpty) return;
+
+    // تحويل الـ Enum إلى نص لكي يتم إرساله للـ Repository وخدمات الطباعة
+    final String paymentTypeStr = method.name; // أو تحويله إلى نص عربي مثل "نقدي" أو "شبكة" حسب الرغبة
+
+    // حساب الإجمالي النهائي شاملاً الضريبة أو كما هو مخزن
+
+    final double finalTotal = _currentCart.fold(0.0, (sum, item) => sum + (item.product.price * item.quantity)) * 1.15;
+
+    emit(PosSubmitting());
+    try {
+      final success = await _posService.saveInvoice(_currentCart, paymentTypeStr);
+
+      if (success) {
+        await InvoicePdfHelper.generateAndPrintReceipt(_currentCart, finalTotal, paymentTypeStr);
+        _currentCart.clear();
+        emit(PosSuccess());
+        await fetchInventoryProducts();
+      } else {
+        emit(PosError("فشل حفظ الفاتورة"));
+      }
+    } catch (e) {
+      emit(PosError(e.toString()));
+    }
+  }
+
+  /// الدالة القديمة للتوافقية (إن كانت مستخدمة في أماكن أخرى)
   Future<void> checkout({
     required String paymentType,
     required List<dynamic> invoiceItems,

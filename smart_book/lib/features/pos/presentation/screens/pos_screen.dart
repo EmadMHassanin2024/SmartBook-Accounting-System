@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_book/features/auth/auth_exports.dart';
 
+import '../../../system_config/presentation/screens/system_config_screen.dart';
 import '../../logic/pos_cubit.dart';
 import '../../logic/PosState.dart';
 
@@ -44,7 +45,7 @@ class _POSScreenState extends State<POSScreen> {
           appBar: AppBar(
             title: Text(
                 activeExtension != null
-                    ? "وضع: ${activeExtension.extensionName}"
+                    ? "النشاط: ${activeExtension.extensionName}"
                     : "نقطة البيع (عام)"
             ),
             actions: [
@@ -52,13 +53,12 @@ class _POSScreenState extends State<POSScreen> {
                 icon: const Icon(Icons.tune), // أيقونة الإعدادات الحقيقية للنظام
                 tooltip: "إعدادات النظام",
                 onPressed: () {
-                  // TODO: استبدل SystemConfigurationScreen بشاشة إعدادات النظام الحقيقية لديك
-                  /*
+
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const SystemConfigurationScreen()),
+                    MaterialPageRoute(builder: (_) =>
+                    const SystemConfigurationScreen()),
                   );
-                  */
                 },
               ),
             ],

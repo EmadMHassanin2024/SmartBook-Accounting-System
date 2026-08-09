@@ -1,10 +1,18 @@
+import 'package:flutter/material.dart';
 import 'package:smart_book/features/auth/auth_exports.dart';
-// لوحة الملخص العام
+
+import '../../../core/PaymentMethod.dart';
+import '../../../logic/pos_cubit.dart';
+import '../payment/PaymentBottomSheet.dart';
+
+///--------------------------------------------------------------
+/// لوحة الملخص العام (تم تعديل زر الدفع ليدعم خيارات الدفع المنبثقة)
+///--------------------------------------------------------------
 class POSSummaryPanel extends StatelessWidget {
   final double subTotal;       // المجموع قبل الضريبة القادم من السلة
   final double vatAmount;      // قيمة الضريبة المحسوبة (15%)
   final double totalAmount;    // الإجمالي النهائي الشامل للضريبة
-  final VoidCallback onConfirm; // الدالة الممررة لحفظ الفاتورة وترحيلها للـ C#
+  final VoidCallback onConfirm; // الدالة الممررة لحفظ الفاتورة (يمكن استبدالها أو دمجها حسب الحاجة)
 
   const POSSummaryPanel({
     super.key,
@@ -45,20 +53,39 @@ class POSSummaryPanel extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // 4. زر التأكيد والدفع والترحيل للـ SQL Server
+            // 4. زر التأكيد والدفع وإظهار خيارات الدفع
             SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.successGreen, // اللون الأخضر لاعتماد الفواتير
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  elevation: 0.5,
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-                onPressed: onConfirm, // تنفيذ دالة الحفظ الذكية الممررة من الـ Cubit
+                onPressed: () {
+                  // إظهار نافذة خيارات الدفع المنبثقة مع تمرير الإجمالي النهائي
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (sheetContext) => PaymentBottomSheet(
+                      totalAmount: totalAmount,
+                      onConfirmPayment: (PaymentMethod method) {
+                        // إرسال طريقة الدفع للـ Cubit لإنهاء الفاتورة وترحيلها
+                        context.read<PosCubit>().checkoutWithMethod(method);
+                      },
+                    ),
+                  );
+                },
                 child: const Text(
                   "تأكيد ودفع (F10)",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
