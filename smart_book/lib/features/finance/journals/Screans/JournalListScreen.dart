@@ -30,7 +30,7 @@ class _JournalListScreenState extends State<JournalListScreen> {
     super.dispose();
   }
 
-  // دالة انتقال موحدة لمنع التكرار
+
   void _navigateToDetails(JournalModel journal) {
     Navigator.push(
       context,

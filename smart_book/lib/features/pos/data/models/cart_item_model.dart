@@ -1,4 +1,5 @@
-import 'product_model.dart';
+
+import 'package:smart_book/features/pos/auth_exports.dart';
 
 class CartItemModel {
   final ProductModel product;

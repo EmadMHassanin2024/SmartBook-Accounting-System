@@ -1,7 +1,7 @@
-
 import 'package:smart_book/features/auth/auth_exports.dart';
+import '../../../core/routes/app_routes.dart';
 
-class SignUpScreen extends StatefulWidget { // قمنا بتغيير الاسم ليتطابق مع LoginScreen
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
@@ -9,7 +9,7 @@ class SignUpScreen extends StatefulWidget { // قمنا بتغيير الاسم 
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _formKey = GlobalKey<FormState>(); // 🎯 الممارسة الأفضل: استخدام FormKey
+  final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,72 +27,132 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
-
+    final authCubit = context.read<AuthCubit>();
 
     return Scaffold(
-      backgroundColor: AppColors.cardBg, // توحيد اللون مع شاشة الدخول
-      appBar: const AuthAppBar(primaryColor:AppColors.qiwaBlue),
+      backgroundColor: AppColors.cardBg,
+      appBar: const AuthAppBar(primaryColor: AppColors.qiwaBlue),
       body: SafeArea(
         child: BlocConsumer<AuthCubit, AuthState>(
+          // الاستماع فقط لحالات النجاح أو الخطأ
+          listenWhen: (previous, current) =>
+          current is AuthSuccess || current is AuthError,
           listener: (context, state) {
             if (state is AuthSuccess) {
-              SnackbarHelper.show(context, lang.registrationSuccess, AppColors.successGreen);
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+              SnackbarHelper.show(
+                context,
+                lang.registrationSuccess,
+                AppColors.successGreen,
+              );
+              Navigator.pushReplacementNamed(context, AppRoutes.login);
             } else if (state is AuthError) {
-              SnackbarHelper.show(context, state.message, Colors.red);
+              SnackbarHelper.show(
+                context,
+                state.message,
+                AppColors.accentRed,
+              );
             }
           },
+          // منع إعادة بناء الشاشة بالكامل عند تغير حالات التحميل
+          buildWhen: (previous, current) => current is AuthInitial,
           builder: (context, state) {
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Form(
-                key: _formKey, // ربط الـ Form للتحقق
+                key: _formKey,
                 child: Column(
                   children: [
                     const SizedBox(height: 30),
-                    Text(lang.signUp, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.qiwaBlue)),
+                    Text(
+                      lang.signUp,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.qiwaBlue,
+                      ),
+                    ),
                     const SizedBox(height: 30),
 
-                    CustomInputField(label: lang.fullName, controller: _fullNameController),
+                    CustomInputField(
+                      label: lang.fullName,
+                      controller: _fullNameController,
+                    ),
                     const SizedBox(height: 20),
-                    CustomInputField(label: lang.username, controller: _usernameController),
+                    CustomInputField(
+                      label: lang.username,
+                      controller: _usernameController,
+                    ),
                     const SizedBox(height: 20),
-                    CustomInputField(label: lang.password, controller: _passwordController, isPassword: true),
+                    CustomInputField(
+                      label: lang.password,
+                      controller: _passwordController,
+                      isPassword: true,
+                    ),
                     const SizedBox(height: 20),
-                    CustomInputField(label: lang.passwordConfirm, controller: _confirmPasswordController, isPassword: true),
+                    CustomInputField(
+                      label: lang.passwordConfirm,
+                      controller: _confirmPasswordController,
+                      isPassword: true,
+                    ),
 
                     const SizedBox(height: 40),
 
-                    state is AuthLoading
-                        ? const CircularProgressIndicator()
-                        : SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.qiwaBlue),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            // إرسال البيانات للـ Cubit
-                            final user = UserModel(
-                              fullName: _fullNameController.text.trim(),
-                              username: _usernameController.text.trim(),
-                              password: _passwordController.text,
-                            );
-                            context.read<AuthCubit>().registerUser(user);
-                          }
-                        },
-                        child: Text(lang.createAccount.toUpperCase(), style: const TextStyle(color: Colors.white)),
-                      ),
+                    // BlocBuilder مستقل وخاص بزر التسجيل وحالة التحميل فقط
+                    BlocBuilder<AuthCubit, AuthState>(
+                      buildWhen: (previous, current) =>
+                      current is AuthLoading ||
+                          current is AuthSuccess ||
+                          current is AuthError ||
+                          current is AuthInitial,
+                      builder: (context, buttonState) {
+                        if (buttonState is AuthLoading) {
+                          return const CircularProgressIndicator(
+                            color: AppColors.qiwaBlue,
+                          );
+                        }
+
+                        return SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.qiwaBlue,
+                            ),
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+
+                              if (_formKey.currentState!.validate()) {
+                                authCubit.registerUser(
+                                  UserModel(
+                                    fullName: _fullNameController.text.trim(),
+                                    username: _usernameController.text.trim(),
+                                    password: _passwordController.text,
+                                  ),
+                                );
+                              }
+                            },
+                            child: Text(
+                              lang.createAccount.toUpperCase(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        );
+                      },
                     ),
+
                     const SizedBox(height: 24),
+
                     AuthFooter(
                       primaryColor: AppColors.qiwaBlue,
-                      text: lang.alreadyHaveAccount, // نص: "لديك حساب بالفعل؟"
-                      actionText: lang.signIn,       // نص: "تسجيل الدخول"
-
-                        onTap: () => Navigator.pushReplacementNamed(context, '/'), // المسار الرئيسي '/'
-                      ),
-
+                      text: lang.alreadyHaveAccount,
+                      actionText: lang.signIn,
+                      onTap: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.login,
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),

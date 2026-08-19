@@ -1,7 +1,7 @@
-// داخل ملف custom_input_field.dart المحدث
-import 'package:flutter/material.dart';
 
-class CustomInputField extends StatefulWidget { // حولناه لـ Stateful فقط لهذا الـ Widget الصغير
+import 'package:smart_book/features/auth/auth_exports.dart';
+
+class CustomInputField extends StatefulWidget {
   final String label;
   final bool isPassword;
   final TextEditingController controller;
@@ -22,35 +22,42 @@ class _CustomInputFieldState extends State<CustomInputField> {
 
   @override
   void initState() {
-    _obscureText = widget.isPassword; // يبدأ مخفي إذا كان حقل كلمة مرور
+    _obscureText = widget.isPassword;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
+
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.label,
-          style: const TextStyle(color: Colors.grey, fontSize: 14),
+          style: const TextStyle(color: AppColors.greyText, fontSize: 14),
         ),
-        TextField(
+        TextFormField( // استخدام TextFormField لدعم الـ Validation
           controller: widget.controller,
           obscureText: _obscureText,
+          validator: (value) {
+            if (value == null || value.isEmpty) return 'هذا الحقل مطلوب';
+            return null;
+          },
           decoration: InputDecoration(
             enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey, width: 0.5), //
+              borderSide: BorderSide(color:AppColors.greyText, width: 0.5),
             ),
             focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF0054A6), width: 2), //
+              borderSide: BorderSide(color:  AppColors.primaryBlue, width: 2),
             ),
             suffixIcon: widget.isPassword
                 ? IconButton(
               icon: Icon(
                 _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                 size: 20,
-                color: Colors.grey,
+                color:AppColors.greyText,
               ),
               onPressed: () => setState(() => _obscureText = !_obscureText),
             )

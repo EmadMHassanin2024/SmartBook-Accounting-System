@@ -3,7 +3,7 @@ import '../../../core/PaymentMethod.dart';
 
 class PaymentBottomSheet extends StatelessWidget {
   final double totalAmount;
-  final Function(PaymentMethod method) onConfirmPayment;
+  final Function( PaymentMethod method) onConfirmPayment;
 
   const PaymentBottomSheet({
     super.key,

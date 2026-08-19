@@ -1,11 +1,6 @@
-import 'package:smart_book/features/auth/auth_exports.dart';
+
 import 'package:smart_book/features/pos/auth_exports.dart';
 import 'package:smart_book/features/pos/presentation/widgets/summary/pos_summary_panel.dart';
-
-import '../../../logic/PosState.dart';
-import '../../../logic/pos_cubit.dart';
-
-
 
 // قسم ملخص السلة الضريبي والحسابي
 

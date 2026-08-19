@@ -3,8 +3,7 @@ import 'package:smart_book/features/auth/auth_exports.dart';
 import '../../../services/AuthService.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  final TokenRepository _tokenRepository; // 🎯 الحقن (Injection)
-
+  final TokenRepository _tokenRepository;
   AuthCubit(this._tokenRepository) : super(AuthInitial());
 
   // داخل AuthCubit
@@ -12,8 +11,8 @@ class AuthCubit extends Cubit<AuthState> {
 
   void toggleKeepMeSignedIn(bool value) {
     keepMeSignedIn = value;
-    // يمكنك أيضاً حفظ هذه القيمة في الـ TokenRepository إذا أردت
-    emit(AuthKeepMeSignedInChanged(value)); // ستحتاج لتعريف هذه الحالة في AuthState
+
+    emit(AuthKeepMeSignedInChanged(value));
   }
   // دالة التسجيل
   Future<void> registerUser(UserModel user) async {
@@ -56,7 +55,7 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthError(errorMessage));
       }
     } catch (e) {
-      debugPrint("❌ خطأ أثناء Login: $e");
+
       emit(AuthError("تعذر الاتصال بالسيرفر."));
     }
   }

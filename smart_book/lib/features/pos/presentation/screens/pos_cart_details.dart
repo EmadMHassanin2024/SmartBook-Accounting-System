@@ -1,10 +1,7 @@
-//
-import 'package:smart_book/features/auth/auth_exports.dart';
-import 'package:smart_book/features/pos/presentation/widgets/cart/pos_cart_item.dart';
 
-import '../../logic/PosState.dart';
-import '../../logic/pos_cubit.dart';
-import '../widgets/summary/pos_cart_summary_section.dart';
+import 'package:smart_book/features/pos/auth_exports.dart';
+
+
 
 class POSCartDetailsScreen extends StatelessWidget {
   const POSCartDetailsScreen({super.key});

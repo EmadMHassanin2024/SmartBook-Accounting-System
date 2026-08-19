@@ -1,8 +1,4 @@
 
-
-
-
-// --- استيرادات الميزات ---
 import 'package:smart_book/features/auth/auth_exports.dart';
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
@@ -15,11 +11,12 @@ import 'package:smart_book/features/finance/ledger/logic/ledger_cubit.dart';
 
 import 'package:smart_book/features/finance/TrialBalance/logic/TrialBalanceCubit.dart';
 import 'package:smart_book/features/finance/Account/logic/account_cubit.dart';
-import 'package:smart_book/services/ProductRepository.dart';
 
 
+import 'core/routes/AppRouter.dart';
+import 'core/routes/app_routes.dart';
 import 'core/widgets/main_layout.dart';
-import 'features/finance/adjustments/logic/adjustment_cubit.dart';
+
 
 import 'features/finance/income_statement/data/repositories/income_statement_repository.dart';
 import 'features/finance/income_statement/logic/income_statement_cubit.dart';
@@ -27,9 +24,7 @@ import 'features/finance/repositories/FinancialReportsRepository.dart';
 
 import 'features/pos/data/Repository/PosRepository.dart';
 import 'features/settings/logic/SettingsCubit.dart';
-import 'features/system_config/data/repositories/SystemConfigurationRepository.dart';
-import 'features/system_config/data/repositories/system_configuration_repository.dart';
-import 'features/system_config/logic/system_configuration_cubit.dart';
+
 
 
 class MyHttpOverrides extends HttpOverrides {
@@ -84,6 +79,8 @@ class SmartBookApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'SmartBook',
+            initialRoute: AppRoutes.login,
+            onGenerateRoute: AppRouter.generateRoute,
             locale: locale, // 👈 التطبيق الآن يقرأ اللغة من الـ Cubit
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -97,7 +94,7 @@ class SmartBookApp extends StatelessWidget {
                 iconTheme: IconThemeData(color: AppColors.primaryBlue),
               ),
             ),
-            initialRoute: '/',
+          //  initialRoute: '/',
             routes: {
               '/': (context) => const LoginScreen(),
               '/signup': (context) => const SignUpScreen(),
