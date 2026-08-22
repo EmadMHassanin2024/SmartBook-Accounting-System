@@ -1,25 +1,42 @@
-import '../../inventory/auth_exports.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class AuthState extends Equatable {
-  const AuthState();
-  @override
-  List<Object?> get props => [];
+enum AuthStatus {
+  initial,
+  loading,
+  success,
+  error,
 }
 
-class AuthInitial extends AuthState {}
-class AuthLoading extends AuthState {}
-class AuthSuccess extends AuthState {}
-class AuthError extends AuthState {
-  final String message;
-  const AuthError(this.message);
-  @override
-  List<Object?> get props => [message];
-}
+class AuthState extends Equatable {
+  final AuthStatus status;
+  final bool keepMeSignedIn;
+  final String? errorMessage;
 
-// حالة خاصة لتغيير Checkbox لتقليل Rebuild الشاشة كاملة
-class AuthKeepMeSignedInChanged extends AuthState {
-  final bool isChecked;
-  const AuthKeepMeSignedInChanged(this.isChecked);
+  const AuthState({
+    this.status = AuthStatus.initial,
+    this.keepMeSignedIn = false,
+    this.errorMessage,
+  });
+
+  AuthState copyWith({
+    AuthStatus? status,
+    bool? keepMeSignedIn,
+    String? errorMessage,
+    bool clearError = false,
+  }) {
+    return AuthState(
+      status: status ?? this.status,
+      keepMeSignedIn: keepMeSignedIn ?? this.keepMeSignedIn,
+      errorMessage: clearError
+          ? null
+          : (errorMessage ?? this.errorMessage),
+    );
+  }
+
   @override
-  List<Object?> get props => [isChecked];
+  List<Object?> get props => [
+    status,
+    keepMeSignedIn,
+    errorMessage,
+  ];
 }
