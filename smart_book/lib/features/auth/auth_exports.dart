@@ -12,10 +12,6 @@ export  'package:smart_book/features/auth/screens/login_screen.dart';
 
 export  'models/user_model.dart';
 
-export 'package:smart_book/features/auth/utils/snackbar_helper.dart'; // الموديل الموحد
-
-
-
 // auth_exports.dart
 
 // 1. المكتبات الخارجية (Packages)

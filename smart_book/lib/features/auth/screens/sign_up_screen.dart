@@ -1,7 +1,7 @@
-
 import 'package:smart_book/features/auth/auth_exports.dart';
 import '../../../core/routes/app_routes.dart';
-
+import '../../../core/SnackbarHelper.dart';
+import '../widgets/auth_form_container_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -11,8 +11,6 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _formKey = GlobalKey<FormState>();
-
   final _fullNameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -30,141 +28,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
-    final authCubit = context.read<AuthCubit>();
 
     return Scaffold(
-      backgroundColor: AppColors.cardBg,
-      appBar: const AuthAppBar(
-        primaryColor: AppColors.qiwaBlue,
-      ),
+      backgroundColor: AppColors.cardBg, //[cite: 5]
+      appBar: const AuthAppBar(primaryColor: AppColors.qiwaBlue), //[cite: 5, 7]
       body: SafeArea(
-        child: BlocListener<AuthCubit, AuthState>(
-          listenWhen: (previous, current) =>
-          previous.status != current.status &&
-              (current.status == AuthStatus.success ||
-                  current.status == AuthStatus.error),
-          listener: (context, state) {
-            if (state.status == AuthStatus.success) {
-              SnackbarHelper.show(
-                context,
-                lang.registrationSuccess,
-                AppColors.successGreen,
-              );
-
-              Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.login,
-              );
-            } else if (state.status == AuthStatus.error) {
-              SnackbarHelper.show(
-                context,
-                state.errorMessage ?? 'حدث خطأ ما',
-                AppColors.accentRed,
-              );
-            }
-          },
+        child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 25.0,
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0), //[cite: 5]
+              child: AuthFormContainerWidget(
+                title: lang.signUp, //[cite: 5]
+                primaryColor: AppColors.qiwaBlue, //[cite: 5]
+                submitButtonText: lang.createAccount.toUpperCase(), //[cite: 5]
+                successRoute: AppRoutes.login, //[cite: 5]
+                isLogin: false, //[cite: 5]
+                onSubmitPressed: (formKey) {
+                  // التحقق من صحة الحقول عبر الـ formKey الداخلي
+                  if (formKey.currentState?.validate() ?? false) {
+                    if (_passwordController.text != _confirmPasswordController.text) {
+                      // ملاحظة: يفضل لاحقاً نقل النص إلى ملفات الترجمة لضمان دعم اللغات بالكامل
+                      SnackbarHelper.showWarning('كلمات المرور غير متطابقة');
+                      return;
+                    }
+
+                    // استدعاء دالة تسجيل الحساب
+                    context.read<AuthCubit>().registerUser( //[cite: 5]
+                      UserModel(
+                        fullName: _fullNameController.text.trim(),
+                        username: _usernameController.text.trim(),
+                        password: _passwordController.text,
+                      ),
+                    );
+                  }
+                },
                 children: [
-                  const SizedBox(height: 30),
-                  Text(
-                    lang.signUp,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.qiwaBlue,
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  CustomInputField(
-                    label: lang.fullName,
-                    controller: _fullNameController,
-                  ),
-                  const SizedBox(height: 20),
-                  CustomInputField(
-                    label: lang.username,
-                    controller: _usernameController,
-                  ),
-                  const SizedBox(height: 20),
-                  CustomInputField(
-                    label: lang.password,
-                    controller: _passwordController,
-                    isPassword: true,
-                  ),
-                  const SizedBox(height: 20),
-                  CustomInputField(
-                    label: lang.passwordConfirm,
-                    controller: _confirmPasswordController,
-                    isPassword: true,
-                  ),
-                  const SizedBox(height: 40),
-
-                  // BlocBuilder خاص بالزر فقط بناءً على حالة التحميل
-                  BlocBuilder<AuthCubit, AuthState>(
-                    buildWhen: (previous, current) =>
-                    previous.status == AuthStatus.loading ||
-                        current.status == AuthStatus.loading,
-                    builder: (context, buttonState) {
-                      if (buttonState.status == AuthStatus.loading) {
-                        return const SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.qiwaBlue,
-                            ),
-                          ),
-                        );
-                      }
-
-                      return SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.qiwaBlue,
-                          ),
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-
-                            if (_formKey.currentState!.validate()) {
-                              authCubit.registerUser(
-                                UserModel(
-                                  fullName: _fullNameController.text.trim(),
-                                  username: _usernameController.text.trim(),
-                                  password: _passwordController.text,
-                                ),
-                              );
-                            }
-                          },
-                          child: Text(
-                            lang.createAccount.toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  AuthFooter(
-                    primaryColor: AppColors.qiwaBlue,
-                    text: lang.alreadyHaveAccount,
-                    actionText: lang.signIn,
-                    onTap: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        AppRoutes.login,
-                      );
-                    },
-                  ),
+                  CustomInputField(label: lang.fullName, controller: _fullNameController), //[cite: 5]
+                  const SizedBox(height: 20), //[cite: 5]
+                  CustomInputField(label: lang.username, controller: _usernameController), //[cite: 5]
+                  const SizedBox(height: 20), //[cite: 5]
+                  CustomInputField(label: lang.password, controller: _passwordController, isPassword: true), //[cite: 5]
+                  const SizedBox(height: 20), //[cite: 5]
+                  CustomInputField(label: lang.passwordConfirm, controller: _confirmPasswordController, isPassword: true), //[cite: 5]
                 ],
               ),
             ),

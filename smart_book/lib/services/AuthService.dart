@@ -1,9 +1,9 @@
 // lib/services/auth_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import '../core/constants/app_config.dart';
-import '../features/auth/models/user_model.dart';
+  import 'package:shared_preferences/shared_preferences.dart';
+  import '../core/constants/app_config.dart';
+  import '../features/auth/models/user_model.dart';
 
 class AuthService {
   static const String _baseUrl = '${AppConfig.baseUrl}/Auth';

@@ -78,6 +78,7 @@ class SmartBookApp extends StatelessWidget {
         builder: (context, locale) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
+           // scaffoldMessengerKey:SnackbarHelper.messengerKey,
             title: 'SmartBook',
             initialRoute: AppRoutes.login,
             onGenerateRoute: AppRouter.generateRoute,
