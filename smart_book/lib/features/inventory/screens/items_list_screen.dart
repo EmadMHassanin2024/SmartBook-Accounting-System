@@ -1,15 +1,32 @@
-
 import 'package:smart_book/features/inventory/auth_exports.dart';
+import '../../system_config/logic/system_configuration_state.dart';
+import '../widgets/inventory_content_view.dart';
+import '../widgets/inventory_stats_section.dart';
 
 
-
-class ItemsListScreen extends StatelessWidget {
+class ItemsListScreen extends StatefulWidget {
   const ItemsListScreen({super.key});
 
   @override
+  State<ItemsListScreen> createState() => _ItemsListScreenState();
+}
+
+class _ItemsListScreenState extends State<ItemsListScreen> {
+  late final InventoryCubit _inventoryCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _inventoryCubit = sl<InventoryCubit>();
+    final activeModule = context.read<SystemConfigurationCubit>().state.settings.activeBusinessModule;
+    _inventoryCubit.changeActivityType(activeModule);
+    _inventoryCubit.fetchProducts();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<InventoryCubit>()..fetchProducts(),
+    return BlocProvider.value(
+      value: _inventoryCubit,
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBg,
         appBar: AppBar(
@@ -21,76 +38,30 @@ class ItemsListScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: BlocListener<AdjustmentCubit, AdjustmentState>(
-          listener: (context, state) {
-            if (state is AdjustmentSuccess) {
-              context.read<InventoryCubit>().fetchProducts();
-            }
-          },
+        body: MultiBlocListener(
+          listeners: [
+            BlocListener<SystemConfigurationCubit, SystemConfigurationState>(
+              listenWhen: (prev, curr) => prev.settings.activeBusinessModule != curr.settings.activeBusinessModule,
+              listener: (context, state) => _inventoryCubit.changeActivityType(state.settings.activeBusinessModule),
+            ),
+            BlocListener<AdjustmentCubit, AdjustmentState>(
+              listener: (context, state) {
+                if (state is AdjustmentSuccess) _inventoryCubit.fetchProducts();
+              },
+            ),
+          ],
           child: BlocBuilder<InventoryCubit, InventoryState>(
             builder: (context, state) {
-              if (state is InventoryLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state is InventoryError) {
-                return Center(child: Text("حدث خطأ: ${state.message}"));
-              }
-
+              if (state is InventoryLoading) return const Center(child: CircularProgressIndicator());
+              if (state is InventoryError) return Center(child: Text("حدث خطأ: ${state.message}"));
               if (state is InventoryLoaded) {
-                // 1. معرفة النشاط الحالي المفعل في النظام
-                final settings = context.read<SystemConfigurationCubit>().state.settings;
-                String currentActivityType = 'general'; // القيمة الافتراضية
-
-                if (settings.hasBusinessModule(BusinessModule.pharmacy)) {
-                  currentActivityType = 'pharmacy';
-                } else if (settings.hasBusinessModule(BusinessModule.restaurant)) {
-                  currentActivityType = 'restaurant';
-                }
-
-                // 🔍 طباعة تفكيكية لمعرفة البيانات
-                print("--- [DEBUG INVENTORY] ---");
-                print("Current Activity Type: $currentActivityType");
-                print("Total products from API: ${state.products.length}");
-                for (var p in state.products) {
-                  print("Product: ${p.name} | itemType: '${p.itemType}' | stock: ${p.stock}");
-                }
-                // 2. تصفية صارمة ومستقلة: إظهار منتجات القسم النشط فقط
-                final filteredProducts = state.products.where((product) {
-                  return product.itemType == currentActivityType;
-                }).toList();
-
-                print("Filtered products count: ${filteredProducts.length}");
-                print("--------------------------");
                 return Column(
                   children: [
-                    QuickStatsWidget(
-                      totalCount: filteredProducts.length,
-                      lowStockCount: filteredProducts.where((p) => p.stock <= 5).length,
-                      outOfStockCount: filteredProducts.where((p) => p.stock == 0).length,
-                      onTotalTap: () => context.read<InventoryCubit>().filterByCategory("الكل"),
-                      onLowStockTap: () => context.read<InventoryCubit>().filterByCategory("قربت تنتهي"),
-                      onOutOfStockTap: () => context.read<InventoryCubit>().filterByCategory("منتهية"),
-                    ),
-                    InventorySearchBar(
-                      onChanged: (val) => context.read<InventoryCubit>().filterProducts(val),
-                      onFilterTap: () => _openFilters(context),
-                    ),
-                    // 3. استخدام copyWith لتحديث القائمة المصفاة للقسم النشط فقط
-                    Expanded(
-                      child: InventoryListView(
-                        state: state.copyWith(
-                          products: filteredProducts,
-                          totalCount: filteredProducts.length,
-                          lowStockCount: filteredProducts.where((p) => p.stock <= 5).length,
-                          outOfStockCount: filteredProducts.where((p) => p.stock == 0).length,
-                        ),
-                      ),
-                    ),
+                    InventoryStatsSection(state: state),
+                    InventoryContentView(state: state, onOpenFilters: () => _openFilters(context)),
                   ],
                 );
               }
-
               return const SizedBox.shrink();
             },
           ),
@@ -103,11 +74,9 @@ class ItemsListScreen extends StatelessWidget {
   void _openFilters(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => InventoryFilterSheet(
-        onFilterSelected: (category) => context.read<InventoryCubit>().filterByCategory(category),
+        onFilterSelected: (category) => _inventoryCubit.filterByCategory(category),
       ),
     );
   }

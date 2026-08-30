@@ -1,7 +1,7 @@
 import 'package:smart_book/features/auth/auth_exports.dart';
-import '../../../core/routes/app_routes.dart';
 import '../../../core/SnackbarHelper.dart';
-import '../widgets/auth_form_container_widget.dart';
+import '../../../core/utils/extensions/localization_extension.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -27,33 +27,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context)!;
+
 
     return Scaffold(
-      backgroundColor: AppColors.cardBg, //[cite: 5]
-      appBar: const AuthAppBar(primaryColor: AppColors.qiwaBlue), //[cite: 5, 7]
+      backgroundColor: AppColors.cardBg,
+      appBar: const AuthAppBar(primaryColor: AppColors.qiwaBlue),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0), //[cite: 5]
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: AuthFormContainerWidget(
-                title: lang.signUp, //[cite: 5]
-                primaryColor: AppColors.qiwaBlue, //[cite: 5]
-                submitButtonText: lang.createAccount.toUpperCase(), //[cite: 5]
-                successRoute: AppRoutes.login, //[cite: 5]
-                isLogin: false, //[cite: 5]
+                title: context.lang.signUp,
+                primaryColor: AppColors.qiwaBlue,
+                submitButtonText: context.lang.createAccount.toUpperCase(),
+                isLogin: false,
                 onSubmitPressed: (formKey) {
-                  // التحقق من صحة الحقول عبر الـ formKey الداخلي
                   if (formKey.currentState?.validate() ?? false) {
                     if (_passwordController.text != _confirmPasswordController.text) {
-                      // ملاحظة: يفضل لاحقاً نقل النص إلى ملفات الترجمة لضمان دعم اللغات بالكامل
-                      SnackbarHelper.showWarning('كلمات المرور غير متطابقة');
+                      SnackbarHelper.showWarning(context.lang.passwordsNotMatch ?? 'كلمات المرور غير متطابقة');
                       return;
                     }
 
-                    // استدعاء دالة تسجيل الحساب
-                    context.read<AuthCubit>().registerUser( //[cite: 5]
+                    context.read<AuthCubit>().registerUser(
                       UserModel(
                         fullName: _fullNameController.text.trim(),
                         username: _usernameController.text.trim(),
@@ -63,13 +59,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   }
                 },
                 children: [
-                  CustomInputField(label: lang.fullName, controller: _fullNameController), //[cite: 5]
-                  const SizedBox(height: 20), //[cite: 5]
-                  CustomInputField(label: lang.username, controller: _usernameController), //[cite: 5]
-                  const SizedBox(height: 20), //[cite: 5]
-                  CustomInputField(label: lang.password, controller: _passwordController, isPassword: true), //[cite: 5]
-                  const SizedBox(height: 20), //[cite: 5]
-                  CustomInputField(label: lang.passwordConfirm, controller: _confirmPasswordController, isPassword: true), //[cite: 5]
+                  CustomInputField(label:context. lang.fullName, controller: _fullNameController),
+                  const SizedBox(height: 20),
+                  CustomInputField(label: context.lang.username, controller: _usernameController),
+                  const SizedBox(height: 20),
+                  CustomInputField(label:context. lang.password, controller: _passwordController, isPassword: true),
+                  const SizedBox(height: 20),
+                  CustomInputField(label: context.lang.passwordConfirm, controller: _confirmPasswordController, isPassword: true),
                 ],
               ),
             ),

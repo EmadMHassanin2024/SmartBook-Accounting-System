@@ -1,8 +1,7 @@
 import 'package:smart_book/features/auth/auth_exports.dart';
-import '../../../core/routes/app_routes.dart';
-import '../../../core/SnackbarHelper.dart';
-import '../widgets/LoginKeepMeSignedInWidget.dart';
-import '../widgets/auth_form_container_widget.dart';
+
+import '../../../core/utils/extensions/localization_extension.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context)!;
+
 
     return Scaffold(
       backgroundColor: AppColors.cardBg,
@@ -35,29 +34,25 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: AuthFormContainerWidget(
-                title: lang.signIn,
-                subtitle: lang.signInSubtitle ?? 'to continue to your account',
+                title: context.lang.signIn,
+                subtitle: context.lang.signInSubtitle ?? 'to continue to your account',
                 primaryColor: AppColors.primaryBlue,
-                submitButtonText: lang.signIn.toUpperCase(),
-                successRoute: AppRoutes.main,
+                submitButtonText: context.lang.signIn.toUpperCase(),
                 isLogin: true,
-    onSubmitPressed: (formKey) {
-    // الاعتماد على التحقق التلقائي للـ Form بدلاً من الشروط اليدوية غير المترجمة
-    if (formKey.currentState?.validate() ?? false) {
-    context.read<AuthCubit>().loginUser( //[cite: 4]
-    UserModel(
-    username: _usernameController.text.trim(),
-    password: _passwordController.text,
-    ),
-    );
-    }
-    },
-
-
+                onSubmitPressed: (formKey) {
+                  if (formKey.currentState?.validate() ?? false) {
+                    context.read<AuthCubit>().loginUser(
+                      UserModel(
+                        username: _usernameController.text.trim(),
+                        password: _passwordController.text,
+                      ),
+                    );
+                  }
+                },
                 children: [
-                  CustomAuthInputField(label: lang.username, controller: _usernameController),
+                  CustomAuthInputField(label: context.lang.username, controller: _usernameController),
                   const SizedBox(height: 24),
-                  CustomAuthInputField(label: lang.password, isPassword: true, controller: _passwordController),
+                  CustomAuthInputField(label: context.lang.password, isPassword: true, controller: _passwordController),
                   const SizedBox(height: 16),
                   const LoginKeepMeSignedInWidget(primaryColor: AppColors.primaryBlue),
                 ],

@@ -18,9 +18,7 @@ class SystemConfigurationState extends Equatable {
     this.errorMessage,
   });
 
-  //============================================================
-  // Initial
-  //============================================================
+
 
   factory SystemConfigurationState.initial() {
     return SystemConfigurationState(
@@ -28,9 +26,6 @@ class SystemConfigurationState extends Equatable {
     );
   }
 
-  //============================================================
-  // Copy With
-  //============================================================
 
   SystemConfigurationState copyWith({
     SystemSettingsModel? settings,
@@ -50,9 +45,7 @@ class SystemConfigurationState extends Equatable {
     );
   }
 
-  //============================================================
-  // Equatable
-  //============================================================
+
 
   @override
   List<Object?> get props => [

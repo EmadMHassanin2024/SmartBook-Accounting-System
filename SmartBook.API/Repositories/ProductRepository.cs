@@ -24,13 +24,29 @@ namespace SmartBook.API.Repositories
                 .ToListAsync();
         }
 
+     
+
+
         public async Task<Product> AddAsync(Product product)
         {
+            // تأكد من إضافة المنتج ومعه الوحدات المرتبطة إذا كانت مدمجة في الـ Payload
+            if (product.ProductUnits != null && product.ProductUnits.Any())
+            {
+                foreach (var unit in product.ProductUnits)
+                {
+                    // ربط الوحدة بالمنتج إذا تطلب الأمر
+                    unit.Product = product;
+                }
+            }
+
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
+
+            // إعادة تحميل المنتج مع الوحدات لضمان رجوعها كاملة في الاستجابة (Response)
+            await _context.Entry(product).Collection(p => p.ProductUnits).LoadAsync();
+
             return product;
         }
-
         // تم دمج التوقيع ليطابق الواجهة (Interface)
         public async Task<string> UpdateStockAndLogAdjustment(InventoryAdjustmentDto model)
         {

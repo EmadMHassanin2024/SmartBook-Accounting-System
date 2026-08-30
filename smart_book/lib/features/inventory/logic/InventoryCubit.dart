@@ -1,49 +1,52 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
 class InventoryCubit extends Cubit<InventoryState> {
+  static const int lowStockThreshold = 10;
   final ProductRepository _productService;
 
-  // المتغيرات المخزنة محلياً للحالة
   List<ProductModel> _allProducts = [];
   String _currentCategory = "الكل";
   String _currentQuery = "";
+  BusinessModule _currentActivityType = BusinessModule.generalStore;
 
-  // تم حذف allProducts و lowStockItems من Constructor
-  // لأن الـ Cubit يجب أن يجلبها بنفسه أو يحتفظ بها محلياً
   InventoryCubit(this._productService) : super(InventoryInitial());
 
-  // 1. حساب القيمة المالية
   double _calculateTotalInventoryValue(List<ProductModel> products) {
     return products.fold(0.0, (sum, item) => sum + (item.stock * item.purchasePrice));
   }
 
-  // 2. دالة بناء الحالة (State) - تم إضافة lowStockItems هنا للربط مع الشاشة
-  InventoryLoaded _buildLoadedState(List<ProductModel> filteredList) {
-    final lowStock = _allProducts.where((p) => p.stock > 0 && p.stock <= 10).toList();
-    final outOfStock = _allProducts.where((p) => p.stock <= 0).toList();
+  InventoryLoaded _buildLoadedState(List<ProductModel> filteredList, List<ProductModel> activityProducts) {
+    final lowStock = activityProducts.where((p) => p.stock > 0 && p.stock <= lowStockThreshold).toList();
+    final outOfStock = activityProducts.where((p) => p.stock <= 0).toList();
 
     return InventoryLoaded(
-      products: filteredList, // القائمة المعروضة حالياً
-      allProducts: _allProducts, // جميع المنتجات
-      lowStockItems: lowStock, // القائمة التي ستظهر في التنبيه
-      totalCount: _allProducts.length,
+      products: filteredList,
+      allProducts: _allProducts,
+      lowStockItems: lowStock,
+      totalCount: activityProducts.length,
       lowStockCount: lowStock.length,
       outOfStockItems: outOfStock,
-      outOfStockCount: _allProducts.where((p) => p.stock <= 0).length,
-      totalInventoryValue: _calculateTotalInventoryValue(_allProducts),
+      outOfStockCount: outOfStock.length,
+      totalInventoryValue: _calculateTotalInventoryValue(activityProducts),
     );
   }
 
-  // 3. الفلترة المركزية
   void _applyFilters() {
-    List<ProductModel> results = _allProducts;
+    // 1. تصفية منتجات النشاط الحالي أولاً
+    List<ProductModel> activityProducts = _allProducts.where((p) {
+      return (p.itemType ?? BusinessModule.generalStore.name) == _currentActivityType.name;
+    }).toList();
 
+    List<ProductModel> results = List.from(activityProducts);
+
+    // 2. تصفية حسب حالة المخزون
     if (_currentCategory == "منتهية") {
       results = results.where((p) => p.stock <= 0).toList();
     } else if (_currentCategory == "قربت تنتهي") {
-      results = results.where((p) => p.stock > 0 && p.stock <= 10).toList();
+      results = results.where((p) => p.stock > 0 && p.stock <= lowStockThreshold).toList();
     }
 
+    // 3. تصفية حسب البحث (الاسم أو الباركود)
     if (_currentQuery.isNotEmpty) {
       final searchLabel = _currentQuery.toLowerCase();
       results = results.where((product) {
@@ -53,30 +56,34 @@ class InventoryCubit extends Cubit<InventoryState> {
       }).toList();
     }
 
-    emit(_buildLoadedState(results));
+    // 4. إرسال الحالة مع تمرير القائمة المفلترة والقائمة الأساسية للنشاط
+    emit(_buildLoadedState(results, activityProducts));
   }
 
-  // 4. جلب البيانات (تم إصلاح الخطأ البرمجي هنا)
   Future<void> fetchProducts() async {
     emit(InventoryLoading());
     try {
       _allProducts = await _productService.fetchProducts();
-      // تطبيق الفلترة فوراً بعد الجلب
       _applyFilters();
     } catch (e) {
       emit(InventoryError(e.toString()));
     }
   }
 
-  // 5. البحث
   void filterProducts(String query) {
     _currentQuery = query;
     _applyFilters();
   }
 
-  // 6. التصنيف
   void filterByCategory(String category) {
     _currentCategory = category;
+    _applyFilters();
+  }
+
+  void changeActivityType(BusinessModule activityType) {
+    _currentActivityType = activityType;
+    _currentCategory = "الكل";
+    _currentQuery = "";
     _applyFilters();
   }
 }

@@ -106,20 +106,18 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? color,
     String itemType = 'general', // نوع النشاط المستلم من الشاشة
   }) async {
-    // التقاط بيانات الوحدة الأساسية (الأولى دائمًا في المصفوفة)
-    final baseUnit = state.units.first;
+    // 👈 استخدام قائمة الوحدات بالكامل بدلاً من اكتفاء الوحدة الأولى فقط
+    final List<ProductUnitModel> allUnits = state.units;
 
     emit(AddProductLoading(units: state.units));
     try {
-      // 💡 التعديل هنا: تمرير itemType إلى دالة الـ Repository ليتم حفظه بشكل صحيح
+      // 💡 التعديل هنا: تمرير قائمة الوحدات بالكامل `productUnits` لتتوافق مع الـ Backend والـ Repository
       bool success = await productService.addProduct(
         name: name,
         barcode: barcode,
-        price: baseUnit.salePrice,
-        purchasePrice: baseUnit.purchasePrice,
-        stock: stock,
-        unitName: baseUnit.unitName.trim().isEmpty ? "قطعة" : baseUnit.unitName.trim(),
-        itemType: itemType, // 👈 إرسال النوع الفعلي (restaurant أو pharmacy) للسيرفر
+        totalStockQuantity: stock.toDouble(),
+        itemType: itemType,
+        productUnits: allUnits, // 👈 إرسال قائمة الوحدات المتعددة للسيرفر
       );
 
       if (success) {

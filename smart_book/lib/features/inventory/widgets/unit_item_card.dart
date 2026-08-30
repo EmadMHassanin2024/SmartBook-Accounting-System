@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../models/ ProductUnitModel.dart';
-//عرض وحدة منتج واحدة داخل فاتورة أو شاشة إدارة المنتجات.
-class UnitItemCard extends StatelessWidget {
+
+
+class UnitItemCard extends StatefulWidget {
   final int index;
   final ProductUnitModel unit;
   final VoidCallback onDelete;
   final Function(String) onNameChanged;
   final Function(double) onSalePriceChanged;
   final Function(double) onPurchasePriceChanged;
-  // Callback عند تغيير معامل التحويل
   final Function(double) onFactorChanged;
 
   const UnitItemCard({
@@ -24,8 +24,42 @@ class UnitItemCard extends StatelessWidget {
   });
 
   @override
+  State<UnitItemCard> createState() => _UnitItemCardState();
+}
+
+class _UnitItemCardState extends State<UnitItemCard> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _salePriceController;
+  late final TextEditingController _purchasePriceController;
+  late final TextEditingController _factorController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.unit.unitName);
+    _salePriceController = TextEditingController(
+      text: widget.unit.salePrice > 0 ? widget.unit.salePrice.toString() : "",
+    );
+    _purchasePriceController = TextEditingController(
+      text: widget.unit.purchasePrice > 0 ? widget.unit.purchasePrice.toString() : "",
+    );
+    _factorController = TextEditingController(
+      text: widget.unit.conversionFactor.toString(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _salePriceController.dispose();
+    _purchasePriceController.dispose();
+    _factorController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    bool isBase = unit.isBaseUnit;
+    bool isBase = widget.unit.isBaseUnit;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -39,47 +73,50 @@ class UnitItemCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _buildSmallTextField(
-                  "اسم الوحدة (قطعة، كرتونة..)",
-                  onNameChanged,
-                  initialValue: unit.unitName,
+                child: TextField(
+                  controller: _nameController,
+                  onChanged: widget.onNameChanged,
+                  decoration: _inputDecoration("اسم الوحدة (قطعة، كرتونة..)"),
                 ),
               ),
               if (!isBase)
-                IconButton(onPressed: onDelete, icon: const Icon(Icons.delete_outline, color: Colors.red)),
+                IconButton(
+                  onPressed: widget.onDelete,
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                ),
             ],
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              // ... داخل كلاس UnitItemCard
               Expanded(
-                child: _buildSmallTextField(
-                  "سعر البيع",
-                      (val) => onSalePriceChanged(double.tryParse(val) ?? 0),
-                  isNumber: true,
-                  // تأكد من استخدام unit.salePrice هنا
-                  initialValue: unit.salePrice > 0 ? unit.salePrice.toString() : "",
+                child: TextField(
+                  controller: _salePriceController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (val) => widget.onSalePriceChanged(double.tryParse(val) ?? 0),
+                  decoration: _inputDecoration("سعر البيع"),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: _buildSmallTextField(
-                  "سعر الشراء",
-                      (val) => onPurchasePriceChanged(double.tryParse(val) ?? 0),
-                  isNumber: true,
-                  initialValue: unit.purchasePrice > 0 ? unit.purchasePrice.toString() : "",
+                child: TextField(
+                  controller: _purchasePriceController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (val) => widget.onPurchasePriceChanged(double.tryParse(val) ?? 0),
+                  decoration: _inputDecoration("سعر الشراء"),
                 ),
               ),
             ],
           ),
           if (!isBase) ...[
             const SizedBox(height: 12),
-            _buildSmallTextField(
-              "عامل التحويل (كم قطعة في هذه الوحدة؟)",
-                  (val) => onFactorChanged(double.tryParse(val) ?? 1),
-              isNumber: true,
-              initialValue: unit.conversionFactor.toString(),
+            TextField(
+              controller: _salePriceController,
+              keyboardType: TextInputType.number,
+              // استخدام onSubmitted أو التحديث عند انتهاء الكتابة بدلاً من onChanged المباشر
+              onSubmitted: (val) => widget.onSalePriceChanged(double.tryParse(val) ?? 0),
+              decoration: _inputDecoration("سعر البيع"),
+
             ),
           ]
         ],
@@ -87,17 +124,15 @@ class UnitItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSmallTextField(String hint, Function(String) onChanged, {bool isNumber = false, String? initialValue}) {
-    return TextFormField(
-      initialValue: initialValue,
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey.shade200)),
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.grey.shade200),
       ),
     );
   }

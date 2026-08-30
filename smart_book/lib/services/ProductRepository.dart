@@ -3,11 +3,12 @@ import 'dart:convert';
 import '../../../../core/network/base_api_service.dart';
 
 import '../features/pos/data/models/product_model.dart';
+import '../models/ ProductUnitModel.dart';
 import 'AuthService.dart';
 
 class ProductRepository {
 
-  // 1. جلب المنتجات (بدون طلب توكن كمعامل)
+  // 1. جلب المنتجات
   Future<List<ProductModel>> fetchProducts() async {
     final String token = await AuthService.getToken();
     try {
@@ -22,29 +23,22 @@ class ProductRepository {
     }
   }
 
-  // 2. إضافة صنف جديد (تمت إضافة itemType لدعم استقلالية الأقسام)
+  // 2. إضافة صنف جديد مع دعم الوحدات المتعددة
   Future<bool> addProduct({
     required String name,
     required String barcode,
-    required double price,
-    required double purchasePrice,
-    required int stock,
-    String unitName = "قطعة",
-    String itemType = "general", // 👈 استقبال نوع النشاط (restaurant أو pharmacy)
+    required double totalStockQuantity,
+    required String itemType,
+    required List<ProductUnitModel> productUnits, // 👈 استقبال قائمة الوحدات بدلاً من وحدة مفردة
   }) async {
     final String token = await AuthService.getToken();
+
     final Map<String, dynamic> body = {
-      "productNameAr": name,
-      "barcode": barcode.isEmpty ? null : barcode,
-      "totalStockQuantity": stock,
-      "itemType": itemType, // 👈 إرسال نوع النشاط فعلياً للسيرفر لضمان الاستقلالية التامة
-      "productUnits": [{
-        "unitName": unitName.isEmpty ? "قطعة" : unitName,
-        "salePrice": price,
-        "purchasePrice": purchasePrice,
-        "conversionFactor": 1,
-        "isBaseUnit": true
-      }]
+      "ProductNameAr": name,
+      "Barcode": barcode.isEmpty ? null : barcode,
+      "TotalStockQuantity": totalStockQuantity,
+      "ItemType": itemType,
+      "ProductUnits": productUnits.map((unit) => unit.toJson()).toList(), // 👈 إرسال المصفوفة بشكل صحيح
     };
 
     try {
@@ -55,38 +49,30 @@ class ProductRepository {
     }
   }
 
-  // 3. تعديل صنف (تم إضافة التوكين داخلياً)
+  // 3. تعديل صنف مع دعم الوحدات المتعددة
   Future<bool> updateProduct({
     required int id,
     required String name,
     required String barcode,
-    required double price,
-    required double purchasePrice,
-    required int stock,
-    String unitName = "قطعة",
-    String itemType = "general", // 👈 يدعم التعديل أيضاً لو احتجته مستقبلاً
+    required double totalStockQuantity,
+    required String itemType,
+    required List<ProductUnitModel> productUnits, // 👈 استقبال قائمة الوحدات
   }) async {
     final String token = await AuthService.getToken();
+
     final Map<String, dynamic> body = {
-      "productId": id,
-      "productNameAr": name,
-      "barcode": barcode.isEmpty ? null : barcode,
-      "totalStockQuantity": stock,
-      "itemType": itemType,
-      "productUnits": [{
-        "unitName": unitName.isEmpty ? "قطعة" : unitName,
-        "salePrice": price,
-        "purchasePrice": purchasePrice,
-        "conversionFactor": 1,
-        "isBaseUnit": true
-      }]
+      "ProductId": id,
+      "ProductNameAr": name,
+      "Barcode": barcode.isEmpty ? null : barcode,
+      "TotalStockQuantity": totalStockQuantity,
+      "ItemType": itemType,
+      "ProductUnits": productUnits.map((unit) => unit.toJson()).toList(),
     };
 
     try {
-      // بما أنك تحتاج PUT، يفضل إضافة الميثود في BaseApiService
-      // إذا لم تضفها بعد، يمكنك استخدام http.put مباشرة هنا
-      // أو استدعاء BaseApiService.putRequest إذا قمت بتعريفها
-      return true;
+      // استبدل بـ putRequest إذا كانت مدعومة في BaseApiService لديك
+      final response = await BaseApiService.putRequest('Products/$id', body, token);
+      return response.statusCode == 200 || response.statusCode == 204;
     } catch (e) {
       return false;
     }

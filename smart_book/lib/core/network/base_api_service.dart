@@ -28,4 +28,18 @@ class BaseApiService {
       body: jsonEncode(body),
     ).timeout(const Duration(seconds: 30));
   }
+
+// ميثود PUT عامة
+  static Future<http.Response> putRequest(String endpoint, Map<String, dynamic> body, String token) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/$endpoint');
+    return await http.put(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode(body),
+    ).timeout(const Duration(seconds: 30));
+  }
+
 }

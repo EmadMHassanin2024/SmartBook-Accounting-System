@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../data/models/ business_module.dart';
 
+import '../data/models/ business_module.dart';
 import '../data/models/core_module.dart';
 import '../data/models/feature_module.dart';
 import '../data/repositories/SystemConfigurationRepository.dart';
@@ -15,11 +15,7 @@ class SystemConfigurationCubit
   SystemConfigurationCubit(this._repository)
       : super(SystemConfigurationState.initial());
 
-  //============================================================
-  // Company
-  //============================================================
 
-  /// تحديث اسم الشركة
   void updateCompanyName(String value) {
     emit(
       state.copyWith(
@@ -30,34 +26,21 @@ class SystemConfigurationCubit
     );
   }
 
-  //============================================================
-  // Helpers
-  //============================================================
 
-  /// تبديل عنصر داخل قائمة.
-  ///
-  /// إذا كان العنصر موجودًا يتم حذفه،
-  /// وإذا لم يكن موجودًا تتم إضافته.
   List<T> _toggleItem<T>(
-      List<T> items,
-      T item,
-      ) {
-    final list = List<T>.from(items);
+      List<T> items, T item) {
+        final list = List<T>.from(items);
 
-    if (list.contains(item)) {
-      list.remove(item);
-    } else {
-      list.add(item);
+        if (list.contains(item)) {
+          list.remove(item);
+        } else {
+          list.add(item);
     }
 
     return list;
   }
 
-  //============================================================
-  // Core Modules
-  //============================================================
 
-  /// تفعيل / إلغاء موديول أساسي
   void toggleCoreModule(CoreModule module) {
     emit(
       state.copyWith(
@@ -71,7 +54,6 @@ class SystemConfigurationCubit
     );
   }
 
-  /// تفعيل موديول أساسي
   void enableCoreModule(CoreModule module) {
     if (isCoreModuleEnabled(module)) {
       return;
@@ -92,7 +74,6 @@ class SystemConfigurationCubit
     );
   }
 
-  /// إلغاء موديول أساسي
   void disableCoreModule(CoreModule module) {
     final list = List<CoreModule>.from(
       state.settings.enabledCoreModules,
@@ -109,7 +90,6 @@ class SystemConfigurationCubit
     );
   }
 
-  /// هل الموديول الأساسي مفعل؟
   bool isCoreModuleEnabled(CoreModule module) {
     return state.settings.enabledCoreModules.contains(module);
   }
@@ -118,13 +98,27 @@ class SystemConfigurationCubit
   // Business Modules
   //============================================================
 
-  /// تفعيل / إلغاء نشاط تجاري
   void toggleBusinessModule(BusinessModule module) {
+    final currentModules =
+        state.settings.enabledBusinessModules;
+
+    // لا يمكن تعطيل النشاط الحالي.
+    if (module == state.settings.activeBusinessModule &&
+        currentModules.contains(module)) {
+      return;
+    }
+
+    // يجب أن يبقى نشاط واحد على الأقل.
+    if (currentModules.length <= 1 &&
+        currentModules.contains(module)) {
+      return;
+    }
+
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
           enabledBusinessModules: _toggleItem(
-            state.settings.enabledBusinessModules,
+            currentModules,
             module,
           ),
         ),
@@ -132,7 +126,6 @@ class SystemConfigurationCubit
     );
   }
 
-  /// تفعيل نشاط تجاري
   void enableBusinessModule(BusinessModule module) {
     if (isBusinessModuleEnabled(module)) {
       return;
@@ -153,10 +146,22 @@ class SystemConfigurationCubit
     );
   }
 
-  /// إلغاء نشاط تجاري
   void disableBusinessModule(BusinessModule module) {
+    final currentModules =
+        state.settings.enabledBusinessModules;
+
+    // لا يمكن تعطيل النشاط الحالي.
+    if (module == state.settings.activeBusinessModule) {
+      return;
+    }
+
+    // يجب أن يبقى نشاط واحد على الأقل.
+    if (currentModules.length <= 1) {
+      return;
+    }
+
     final list = List<BusinessModule>.from(
-      state.settings.enabledBusinessModules,
+      currentModules,
     );
 
     list.remove(module);
@@ -170,16 +175,44 @@ class SystemConfigurationCubit
     );
   }
 
-  /// هل النشاط التجاري مفعل؟
-  bool isBusinessModuleEnabled(BusinessModule module) {
-    return state.settings.enabledBusinessModules.contains(module);
+  bool isBusinessModuleEnabled(
+      BusinessModule module,
+      ) {
+    return state.settings.enabledBusinessModules
+        .contains(module);
+  }
+
+  //============================================================
+  // Active Business Module
+  //============================================================
+
+  /// تغيير النشاط الحالي.
+  ///
+  /// لا يسمح باختيار نشاط غير مفعّل.
+  void setActiveBusinessModule(
+      BusinessModule module,
+      ) {
+    if (!isBusinessModuleEnabled(module)) {
+      return;
+    }
+
+    if (module == state.settings.activeBusinessModule) {
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        settings: state.settings.copyWith(
+          activeBusinessModule: module,
+        ),
+      ),
+    );
   }
 
   //============================================================
   // Features
   //============================================================
 
-  /// تفعيل / إلغاء خاصية إضافية
   void toggleFeature(FeatureModule feature) {
     emit(
       state.copyWith(
@@ -193,7 +226,6 @@ class SystemConfigurationCubit
     );
   }
 
-  /// تفعيل خاصية
   void enableFeature(FeatureModule feature) {
     if (isFeatureEnabled(feature)) {
       return;
@@ -214,7 +246,6 @@ class SystemConfigurationCubit
     );
   }
 
-  /// إلغاء خاصية
   void disableFeature(FeatureModule feature) {
     final list = List<FeatureModule>.from(
       state.settings.enabledFeatures,
@@ -231,7 +262,6 @@ class SystemConfigurationCubit
     );
   }
 
-  /// هل الخاصية مفعلة؟
   bool isFeatureEnabled(FeatureModule feature) {
     return state.settings.enabledFeatures.contains(feature);
   }
@@ -240,7 +270,6 @@ class SystemConfigurationCubit
   // Reset
   //============================================================
 
-  /// إعادة الإعدادات للوضع الافتراضي
   void resetConfiguration() {
     emit(
       SystemConfigurationState.initial(),
@@ -251,7 +280,6 @@ class SystemConfigurationCubit
   // Load
   //============================================================
 
-  /// تحميل إعدادات النظام
   Future<void> loadConfiguration() async {
     emit(
       state.copyWith(
@@ -261,7 +289,8 @@ class SystemConfigurationCubit
     );
 
     try {
-      final settings = await _repository.loadConfiguration();
+      final settings =
+      await _repository.loadConfiguration();
 
       if (settings != null) {
         emit(
@@ -293,7 +322,6 @@ class SystemConfigurationCubit
   // Save
   //============================================================
 
-  /// حفظ إعدادات النظام
   Future<void> saveConfiguration() async {
     emit(
       state.copyWith(
