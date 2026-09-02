@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/extensions/localization_extension.dart';
 
 class InventoryFilterSheet extends StatelessWidget {
   final Function(String) onFilterSelected;
@@ -18,18 +19,18 @@ class InventoryFilterSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "تصفية حسب حالة المخزون",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              context.lang.filterByInventoryStatus,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
             ),
           ),
           const SizedBox(height: 10),
           const Divider(),
           const SizedBox(height: 5),
-          _filterOption(context, "الكل", Icons.inventory_2_outlined, AppColors.primaryBlue),
-          _filterOption(context, "قربت تنتهي", Icons.warning_amber_rounded, Colors.orange),
-          _filterOption(context, "منتهية", Icons.error_outline, Colors.red),
+          _filterOption(context, context.lang.all, Icons.inventory_2_outlined, AppColors.primaryBlue),
+          _filterOption(context, context.lang.lowStock, Icons.warning_amber_rounded, Colors.orange),
+          _filterOption(context, context.lang.outOfStock, Icons.error_outline, Colors.red),
           const SizedBox(height: 10),
         ],
       ),

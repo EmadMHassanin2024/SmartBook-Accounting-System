@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/extensions/localization_extension.dart';
 import '../../../models/ ProductUnitModel.dart';
-
 
 class UnitItemCard extends StatefulWidget {
   final int index;
@@ -44,7 +44,7 @@ class _UnitItemCardState extends State<UnitItemCard> {
       text: widget.unit.purchasePrice > 0 ? widget.unit.purchasePrice.toString() : "",
     );
     _factorController = TextEditingController(
-      text: widget.unit.conversionFactor.toString(),
+      text: widget.unit.conversionFactor > 0 ? widget.unit.conversionFactor.toString() : "",
     );
   }
 
@@ -76,7 +76,7 @@ class _UnitItemCardState extends State<UnitItemCard> {
                 child: TextField(
                   controller: _nameController,
                   onChanged: widget.onNameChanged,
-                  decoration: _inputDecoration("اسم الوحدة (قطعة، كرتونة..)"),
+                  decoration: _inputDecoration(context.lang.unitNameHint),
                 ),
               ),
               if (!isBase)
@@ -94,7 +94,7 @@ class _UnitItemCardState extends State<UnitItemCard> {
                   controller: _salePriceController,
                   keyboardType: TextInputType.number,
                   onChanged: (val) => widget.onSalePriceChanged(double.tryParse(val) ?? 0),
-                  decoration: _inputDecoration("سعر البيع"),
+                  decoration: _inputDecoration(context.lang.salePrice),
                 ),
               ),
               const SizedBox(width: 10),
@@ -103,7 +103,7 @@ class _UnitItemCardState extends State<UnitItemCard> {
                   controller: _purchasePriceController,
                   keyboardType: TextInputType.number,
                   onChanged: (val) => widget.onPurchasePriceChanged(double.tryParse(val) ?? 0),
-                  decoration: _inputDecoration("سعر الشراء"),
+                  decoration: _inputDecoration(context.lang.purchasePrice),
                 ),
               ),
             ],
@@ -111,12 +111,10 @@ class _UnitItemCardState extends State<UnitItemCard> {
           if (!isBase) ...[
             const SizedBox(height: 12),
             TextField(
-              controller: _salePriceController,
+              controller: _factorController,
               keyboardType: TextInputType.number,
-              // استخدام onSubmitted أو التحديث عند انتهاء الكتابة بدلاً من onChanged المباشر
-              onSubmitted: (val) => widget.onSalePriceChanged(double.tryParse(val) ?? 0),
-              decoration: _inputDecoration("سعر البيع"),
-
+              onChanged: (val) => widget.onFactorChanged(double.tryParse(val) ?? 0),
+              decoration: _inputDecoration(context.lang.conversionFactor),
             ),
           ]
         ],

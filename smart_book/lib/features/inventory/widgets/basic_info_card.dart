@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/extensions/localization_extension.dart';
 
 class BasicInfoCard extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController barcodeController;
   final TextEditingController stockController;
-  final String baseUnitName; // 💡 أضفنا المتغير هنا عشان يعرض اسم الوحدة الحقيقي
+  final String baseUnitName;
 
   const BasicInfoCard({
     super.key,
     required this.nameController,
     required this.barcodeController,
     required this.stockController,
-    required this.baseUnitName, // تمرير ديناميكي
+    required this.baseUnitName,
   });
 
   @override
@@ -26,25 +27,43 @@ class BasicInfoCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text("المعلومات الأساسية", style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            context.lang.basicInformation,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
           const SizedBox(height: 16),
-          // 💡 هنا أضفنا الـ Validator لاسم الصنف
           _buildTextField(
-            "اسم الصنف (أرز، زيت..)",
+            context.lang.itemNameHint,
             nameController,
             Icons.shopping_bag_outlined,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'يرجى إدخال اسم الصنف';
+                return context.lang.pleaseEnterItemName;
               }
               return null;
             },
           ),
           const SizedBox(height: 12),
-          _buildTextField("الباركود (اختياري)", barcodeController, Icons.qr_code_scanner),
+          _buildTextField(
+            context.lang.barcodeOptional,
+            barcodeController,
+            Icons.qr_code_scanner,
+          ),
           const SizedBox(height: 12),
-          // عرض الكمية الافتتاحية مع اسم الوحدة الحية
-          _buildTextField("الكمية الافتتاحية بـ ($baseUnitName)", stockController, Icons.inventory_2_outlined, isNumber: true),
+          _buildTextField(
+            "${context.lang.openingQuantity} ($baseUnitName)",
+            stockController,
+            Icons.inventory_2_outlined,
+            isNumber: true,
+            validator: (value) {
+              if (value != null && value.trim().isNotEmpty) {
+                if (double.tryParse(value.trim()) == null) {
+                  return context.lang.pleaseEnterValidQuantity;
+                }
+              }
+              return null;
+            },
+          ),
         ],
       ),
     );
@@ -55,20 +74,29 @@ class BasicInfoCard extends StatelessWidget {
       TextEditingController controller,
       IconData icon, {
         bool isNumber = false,
-        String? Function(String?)? validator, // 💡 بارامتر الـ validator الجديد
+        String? Function(String?)? validator,
       }) {
     return TextFormField(
       controller: controller,
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      validator: validator, // تشغيله هنا
+      keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+      validator: validator,
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
         prefixIcon: Icon(icon, size: 20, color: AppColors.iconGrey),
         filled: true,
         fillColor: const Color(0xFFF1F5F9),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AppColors.primaryBlue, width: 1),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

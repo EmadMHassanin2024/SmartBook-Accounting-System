@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/extensions/localization_extension.dart';
 
 class InventorySearchBar extends StatelessWidget {
   final Function(String) onChanged;
@@ -36,7 +37,7 @@ class InventorySearchBar extends StatelessWidget {
                 onChanged: onChanged,
                 style: const TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: "بحث باسم الصنف أو الباركود...",
+                  hintText: context.lang.searchByNameOrBarcode,
                   hintStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
                   prefixIcon: const Icon(Icons.search, size: 20, color: AppColors.primaryBlue),
                   border: InputBorder.none,
@@ -46,7 +47,7 @@ class InventorySearchBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          // زر الفلترة الجانبي (اختياري لو أردت وضعه هنا بدلاً من الـ AppBar)
+          // زر الفلترة الجانبي
           GestureDetector(
             onTap: onFilterTap,
             child: Container(

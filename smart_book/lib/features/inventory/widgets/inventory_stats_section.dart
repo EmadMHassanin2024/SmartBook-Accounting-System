@@ -1,4 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
+import '../../../../core/utils/extensions/localization_extension.dart';
 
 class InventoryStatsSection extends StatelessWidget {
   final InventoryLoaded state;
@@ -11,9 +12,9 @@ class InventoryStatsSection extends StatelessWidget {
       totalCount: state.totalCount,
       lowStockCount: state.lowStockCount,
       outOfStockCount: state.outOfStockCount,
-      onTotalTap: () => cubit.filterByCategory("الكل"),
-      onLowStockTap: () => cubit.filterByCategory("قربت تنتهي"),
-      onOutOfStockTap: () => cubit.filterByCategory("منتهية"),
+      onTotalTap: () => cubit.filterByCategory(context.lang.all),
+      onLowStockTap: () => cubit.filterByCategory(context.lang.lowStock),
+      onOutOfStockTap: () => cubit.filterByCategory(context.lang.outOfStock),
     );
   }
 }

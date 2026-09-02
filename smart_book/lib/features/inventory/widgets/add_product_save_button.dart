@@ -1,27 +1,29 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import '../../../core/di/service_locator.dart';
 
-
-// زر إضافة منتج (Floating Action Button) المطور بـ Dependency Injection
+// زر إضافة منتج محسن بحيث يعتمد على السياق الحالي أو تمرير الـ Cubit دون الحاجة لـ GetIt المتكرر
 class AddProductFAB extends StatelessWidget {
-  const AddProductFAB({super.key}); // تحسين الـ Constructor بإضافة الـ Key
+  const AddProductFAB({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+
     return FloatingActionButton(
       onPressed: () async {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              // 🚀 استدعاء الـ Cubit نظيف ومستقل من الـ Locator ومبني بنظام Factory التصفيري
-              create: (context) => sl<AddProductCubit>(),
-              child: AddProductScreen(), // تم إزالة const لأن الشاشة أصبحت Stateless وتحمل Controllers داخلية
+            builder: (_) => BlocProvider.value(
+              // استخدام BlocProvider.value لاستخدام الـ Cubit الموجود أو تمريره بشكل نظيف
+              value: sl<AddProductCubit>(),
+              child: const AddProductScreen(),
             ),
           ),
         );
+
         // تحديث البيانات تلقائياً وفوراً إذا نجحت عملية الإضافة وعاد بـ true
         if (result == true && context.mounted) {
+
           context.read<InventoryCubit>().fetchProducts();
         }
       },

@@ -33,6 +33,8 @@ class InventoryCubit extends Cubit<InventoryState> {
 
   void _applyFilters() {
     // 1. تصفية منتجات النشاط الحالي أولاً
+
+
     List<ProductModel> activityProducts = _allProducts.where((p) {
       return (p.itemType ?? BusinessModule.generalStore.name) == _currentActivityType.name;
     }).toList();

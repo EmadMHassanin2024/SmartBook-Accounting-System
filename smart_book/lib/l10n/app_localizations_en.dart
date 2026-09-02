@@ -329,4 +329,111 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noContraAccount => 'No Contra Account';
+
+  @override
+  String get inventoryFilterTitle => 'Filter by Stock Status';
+
+  @override
+  String openingStockWithUnit(Object unit) {
+    return 'Opening Stock in ($unit)';
+  }
+
+  @override
+  String get unitNameHint => 'Unit Name (e.g., Piece, Carton...)';
+
+  @override
+  String get conversionFactorHint => 'Conversion Factor (Base units per item)';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String stockPrefix(Object stock) {
+    return 'Stock: $stock';
+  }
+
+  @override
+  String barcodePrefix(Object barcode) {
+    return 'Barcode: $barcode';
+  }
+
+  @override
+  String get pharmacyExtensions => 'Pharmacy Extensions';
+
+  @override
+  String get expiryDateHint => 'Expiry Date';
+
+  @override
+  String get batchNumberHint => 'Batch Number';
+
+  @override
+  String get restaurantExtensions => 'Restaurant & Kitchen Extensions';
+
+  @override
+  String get isIngredientCheckbox =>
+      'Is this item an ingredient (deducted from stock based on recipes)?';
+
+  @override
+  String get groceryExtensions => 'Additional Extensions (Size / Color)';
+
+  @override
+  String get sizeHint => 'Size';
+
+  @override
+  String get colorHint => 'Color';
+
+  @override
+  String get pleaseAddUnit => 'Please add a measurement unit';
+
+  @override
+  String get pleaseSetBaseSalePrice =>
+      'Please set the sale price for the base unit first';
+
+  @override
+  String get itemsAndInventory => 'Items & Inventory';
+
+  @override
+  String get errorOccurred => 'An error occurred';
+
+  @override
+  String get noItemsMatchSelection => 'No items match your selection';
+
+  @override
+  String get basicInformation => 'Basic Information';
+
+  @override
+  String get itemNameHint => 'Item Name (e.g., Rice, Oil...)';
+
+  @override
+  String get pleaseEnterItemName => 'Please enter the item name';
+
+  @override
+  String get barcodeOptional => 'Barcode (Optional)';
+
+  @override
+  String get openingQuantity => 'Opening Quantity';
+
+  @override
+  String get pleaseEnterValidQuantity => 'Please enter a valid quantity';
+
+  @override
+  String get searchByNameOrBarcode => 'Search by item name or barcode...';
+
+  @override
+  String get filterByInventoryStatus => 'Filter by inventory status';
+
+  @override
+  String get currency => 'ريال';
+
+  @override
+  String get stock => 'الرصيد';
+
+  @override
+  String get notifyWhenQuantityReaches => 'Notify me when quantity reaches:';
+
+  @override
+  String get unitsAndPrices => 'Units and Prices';
+
+  @override
+  String get addAnotherUnit => 'Add another selling unit (Wholesale)';
 }

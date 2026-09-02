@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/SnackbarHelper.dart';
 import '../../finance/adjustments/logic/adjustment_cubit.dart';
 import '../logic/InventoryState.dart';
+import '../../../../core/utils/extensions/localization_extension.dart';
 
 import '../data/repository/inventory_adjustment_screen.dart';
 import '../widgets/item_card_widget.dart';
@@ -18,13 +20,26 @@ class InventoryListView extends StatelessWidget {
     }
 
     if (state is InventoryError) {
-      return Center(child: Text((state as InventoryError).message));
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        SnackbarHelper.showError(
+
+          (state as InventoryError).message,
+        );
+      });
+      return Center(child: Text(context.lang.errorOccurred));
+
     }
 
     if (state is InventoryLoaded) {
       final loadedState = state as InventoryLoaded;
       if (loadedState.products.isEmpty) {
-        return const Center(child: Text("لا توجد أصناف تطابق اختيارك"));
+        return Center(
+          child: Text(
+            context.lang.noItemsMatchSelection,
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+        );
       }
 
       return ListView.builder(

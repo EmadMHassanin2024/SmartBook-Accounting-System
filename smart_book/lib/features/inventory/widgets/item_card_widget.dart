@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/extensions/localization_extension.dart';
 import '../../pos/data/models/product_model.dart';
 
 class ItemCardWidget extends StatelessWidget {
@@ -51,7 +52,7 @@ class ItemCardWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "باركود: ${product.barcode.isEmpty ? 'بدون باركود' : product.barcode}",
+                  "${context.lang.barcode}: ${product.barcode.isEmpty ? context.lang.noBarcode : product.barcode}",
                   style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
                 ),
               ],
@@ -63,7 +64,7 @@ class ItemCardWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "${product.price.toStringAsFixed(2)} ريال",
+                "${product.price.toStringAsFixed(2)} ${context.lang.currency}",
                 style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 8),
@@ -92,7 +93,7 @@ class ItemCardWidget extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      "الرصيد: ${product.stock}",
+                      "${context.lang.stock}: ${product.stock}",
                       style: TextStyle(
                           color: product.stock > 0 ? Colors.green : Colors.red,
                           fontSize: 12,

@@ -199,7 +199,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pos => 'نقطة البيع';
 
   @override
-  String get journals => 'دفتر اليومية';
+  String get journals => 'قيود اليومية';
 
   @override
   String stockAlert(Object count) {
@@ -240,7 +240,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get trialBalance => 'ميزان المراجعة';
 
   @override
-  String get chartOfAccounts => 'دليل الحسابات';
+  String get chartOfAccounts => 'الدليل المحاسبي';
 
   @override
   String get invoices => 'الفواتير';
@@ -249,7 +249,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inventory => 'المخزون';
 
   @override
-  String get contacts => 'جهات الاتصال';
+  String get contacts => 'العملاء';
 
   @override
   String get ledgerTitle => 'دفتر الأستاذ';
@@ -328,4 +328,112 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noContraAccount => 'لا يوجد طرف مقابل';
+
+  @override
+  String get inventoryFilterTitle => 'تصفية حسب حالة المخزون';
+
+  @override
+  String openingStockWithUnit(Object unit) {
+    return 'الكمية الافتتاحية بـ ($unit)';
+  }
+
+  @override
+  String get unitNameHint => 'اسم الوحدة (قطعة، كرتونة..)';
+
+  @override
+  String get conversionFactorHint =>
+      'معامل التحويل (عدد وحدات القطعة الأساسية)';
+
+  @override
+  String get all => 'الكل';
+
+  @override
+  String stockPrefix(Object stock) {
+    return 'الرصيد: $stock';
+  }
+
+  @override
+  String barcodePrefix(Object barcode) {
+    return 'باركود: $barcode';
+  }
+
+  @override
+  String get pharmacyExtensions => 'خصائص الصيدلية';
+
+  @override
+  String get expiryDateHint => 'تاريخ الصلاحية';
+
+  @override
+  String get batchNumberHint => 'رقم التشغيلة';
+
+  @override
+  String get restaurantExtensions => 'خصائص المطعم والمطبخ';
+
+  @override
+  String get isIngredientCheckbox =>
+      'هل هذا الصنف مادة خام (تُخصم من المخزن بناءً على الوصفات)؟';
+
+  @override
+  String get groceryExtensions => 'خصائص إضافية (مقاس / لون)';
+
+  @override
+  String get sizeHint => 'المقاس (Size)';
+
+  @override
+  String get colorHint => 'اللون (Color)';
+
+  @override
+  String get pleaseAddUnit => 'يرجى إضافة وحدة قياس';
+
+  @override
+  String get pleaseSetBaseSalePrice =>
+      'يرجى تحديد سعر البيع للوحدة الأساسية أولاً';
+
+  @override
+  String get itemsAndInventory => 'الأصناف والمستودع';
+
+  @override
+  String get errorOccurred => 'حدث خطأ ما';
+
+  @override
+  String get noItemsMatchSelection => 'لا توجد أصناف تطابق اختيارك';
+
+  @override
+  String get basicInformation => 'المعلومات الأساسية';
+
+  @override
+  String get itemNameHint => 'اسم الصنف (مثل: أرز، زيت...)';
+
+  @override
+  String get pleaseEnterItemName => 'يرجى إدخال اسم الصنف';
+
+  @override
+  String get barcodeOptional => 'الباركود (اختياري)';
+
+  @override
+  String get openingQuantity => 'الكمية الافتتاحية';
+
+  @override
+  String get pleaseEnterValidQuantity => 'يرجى إدخال رقم صحيح للكمية';
+
+  @override
+  String get searchByNameOrBarcode => 'بحث باسم الصنف أو الباركود...';
+
+  @override
+  String get filterByInventoryStatus => 'تصفية حسب حالة المخزون';
+
+  @override
+  String get currency => 'ريال';
+
+  @override
+  String get stock => 'الرصيد';
+
+  @override
+  String get notifyWhenQuantityReaches => 'نبهني عند وصول الكمية إلى:';
+
+  @override
+  String get unitsAndPrices => 'وحدات القياس والأسعار';
+
+  @override
+  String get addAnotherUnit => 'إضافة وحدة بيع أخرى (جملة)';
 }

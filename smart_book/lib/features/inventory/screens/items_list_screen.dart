@@ -1,8 +1,8 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
+import '../../settings/logic/SettingsCubit.dart';
 import '../../system_config/logic/system_configuration_state.dart';
-import '../widgets/inventory_content_view.dart';
-import '../widgets/inventory_stats_section.dart';
-
+import '../../../core/utils/extensions/localization_extension.dart';
+import '../widgets/inventory_state_views.dart';
 
 class ItemsListScreen extends StatefulWidget {
   const ItemsListScreen({super.key});
@@ -12,6 +12,7 @@ class ItemsListScreen extends StatefulWidget {
 }
 
 class _ItemsListScreenState extends State<ItemsListScreen> {
+  // نقوم بتعريف متغير الـ Cubit لجلب الأصناف عند الفتح الأولي فقط
   late final InventoryCubit _inventoryCubit;
 
   @override
@@ -25,12 +26,45 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.sizeOf(context).width < 320;
+
+
     return BlocProvider.value(
       value: _inventoryCubit,
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBg,
         appBar: AppBar(
-          title: const Text("الأصناف والمستودع"),
+          leadingWidth: isCompact ? 56 : 96,
+          leading: isCompact
+              ? null
+              : BlocBuilder<SettingsCubit, Locale>(
+            builder: (context, locale) {
+              final String nextLanguage = locale.languageCode == 'ar' ? 'EN' : 'AR';
+              return InkWell(
+                onTap: () => context.read<SettingsCubit>().toggleLanguage(),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 12),
+                    const Icon(Icons.language, color: AppColors.primaryBlue, size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      nextLanguage,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          title: Text(
+            context.lang.itemsAndInventory,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.filter_list),
@@ -41,28 +75,35 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
         body: MultiBlocListener(
           listeners: [
             BlocListener<SystemConfigurationCubit, SystemConfigurationState>(
-              listenWhen: (prev, curr) => prev.settings.activeBusinessModule != curr.settings.activeBusinessModule,
-              listener: (context, state) => _inventoryCubit.changeActivityType(state.settings.activeBusinessModule),
+              listenWhen: (previous, current) =>
+              previous.settings.activeBusinessModule !=
+                  current.settings.activeBusinessModule,
+              listener: (context, state) {
+                context.read<InventoryCubit>().changeActivityType(
+                  state.settings.activeBusinessModule,
+                );
+              },
             ),
             BlocListener<AdjustmentCubit, AdjustmentState>(
+              listenWhen: (previous, current) => current is AdjustmentSuccess,
               listener: (context, state) {
-                if (state is AdjustmentSuccess) _inventoryCubit.fetchProducts();
+                if (state is AdjustmentSuccess) {
+                  context.read<InventoryCubit>().fetchProducts();
+                }
               },
             ),
           ],
           child: BlocBuilder<InventoryCubit, InventoryState>(
+            buildWhen: (previous, current) {
+              return current is InventoryLoading ||
+                  current is InventoryError ||
+                  current is InventoryLoaded;
+            },
             builder: (context, state) {
-              if (state is InventoryLoading) return const Center(child: CircularProgressIndicator());
-              if (state is InventoryError) return Center(child: Text("حدث خطأ: ${state.message}"));
-              if (state is InventoryLoaded) {
-                return Column(
-                  children: [
-                    InventoryStatsSection(state: state),
-                    InventoryContentView(state: state, onOpenFilters: () => _openFilters(context)),
-                  ],
-                );
-              }
-              return const SizedBox.shrink();
+              return InventoryStateViews(
+                state: state,
+                onOpenFilters: () => _openFilters(context),
+              );
             },
           ),
         ),
@@ -72,12 +113,22 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
   }
 
   void _openFilters(BuildContext context) {
+    final inventoryCubit = context.read<InventoryCubit>();
+
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => InventoryFilterSheet(
-        onFilterSelected: (category) => _inventoryCubit.filterByCategory(category),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
       ),
+      builder: (_) {
+        return InventoryFilterSheet(
+          onFilterSelected: (category) {
+            inventoryCubit.filterByCategory(category);
+          },
+        );
+      },
     );
   }
 }

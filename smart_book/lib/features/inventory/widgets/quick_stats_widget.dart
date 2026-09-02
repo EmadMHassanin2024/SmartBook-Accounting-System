@@ -1,7 +1,7 @@
-// lib/features/inventory/presentation/widgets/quick_stats_widget.dart
+
 
 import '../../../core/packages.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/extensions/localization_extension.dart';
 
 class QuickStatsWidget extends StatelessWidget {
   final VoidCallback? onTotalTap;
@@ -10,7 +10,6 @@ class QuickStatsWidget extends StatelessWidget {
   final int totalCount;
   final int lowStockCount;
   final int outOfStockCount;
-
 
   const QuickStatsWidget({
     super.key,
@@ -24,7 +23,6 @@ class QuickStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -33,7 +31,7 @@ class QuickStatsWidget extends StatelessWidget {
           Expanded(
             child: GestureDetector(
               onTap: onTotalTap,
-              child: _buildStatCard(lang.allProducts, totalCount.toString(), Colors.blue),
+              child: _buildStatCard(context.lang.allProducts, totalCount.toString(), Colors.blue),
             ),
           ),
           const SizedBox(width: 10),
@@ -41,7 +39,7 @@ class QuickStatsWidget extends StatelessWidget {
           Expanded(
             child: GestureDetector(
               onTap: onLowStockTap,
-              child: _buildStatCard(lang.lowStock, lowStockCount.toString(), Colors.orange),
+              child: _buildStatCard(context.lang.lowStock, lowStockCount.toString(), Colors.orange),
             ),
           ),
           const SizedBox(width: 10),
@@ -49,7 +47,7 @@ class QuickStatsWidget extends StatelessWidget {
           Expanded(
             child: GestureDetector(
               onTap: onOutOfStockTap,
-              child: _buildStatCard(lang.outOfStock, outOfStockCount.toString(), Colors.red),
+              child: _buildStatCard(context.lang.outOfStock, outOfStockCount.toString(), Colors.red),
             ),
           ),
         ],
@@ -57,7 +55,7 @@ class QuickStatsWidget extends StatelessWidget {
     );
   }
 
-  // دالة بناء شكل البطاقة (نفس التصميم في الصورة image_036658.png)
+  // دالة بناء شكل البطاقة
   Widget _buildStatCard(String title, String count, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),

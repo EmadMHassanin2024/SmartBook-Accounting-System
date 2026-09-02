@@ -479,7 +479,7 @@ abstract class AppLocalizations {
   /// No description provided for @journals.
   ///
   /// In ar, this message translates to:
-  /// **'دفتر اليومية'**
+  /// **'قيود اليومية'**
   String get journals;
 
   /// No description provided for @stockAlert.
@@ -557,7 +557,7 @@ abstract class AppLocalizations {
   /// No description provided for @chartOfAccounts.
   ///
   /// In ar, this message translates to:
-  /// **'دليل الحسابات'**
+  /// **'الدليل المحاسبي'**
   String get chartOfAccounts;
 
   /// No description provided for @invoices.
@@ -575,7 +575,7 @@ abstract class AppLocalizations {
   /// No description provided for @contacts.
   ///
   /// In ar, this message translates to:
-  /// **'جهات الاتصال'**
+  /// **'العملاء'**
   String get contacts;
 
   /// No description provided for @ledgerTitle.
@@ -733,6 +733,204 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'لا يوجد طرف مقابل'**
   String get noContraAccount;
+
+  /// No description provided for @inventoryFilterTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفية حسب حالة المخزون'**
+  String get inventoryFilterTitle;
+
+  /// No description provided for @openingStockWithUnit.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية الافتتاحية بـ ({unit})'**
+  String openingStockWithUnit(Object unit);
+
+  /// No description provided for @unitNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الوحدة (قطعة، كرتونة..)'**
+  String get unitNameHint;
+
+  /// No description provided for @conversionFactorHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'معامل التحويل (عدد وحدات القطعة الأساسية)'**
+  String get conversionFactorHint;
+
+  /// No description provided for @all.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get all;
+
+  /// No description provided for @stockPrefix.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرصيد: {stock}'**
+  String stockPrefix(Object stock);
+
+  /// No description provided for @barcodePrefix.
+  ///
+  /// In ar, this message translates to:
+  /// **'باركود: {barcode}'**
+  String barcodePrefix(Object barcode);
+
+  /// No description provided for @pharmacyExtensions.
+  ///
+  /// In ar, this message translates to:
+  /// **'خصائص الصيدلية'**
+  String get pharmacyExtensions;
+
+  /// No description provided for @expiryDateHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الصلاحية'**
+  String get expiryDateHint;
+
+  /// No description provided for @batchNumberHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم التشغيلة'**
+  String get batchNumberHint;
+
+  /// No description provided for @restaurantExtensions.
+  ///
+  /// In ar, this message translates to:
+  /// **'خصائص المطعم والمطبخ'**
+  String get restaurantExtensions;
+
+  /// No description provided for @isIngredientCheckbox.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل هذا الصنف مادة خام (تُخصم من المخزن بناءً على الوصفات)؟'**
+  String get isIngredientCheckbox;
+
+  /// No description provided for @groceryExtensions.
+  ///
+  /// In ar, this message translates to:
+  /// **'خصائص إضافية (مقاس / لون)'**
+  String get groceryExtensions;
+
+  /// No description provided for @sizeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'المقاس (Size)'**
+  String get sizeHint;
+
+  /// No description provided for @colorHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللون (Color)'**
+  String get colorHint;
+
+  /// No description provided for @pleaseAddUnit.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرجى إضافة وحدة قياس'**
+  String get pleaseAddUnit;
+
+  /// No description provided for @pleaseSetBaseSalePrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرجى تحديد سعر البيع للوحدة الأساسية أولاً'**
+  String get pleaseSetBaseSalePrice;
+
+  /// No description provided for @itemsAndInventory.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأصناف والمستودع'**
+  String get itemsAndInventory;
+
+  /// No description provided for @errorOccurred.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدث خطأ ما'**
+  String get errorOccurred;
+
+  /// No description provided for @noItemsMatchSelection.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أصناف تطابق اختيارك'**
+  String get noItemsMatchSelection;
+
+  /// No description provided for @basicInformation.
+  ///
+  /// In ar, this message translates to:
+  /// **'المعلومات الأساسية'**
+  String get basicInformation;
+
+  /// No description provided for @itemNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الصنف (مثل: أرز، زيت...)'**
+  String get itemNameHint;
+
+  /// No description provided for @pleaseEnterItemName.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرجى إدخال اسم الصنف'**
+  String get pleaseEnterItemName;
+
+  /// No description provided for @barcodeOptional.
+  ///
+  /// In ar, this message translates to:
+  /// **'الباركود (اختياري)'**
+  String get barcodeOptional;
+
+  /// No description provided for @openingQuantity.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية الافتتاحية'**
+  String get openingQuantity;
+
+  /// No description provided for @pleaseEnterValidQuantity.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرجى إدخال رقم صحيح للكمية'**
+  String get pleaseEnterValidQuantity;
+
+  /// No description provided for @searchByNameOrBarcode.
+  ///
+  /// In ar, this message translates to:
+  /// **'بحث باسم الصنف أو الباركود...'**
+  String get searchByNameOrBarcode;
+
+  /// No description provided for @filterByInventoryStatus.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفية حسب حالة المخزون'**
+  String get filterByInventoryStatus;
+
+  /// No description provided for @currency.
+  ///
+  /// In ar, this message translates to:
+  /// **'ريال'**
+  String get currency;
+
+  /// No description provided for @stock.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرصيد'**
+  String get stock;
+
+  /// No description provided for @notifyWhenQuantityReaches.
+  ///
+  /// In ar, this message translates to:
+  /// **'نبهني عند وصول الكمية إلى:'**
+  String get notifyWhenQuantityReaches;
+
+  /// No description provided for @unitsAndPrices.
+  ///
+  /// In ar, this message translates to:
+  /// **'وحدات القياس والأسعار'**
+  String get unitsAndPrices;
+
+  /// No description provided for @addAnotherUnit.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة وحدة بيع أخرى (جملة)'**
+  String get addAnotherUnit;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/extensions/localization_extension.dart';
 import '../../../models/ ProductUnitModel.dart';
 import '../logic/add_product_cubit.dart';
 
@@ -16,7 +17,7 @@ class ProductUnitsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader("وحدات القياس والأسعار", Icons.sell),
+        _buildSectionHeader(context.lang.unitsAndPrices, Icons.sell),
         ...units.asMap().entries.map((entry) {
           final index = entry.key;
           final unit = entry.value;
@@ -35,7 +36,7 @@ class ProductUnitsSection extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => context.read<AddProductCubit>().addUnit(),
           icon: const Icon(Icons.add),
-          label: const Text("إضافة وحدة بيع أخرى (جملة)"),
+          label: Text(context.lang.addAnotherUnit),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
