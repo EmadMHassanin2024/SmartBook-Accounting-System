@@ -25,8 +25,6 @@ import 'features/finance/repositories/FinancialReportsRepository.dart';
 import 'features/pos/data/Repository/PosRepository.dart';
 import 'features/settings/logic/SettingsCubit.dart';
 
-
-
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -53,6 +51,12 @@ class SmartBookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<SystemConfigurationCubit>(create: (context) => sl<SystemConfigurationCubit>()..loadConfiguration(),),
+        BlocProvider<InventoryCubit>(create: (_) => sl<InventoryCubit>(),),
+        BlocProvider<AddProductCubit>(
+          create: (_) => sl<AddProductCubit>(),
+          child: const AddProductScreen(),
+        ),
         BlocProvider<SettingsCubit>(create: (_) => SettingsCubit()),
         BlocProvider<AuthCubit>(create: (context) => AuthCubit(sl<TokenRepository>())),
         BlocProvider<IncomeStatementCubit>(
@@ -62,7 +66,7 @@ class SmartBookApp extends StatelessWidget {
         BlocProvider<AccountCubit>(create: (_) => AccountCubit(sl<FinancialReportsRepository>())),
         BlocProvider<JournalListCubit>(create: (_) => JournalListCubit(sl<JournalRepository>())),
         BlocProvider<LedgerCubit>(create: (_) => LedgerCubit(sl<FinancialReportsRepository>())),
-        BlocProvider<InventoryCubit>(create: (context) => InventoryCubit(sl<ProductRepository>())),
+
 
         // التصحيح: استخدم الـ Repository الصحيح (FinancialReportsRepository)
         BlocProvider<AdjustmentCubit>(create: (context) => AdjustmentCubit(sl<FinancialReportsRepository>() )),
@@ -70,9 +74,7 @@ class SmartBookApp extends StatelessWidget {
         BlocProvider<PosCubit>(create: (context) => PosCubit(sl<PosRepository>())),
         // 🌟 إضافة الـ Cubit الخاص بإعدادات النظام
 
-        BlocProvider<SystemConfigurationCubit>(
-          create: (context) => sl<SystemConfigurationCubit>()..loadConfiguration(),
-        ),
+
       ],
       child: BlocBuilder<SettingsCubit, Locale>(
         builder: (context, locale) {
