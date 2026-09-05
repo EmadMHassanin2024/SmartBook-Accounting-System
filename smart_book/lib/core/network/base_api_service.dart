@@ -42,4 +42,16 @@ class BaseApiService {
     ).timeout(const Duration(seconds: 30));
   }
 
+
+  // ميثود DELETE عامة
+  static Future<http.Response> deleteRequest(String endpoint, String token) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/$endpoint');
+    return await http.delete(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    ).timeout(const Duration(seconds: 30));
+  }
 }

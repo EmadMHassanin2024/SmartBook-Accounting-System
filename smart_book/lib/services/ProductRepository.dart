@@ -29,7 +29,7 @@ class ProductRepository {
     required String barcode,
     required double totalStockQuantity,
     required String itemType,
-    required List<ProductUnitModel> productUnits, // 👈 استقبال قائمة الوحدات بدلاً من وحدة مفردة
+    required List<ProductUnitModel> productUnits,
   }) async {
     final String token = await AuthService.getToken();
 
@@ -38,7 +38,7 @@ class ProductRepository {
       "Barcode": barcode.isEmpty ? null : barcode,
       "TotalStockQuantity": totalStockQuantity,
       "ItemType": itemType,
-      "ProductUnits": productUnits.map((unit) => unit.toJson()).toList(), // 👈 إرسال المصفوفة بشكل صحيح
+      "ProductUnits": productUnits.map((unit) => unit.toJson()).toList(),
     };
 
     try {
@@ -56,7 +56,7 @@ class ProductRepository {
     required String barcode,
     required double totalStockQuantity,
     required String itemType,
-    required List<ProductUnitModel> productUnits, // 👈 استقبال قائمة الوحدات
+    required List<ProductUnitModel> productUnits,
   }) async {
     final String token = await AuthService.getToken();
 
@@ -70,11 +70,24 @@ class ProductRepository {
     };
 
     try {
-      // استبدل بـ putRequest إذا كانت مدعومة في BaseApiService لديك
       final response = await BaseApiService.putRequest('Products/$id', body, token);
       return response.statusCode == 200 || response.statusCode == 204;
     } catch (e) {
       return false;
+    }
+  }
+
+  // 4. حذف صنف متوافق مع BaseApiService
+  Future<void> deleteProduct(int productId) async {
+    final String token = await AuthService.getToken();
+    try {
+      final response = await BaseApiService.deleteRequest('Products/$productId', token);
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw Exception('فشل حذف المنتج من الخادم');
+      }
+    } catch (e) {
+      throw Exception('خطأ في الاتصال: $e');
     }
   }
 }

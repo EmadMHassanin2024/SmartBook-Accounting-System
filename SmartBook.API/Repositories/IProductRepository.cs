@@ -11,7 +11,8 @@ namespace SmartBook.API.Repositories
         Task<string> UpdateStockAndLogAdjustment(InventoryAdjustmentDto model);
         Task<bool> ReverseAdjustment(int logId);
 
-
+        Task<bool> DeleteAsync(int id);
+        Task<Product> UpdateAsync(int id, Product product);
     }
 }
  

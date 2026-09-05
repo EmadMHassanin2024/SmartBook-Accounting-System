@@ -37,7 +37,12 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
   }
 
-  // 3. دالة التحديث الديناميكي والذكاء المحاسبي لاحتساب أسعار الجملة تلقائياً
+  // 3. دالة تعيين الوحدات الأولية عند فتح الشاشة للتعديل
+  void setInitialUnits(List<ProductUnitModel> units) {
+    emit(AddProductUnitsUpdated(units: units));
+  }
+
+  // 4. دالة التحديث الديناميكي والذكاء المحاسبي لاحتساب أسعار الجملة تلقائياً
   void updateUnitData({
     required int index,
     String? name,
@@ -94,36 +99,69 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
   }
 
-  // 4. الدالة المحسنة والمطورة لحفظ المنتج النهائي بالسيرفر وتفكيك المتغيرات محاسبياً
+  // 5. الدالة لإضافة منتج جديد بالسيرفر
   Future<void> submitProduct({
     required String name,
     required String barcode,
-    required int stock,
+    required double stock,
     String? expiryDate,
     String? batchNumber,
     bool? isIngredient,
     String? size,
     String? color,
-    String itemType = 'general', // نوع النشاط المستلم من الشاشة
+    String itemType = 'general',
   }) async {
-    // 👈 استخدام قائمة الوحدات بالكامل بدلاً من اكتفاء الوحدة الأولى فقط
     final List<ProductUnitModel> allUnits = state.units;
 
     emit(AddProductLoading(units: state.units));
     try {
-      // 💡 التعديل هنا: تمرير قائمة الوحدات بالكامل `productUnits` لتتوافق مع الـ Backend والـ Repository
       bool success = await productService.addProduct(
         name: name,
         barcode: barcode,
         totalStockQuantity: stock.toDouble(),
         itemType: itemType,
-        productUnits: allUnits, // 👈 إرسال قائمة الوحدات المتعددة للسيرفر
+        productUnits: allUnits,
       );
 
       if (success) {
         emit(AddProductSuccess());
       } else {
         emit(AddProductError("فشل السيرفر في حفظ بيانات الصنف الجديد", units: state.units));
+      }
+    } catch (e) {
+      emit(AddProductError("حدث خطأ استثنائي: ${e.toString()}", units: state.units));
+    }
+  }
+
+  // 6. الدالة المفقودة لتعديل منتج موجود مسبقاً
+  Future<void> updateProduct({
+    required int productId,
+    required String name,
+    required String barcode,
+    required double totalStockQuantity,
+    String? expiryDate,
+    String? batchNumber,
+    bool isIngredient = false,
+    String? size,
+    String? color,
+    required String itemType,
+    required List<ProductUnitModel> productUnits,
+  }) async {
+    emit(AddProductLoading(units: state.units));
+    try {
+      bool success = await productService.updateProduct(
+        id: productId,
+        name: name,
+        barcode: barcode,
+        totalStockQuantity: totalStockQuantity,
+        itemType: itemType,
+        productUnits: productUnits,
+      );
+
+      if (success) {
+        emit(AddProductSuccess());
+      } else {
+        emit(AddProductError("فشل تحديث المنتج في الخادم", units: state.units));
       }
     } catch (e) {
       emit(AddProductError("حدث خطأ استثنائي: ${e.toString()}", units: state.units));

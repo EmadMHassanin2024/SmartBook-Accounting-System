@@ -55,5 +55,44 @@ namespace SmartBook.API.Controllers
             // إذا لم يكن هناك خطأ، نرجع Ok مع رمز حالة 200
             return Ok(new { message = result });
         }
+
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var success = await _repo.DeleteAsync(id);
+                if (!success)
+                {
+                    return NotFound(new { message = "المنتج غير موجود" });
+                }
+                return Ok(new { message = "تم حذف المنتج بنجاح" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error in DeleteProduct: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task <IActionResult> Update(int id, [FromBody] Product product)
+        {
+            if (product == null)
+                return BadRequest("بيانات المنتج غير صالحة");
+
+            try
+            {
+                var result = await _repo.UpdateAsync(id, product);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error in UpdateProduct: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
     }
 }

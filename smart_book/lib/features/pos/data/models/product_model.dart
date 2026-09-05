@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-
 import '../../../../models/ ProductUnitModel.dart';
 
 class ProductModel extends Equatable {
@@ -11,15 +10,21 @@ class ProductModel extends Equatable {
   final double purchasePrice;
   final String imagePath;
 
-  // ⭐ MODIFIED: نوع النشاط
+  // نوع النشاط
   final String itemType;
 
-  // ⭐ MODIFIED: تاريخ الصلاحية
+  // تاريخ الصلاحية
   final String? expiryDate;
+
+  // 🌟 الخصائص المضافة حديثاً لتتوافق مع شاشة الإضافة والتعديل
+  final String? batchNumber;
+  final String? size;
+  final String? color;
+  final bool isIngredient;
 
   final List<dynamic>? ingredients;
 
-  // ⭐ MODIFIED: الاحتفاظ بكل وحدات المنتج القادمة من API
+  // الاحتفاظ بكل وحدات المنتج القادمة من API
   final List<ProductUnitModel> units;
 
   const ProductModel({
@@ -32,9 +37,11 @@ class ProductModel extends Equatable {
     required this.imagePath,
     this.itemType = 'general',
     this.expiryDate,
+    this.batchNumber,
+    this.size,
+    this.color,
+    this.isIngredient = false,
     this.ingredients,
-
-    // ⭐ MODIFIED
     this.units = const [],
   });
 
@@ -42,7 +49,6 @@ class ProductModel extends Equatable {
     double salePrice = 0.0;
     double purchasePrice = 0.0;
 
-    // ⭐ MODIFIED:
     // قراءة جميع وحدات المنتج بدل الاكتفاء بالوحدة الأولى
     final List<ProductUnitModel> units =
         (json['productUnits'] as List<dynamic>?)
@@ -51,7 +57,6 @@ class ProductModel extends Equatable {
             .toList() ??
             [];
 
-    // ⭐ MODIFIED:
     // تحديد الوحدة الأساسية من isBaseUnit
     ProductUnitModel? baseUnit;
 
@@ -71,23 +76,23 @@ class ProductModel extends Equatable {
     }
 
     return ProductModel(
-      id: json['productId'] ?? 0,
-      name: json['productNameAr'] ?? 'صنف بدون اسم',
+      id: json['productId'] ?? json['id'] ?? 0,
+      name: json['productNameAr'] ?? json['name'] ?? 'صنف بدون اسم',
       barcode: json['barcode'] ?? '',
       price: salePrice,
       purchasePrice: purchasePrice,
-
-      stock: (json['totalStockQuantity'] as num?)?.toDouble() ?? 0.0,
-
+      stock: (json['totalStockQuantity'] ?? json['stock'] as num?)?.toDouble() ?? 0.0,
       imagePath: json['imagePath'] ?? '',
-
       itemType: json['itemType'] ?? 'general',
-
       expiryDate: json['expiryDate'],
 
-      ingredients: json['ingredients'],
+      // 🌟 قراءة الحقول الجديدة من الـ JSON
+      batchNumber: json['batchNumber'] ?? json['BatchNumber'],
+      size: json['size'] ?? json['Size'],
+      color: json['color'] ?? json['Color'],
+      isIngredient: json['isIngredient'] ?? json['IsIngredient'] ?? false,
 
-      // ⭐ MODIFIED
+      ingredients: json['ingredients'],
       units: units,
     );
   }
@@ -102,9 +107,11 @@ class ProductModel extends Equatable {
     String? imagePath,
     String? itemType,
     String? expiryDate,
+    String? batchNumber,
+    String? size,
+    String? color,
+    bool? isIngredient,
     List<dynamic>? ingredients,
-
-    // ⭐ MODIFIED
     List<ProductUnitModel>? units,
   }) {
     return ProductModel(
@@ -117,9 +124,11 @@ class ProductModel extends Equatable {
       imagePath: imagePath ?? this.imagePath,
       itemType: itemType ?? this.itemType,
       expiryDate: expiryDate ?? this.expiryDate,
+      batchNumber: batchNumber ?? this.batchNumber,
+      size: size ?? this.size,
+      color: color ?? this.color,
+      isIngredient: isIngredient ?? this.isIngredient,
       ingredients: ingredients ?? this.ingredients,
-
-      // ⭐ MODIFIED
       units: units ?? this.units,
     );
   }
@@ -135,9 +144,11 @@ class ProductModel extends Equatable {
     imagePath,
     itemType,
     expiryDate,
+    batchNumber,
+    size,
+    color,
+    isIngredient,
     ingredients,
-
-    // ⭐ MODIFIED
     units,
   ];
 }

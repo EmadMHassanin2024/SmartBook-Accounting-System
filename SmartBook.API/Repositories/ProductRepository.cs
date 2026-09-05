@@ -24,17 +24,12 @@ namespace SmartBook.API.Repositories
                 .ToListAsync();
         }
 
-     
-
-
         public async Task<Product> AddAsync(Product product)
         {
-            // تأكد من إضافة المنتج ومعه الوحدات المرتبطة إذا كانت مدمجة في الـ Payload
             if (product.ProductUnits != null && product.ProductUnits.Any())
             {
                 foreach (var unit in product.ProductUnits)
                 {
-                    // ربط الوحدة بالمنتج إذا تطلب الأمر
                     unit.Product = product;
                 }
             }
@@ -42,12 +37,11 @@ namespace SmartBook.API.Repositories
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
-            // إعادة تحميل المنتج مع الوحدات لضمان رجوعها كاملة في الاستجابة (Response)
             await _context.Entry(product).Collection(p => p.ProductUnits).LoadAsync();
 
             return product;
         }
-        // تم دمج التوقيع ليطابق الواجهة (Interface)
+
         public async Task<string> UpdateStockAndLogAdjustment(InventoryAdjustmentDto model)
         {
             try
@@ -59,7 +53,6 @@ namespace SmartBook.API.Repositories
                 decimal difference = model.NewStock - oldStock;
                 product.TotalStockQuantity = model.NewStock;
 
-                // 1. تسجيل حركة الجرد
                 var log = new InventoryLog
                 {
                     ProductId = model.ProductId,
@@ -71,10 +64,9 @@ namespace SmartBook.API.Repositories
                 await _context.InventoryLogs.AddAsync(log);
                 await _context.SaveChangesAsync();
 
-                // 2. إنشاء القيد (فقط إذا كان هناك فرق)
                 if (difference != 0)
                 {
-                    decimal cost = product.CostPrice; // تأكد أن CostPrice معرف في الموديل
+                    decimal cost = product.CostPrice;
                     decimal val = Math.Abs(difference * cost);
 
                     var entry = new JournalEntry
@@ -84,9 +76,8 @@ namespace SmartBook.API.Repositories
                         CreatedAt = DateTime.Now
                     };
                     await _context.JournalEntries.AddAsync(entry);
-                    await _context.SaveChangesAsync(); // ضروري للحصول على EntryId
+                    await _context.SaveChangesAsync();
 
-                    // إضافة تفاصيل القيد
                     var d1 = new JournalDetail { EntryId = entry.EntryId, AccountId = (difference < 0 ? 500 : 100), Debit = (difference < 0 ? val : 0), Credit = (difference > 0 ? val : 0) };
                     var d2 = new JournalDetail { EntryId = entry.EntryId, AccountId = (difference < 0 ? 100 : 500), Debit = (difference > 0 ? val : 0), Credit = (difference < 0 ? val : 0) };
 
@@ -95,7 +86,7 @@ namespace SmartBook.API.Repositories
                 }
 
                 return "تمت تسوية المخزون والقيود بنجاح";
-            
+
             }
             catch (Exception ex)
             {
@@ -112,7 +103,6 @@ namespace SmartBook.API.Repositories
                 var originalLog = await _context.InventoryLogs.FindAsync(logId);
                 if (originalLog == null) return false;
 
-                // يجب أن يطابق نمط الوصف ما تم إنشاؤه في الدالة السابقة
                 string descPattern = $"LogId:{logId}";
                 var originalEntry = await _context.JournalEntries
                     .Include(e => e.JournalDetails)
@@ -150,6 +140,54 @@ namespace SmartBook.API.Repositories
                 System.Diagnostics.Debug.WriteLine($"Reversal Error: {ex.ToString()}");
                 return false;
             }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var product = await _context.Products
+                .Include(p => p.ProductUnits)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null) return false;
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<Product> UpdateAsync(int id, Product product)
+        {
+            var existingProduct = await _context.Products
+                .Include(p => p.ProductUnits)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (existingProduct == null) throw new Exception("المنتج غير موجود");
+
+            existingProduct.ProductNameAr = product.ProductNameAr;
+            existingProduct.Barcode = product.Barcode;
+            existingProduct.CostPrice = product.CostPrice;
+            existingProduct.TotalStockQuantity = product.TotalStockQuantity;
+            existingProduct.ItemType = product.ItemType;
+
+            // تحديث الوحدات المرتبطة بطريقة سليمة (إزالة القديم وإضافة الجديد أو التعديل)
+            _context.ProductUnits.RemoveRange(existingProduct.ProductUnits);
+
+            if (product.ProductUnits != null && product.ProductUnits.Any())
+            {
+                foreach (var unit in product.ProductUnits)
+                {
+                    unit.ProductId = id;
+                    unit.Product = null;
+                    _context.ProductUnits.Add(unit);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            // إعادة تحميل الوحدات المحدثة للاستجابة
+            await _context.Entry(existingProduct).Collection(p => p.ProductUnits).LoadAsync();
+
+            return existingProduct;
         }
     }
 }

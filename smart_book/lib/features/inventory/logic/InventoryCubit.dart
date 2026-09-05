@@ -88,4 +88,17 @@ class InventoryCubit extends Cubit<InventoryState> {
     _currentQuery = "";
     _applyFilters();
   }
+
+  Future<void> deleteProduct(int productId) async {
+    try {
+      // استبدل productRepository بالمتغير أو الخدمة المستخدمة لديك لحذف المنتج
+      await _productService.deleteProduct(productId);
+      _allProducts.removeWhere((p) => p.id == productId);
+      _applyFilters();
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
+  }
+
+
 }

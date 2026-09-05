@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/extensions/localization_extension.dart';
 import '../../pos/data/models/product_model.dart';
+
+import '../logic/InventoryCubit.dart';
+import '../screens/add_product_screen.dart';
+
+
+
 
 class ItemCardWidget extends StatelessWidget {
   final ProductModel product;
@@ -59,7 +66,7 @@ class ItemCardWidget extends StatelessWidget {
             ),
           ),
 
-          // القسم الأيسر: السعر، المخزون، وزر الجرد
+          // القسم الأيسر: السعر، المخزون، وأزرار التحكم (تعديل، حذف، جرد)
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -69,9 +76,66 @@ class ItemCardWidget extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // سطر يحتوي على الرصيد وزر الجرد
+              // سطر يحتوي على أزرار التعديل، الحذف، الجرد، ورصيد المخزون
               Row(
                 children: [
+                  // 🌟 زر التعديل
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddProductScreen(productToEdit: product),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Icon(Icons.edit, size: 16, color: Colors.blue),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
+                  // 🌟 زر الحذف
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text("تأكيد الحذف"),
+                          content: Text("هل أنت متأكد من حذف ${product.name}؟"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text("إلغاء"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(ctx);
+                                int productId = int.tryParse(product.id.toString()) ?? 0;
+                                context.read<InventoryCubit>().deleteProduct(productId);
+                              },
+                              child: const Text("حذف", style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+
                   // أيقونة الجرد
                   GestureDetector(
                     onTap: onAdjustmentPressed,
@@ -84,7 +148,8 @@ class ItemCardWidget extends StatelessWidget {
                       child: const Icon(Icons.edit_note, size: 18, color: AppColors.primaryBlue),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
+
                   // رصيد المخزون
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

@@ -8,7 +8,8 @@ import '../widgets/product_save_bottom_sheet.dart';
 import '../widgets/section_header_widget.dart';
 
 class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
+  final ProductModel? productToEdit;
+  const AddProductScreen({super.key, this.productToEdit});
 
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
@@ -32,14 +33,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
   void initState() {
     super.initState();
 
-    _nameController = TextEditingController();
-    _barcodeController = TextEditingController();
-    _stockController = TextEditingController(text: '0');
+    final p = widget.productToEdit;
+
+    // تعبئة الحقول بالبيانات القديمة إذا كنا في وضع التعديل
+    _nameController = TextEditingController(text: p?.name ?? '');
+    _barcodeController = TextEditingController(text: p?.barcode ?? '');
+    _stockController = TextEditingController(text: p?.stock.toString() ?? '0');
     _reorderLevelController = TextEditingController(text: '5');
-    _expiryDateController = TextEditingController();
-    _batchController = TextEditingController();
-    _sizeController = TextEditingController();
-    _colorController = TextEditingController();
+    _expiryDateController = TextEditingController(text: p?.expiryDate ?? '');
+    _batchController = TextEditingController(text: p?.batchNumber ?? '');
+    _sizeController = TextEditingController(text: p?.size ?? '');
+    _colorController = TextEditingController(text: p?.color ?? '');
+    _isIngredient = p?.isIngredient ?? false;
+
+    // تحميل الوحدات الحالية للمنتج في الـ Cubit إذا وجد
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (p != null && p.units.isNotEmpty) {
+        context.read<AddProductCubit>().setInitialUnits(p.units);
+      }
+    });
   }
 
   @override
@@ -108,28 +120,54 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return;
     }
 
-    context.read<AddProductCubit>().submitProduct(
-      name: _nameController.text.trim(),
-      barcode: _barcodeController.text.trim(),
-      stock: int.tryParse(
-        _stockController.text.trim(),
-      ) ??
-          0,
-      expiryDate: _expiryDateController.text.trim().isNotEmpty
-          ? _expiryDateController.text.trim()
-          : null,
-      batchNumber: _batchController.text.trim().isNotEmpty
-          ? _batchController.text.trim()
-          : null,
-      isIngredient: _isIngredient,
-      size: _sizeController.text.trim().isNotEmpty
-          ? _sizeController.text.trim()
-          : null,
-      color: _colorController.text.trim().isNotEmpty
-          ? _colorController.text.trim()
-          : null,
-      itemType: _getCurrentActivityType(context),
-    );
+    final cubit = context.read<AddProductCubit>();
+    final isEditing = widget.productToEdit != null;
+
+    if (isEditing) {
+      // استدعاء دالة التعديل
+      cubit.updateProduct(
+        productId: widget.productToEdit!.id,
+        name: _nameController.text.trim(),
+        barcode: _barcodeController.text.trim(),
+        totalStockQuantity: double.tryParse(_stockController.text.trim()) ?? 0.0,
+        expiryDate: _expiryDateController.text.trim().isNotEmpty
+            ? _expiryDateController.text.trim()
+            : null,
+        batchNumber: _batchController.text.trim().isNotEmpty
+            ? _batchController.text.trim()
+            : null,
+        isIngredient: _isIngredient,
+        size: _sizeController.text.trim().isNotEmpty
+            ? _sizeController.text.trim()
+            : null,
+        color: _colorController.text.trim().isNotEmpty
+            ? _colorController.text.trim()
+            : null,
+        itemType: _getCurrentActivityType(context),
+        productUnits: state.units,
+      );
+    } else {
+      // استدعاء دالة الإضافة العادية
+      cubit.submitProduct(
+        name: _nameController.text.trim(),
+        barcode: _barcodeController.text.trim(),
+        stock: double.tryParse(_stockController.text.trim()) ?? 0.0,
+        expiryDate: _expiryDateController.text.trim().isNotEmpty
+            ? _expiryDateController.text.trim()
+            : null,
+        batchNumber: _batchController.text.trim().isNotEmpty
+            ? _batchController.text.trim()
+            : null,
+        isIngredient: _isIngredient,
+        size: _sizeController.text.trim().isNotEmpty
+            ? _sizeController.text.trim()
+            : null,
+        color: _colorController.text.trim().isNotEmpty
+            ? _colorController.text.trim()
+            : null,
+        itemType: _getCurrentActivityType(context),
+      );
+    }
   }
 
   void _showSnackBar(
@@ -147,6 +185,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.productToEdit != null;
+
     return BlocListener<AddProductCubit, AddProductState>(
       listener: (context, state) {
         if (state is AddProductLoading) {
@@ -197,7 +237,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             backgroundColor: AppColors.scaffoldBg,
             appBar: AppBar(
               title: Text(
-                context.lang.addProduct,
+                isEditing ? "تعديل صنف" : context.lang.addProduct,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
