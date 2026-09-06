@@ -155,9 +155,7 @@ class _AuthFormContainerWidgetState
               // Submit Button Builder
     
               child: BlocBuilder<AuthCubit, AuthState>(
-                // نعيد بناء الزر فقط عند:
-                // 1) الدخول إلى Loading
-                // 2) الخروج من Loading
+
                 buildWhen: (previous, current) =>
                 previous.status == AuthStatus.loading ||
                     current.status == AuthStatus.loading,

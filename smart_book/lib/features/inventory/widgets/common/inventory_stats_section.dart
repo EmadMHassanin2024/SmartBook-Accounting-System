@@ -1,5 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import '../../../../core/utils/extensions/localization_extension.dart';
+
 
 class InventoryStatsSection extends StatelessWidget {
   final InventoryLoaded state;

@@ -1,7 +1,6 @@
 
+import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../core/packages.dart';
-import '../../../core/utils/extensions/localization_extension.dart';
 
 class QuickStatsWidget extends StatelessWidget {
   final VoidCallback? onTotalTap;

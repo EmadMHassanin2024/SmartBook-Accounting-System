@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:smart_book/core/theme/app_colors.dart';
-import 'package:smart_book/core/utils/extensions/localization_extension.dart';
+import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../core/SnackbarHelper.dart';
-import '../logic/InventoryState.dart';
+import '../common/inventory_stats_section.dart';
 import 'inventory_content_view.dart';
-import 'inventory_stats_section.dart';
+
+
 
 class InventoryStateViews extends StatelessWidget {
   final InventoryState state;

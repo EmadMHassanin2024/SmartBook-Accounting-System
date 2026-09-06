@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
 
+import 'package:smart_book/features/inventory/auth_exports.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final IconData icon;

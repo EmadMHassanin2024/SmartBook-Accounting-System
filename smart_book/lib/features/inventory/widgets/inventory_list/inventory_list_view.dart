@@ -1,12 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/SnackbarHelper.dart';
-import '../../finance/adjustments/logic/adjustment_cubit.dart';
-import '../logic/InventoryState.dart';
-import '../../../../core/utils/extensions/localization_extension.dart';
 
-import '../data/repository/inventory_adjustment_screen.dart';
-import '../widgets/item_card_widget.dart';
+import 'package:smart_book/features/inventory/auth_exports.dart';
+
+
+
 
 class InventoryListView extends StatelessWidget {
   final InventoryState state;
