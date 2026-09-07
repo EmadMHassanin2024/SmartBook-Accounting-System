@@ -1,69 +1,43 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-
-
-class AddProductScreen extends StatefulWidget {
+class AddProductScreen extends StatelessWidget {
   final ProductModel? productToEdit;
-  const AddProductScreen({super.key, this.productToEdit});
+  AddProductScreen({super.key, this.productToEdit});
 
-  @override
-  State<AddProductScreen> createState() => _AddProductScreenState();
-}
-
-class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late final TextEditingController _nameController;
-  late final TextEditingController _barcodeController;
-  late final TextEditingController _stockController;
-  late final TextEditingController _reorderLevelController;
-  late final TextEditingController _expiryDateController;
-  late final TextEditingController _batchController;
-  late final TextEditingController _sizeController;
-  late final TextEditingController _colorController;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _barcodeController = TextEditingController();
+  final TextEditingController _stockController = TextEditingController();
+  final TextEditingController _reorderLevelController = TextEditingController();
+  final TextEditingController _expiryDateController = TextEditingController();
+  final TextEditingController _batchController = TextEditingController();
+  final TextEditingController _sizeController = TextEditingController();
+  final TextEditingController _colorController = TextEditingController();
 
-  bool _isIngredient = false;
+  bool get _isEditing => productToEdit != null;
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeControllers();
-    _initializeInitialUnits();
-  }
+  void _initializeControllers(AddProductCubit cubit) {
+    final p = productToEdit;
+    if (p == null) {
+      _reorderLevelController.text = '5';
+      return;
+    }
+    _nameController.text = p.name;
+    _barcodeController.text = p.barcode ?? '';
+    _stockController.text = p.stock.toString();
+    _reorderLevelController.text = '5';
+    _expiryDateController.text = p.expiryDate ?? '';
+    _batchController.text = p.batchNumber ?? '';
+    _sizeController.text = p.size ?? '';
+    _colorController.text = p.color ?? '';
 
-  void _initializeControllers() {
-    final p = widget.productToEdit;
-    _nameController = TextEditingController(text: p?.name ?? '');
-    _barcodeController = TextEditingController(text: p?.barcode ?? '');
-    _stockController = TextEditingController(text: p?.stock.toString() ?? '0');
-    _reorderLevelController = TextEditingController(text: '5');
-    _expiryDateController = TextEditingController(text: p?.expiryDate ?? '');
-    _batchController = TextEditingController(text: p?.batchNumber ?? '');
-    _sizeController = TextEditingController(text: p?.size ?? '');
-    _colorController = TextEditingController(text: p?.color ?? '');
-    _isIngredient = p?.isIngredient ?? false;
-  }
-
-  void _initializeInitialUnits() {
-    final p = widget.productToEdit;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (p != null && p.units.isNotEmpty) {
-        context.read<AddProductCubit>().setInitialUnits(p.units);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _barcodeController.dispose();
-    _stockController.dispose();
-    _reorderLevelController.dispose();
-    _expiryDateController.dispose();
-    _batchController.dispose();
-    _sizeController.dispose();
-    _colorController.dispose();
-    super.dispose();
+    if (p.units.isNotEmpty) {
+      cubit.setInitialUnits(p.units);
+    }
+    if (p.isIngredient) {
+      cubit.changeIngredientStatus(true);
+    }
   }
 
   Future<void> _selectExpiryDate(BuildContext context) async {
@@ -74,21 +48,69 @@ class _AddProductScreenState extends State<AddProductScreen> {
       lastDate: DateTime(2100),
     );
 
-    if (!mounted || picked == null) return;
+    if (picked == null) return;
 
-    setState(() {
-      _expiryDateController.text =
-      '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
-    });
+    final formattedDate = '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+    _expiryDateController.text = formattedDate;
+
+    // تحديث الحالة عبر الـ Cubit بدلاً من setState
+    context.read<AddProductCubit>().setExpiryDate(formattedDate);
   }
 
-  String _getCurrentActivityType(BuildContext context) {
-    return context
-        .read<SystemConfigurationCubit>()
-        .state
-        .settings
-        .activeBusinessModule
-        .name;
+  String? _getOptionalText(TextEditingController controller) {
+    final text = controller.text.trim();
+    return text.isEmpty ? null : text;
+  }
+
+  void _onSave(BuildContext context, AddProductState state, String activityType) {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (state.units.isEmpty) {
+      SnackbarHelper.show(context.lang.pleaseAddUnit, const Color(0xFFFFB300), icon: Icons.warning_amber_rounded);
+      return;
+    }
+
+    if (state.units.first.salePrice <= 0) {
+      SnackbarHelper.show(context.lang.pleaseSetBaseSalePrice, const Color(0xFFFFB300), icon: Icons.warning_amber_rounded);
+      return;
+    }
+
+    final cubit = context.read<AddProductCubit>();
+    final name = _nameController.text.trim();
+    final barcode = _barcodeController.text.trim();
+    final stock = double.tryParse(_stockController.text.trim()) ?? 0.0;
+    final expiry = _getOptionalText(_expiryDateController);
+    final batch = _getOptionalText(_batchController);
+    final size = _getOptionalText(_sizeController);
+    final color = _getOptionalText(_colorController);
+
+    if (_isEditing) {
+      cubit.updateProductData(
+        productId: productToEdit!.id,
+        name: name,
+        barcode: barcode,
+        totalStockQuantity: stock,
+        expiryDate: expiry,
+        batchNumber: batch,
+        isIngredient: state.isIngredient,
+        size: size,
+        color: color,
+        itemType: activityType,
+        units: state.units,
+      );
+    } else {
+      cubit.submitProductData(
+        name: name,
+        barcode: barcode,
+        stock: stock,
+        expiryDate: expiry,
+        batchNumber: batch,
+        isIngredient: state.isIngredient,
+        size: size,
+        color: color,
+        itemType: activityType,
+      );
+    }
   }
 
   void _handleBlocListenerState(BuildContext context, AddProductState state) {
@@ -102,21 +124,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
       );
     } else if (state is AddProductError) {
       if (Navigator.canPop(context)) Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-      );
+      SnackbarHelper.showError(state.message);
     } else if (state is AddProductSuccess) {
       if (Navigator.canPop(context)) Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.lang.saveSuccess), backgroundColor: Colors.green),
-      );
+      SnackbarHelper.showSuccess(context.lang.saveSuccess);
       Navigator.pop(context, true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isEditing = widget.productToEdit != null;
+    final cubit = context.read<AddProductCubit>();
+    _initializeControllers(cubit);
 
     return BlocListener<AddProductCubit, AddProductState>(
       listener: _handleBlocListenerState,
@@ -128,53 +147,38 @@ class _AddProductScreenState extends State<AddProductScreen> {
           final currentActivityType =
               configState.settings.activeBusinessModule.name;
 
-          return Scaffold(
-            backgroundColor: AppColors.scaffoldBg,
-            appBar: AddProductAppBar(
-              isEditing: isEditing,
-              addProductTitle: context.lang.addProduct,
-            ),
-            body: AddProductFormBody(
-              formKey: _formKey,
-              nameController: _nameController,
-              barcodeController: _barcodeController,
-              stockController: _stockController,
-              reorderLevelController: _reorderLevelController,
-              expiryDateController: _expiryDateController,
-              batchController: _batchController,
-              sizeController: _sizeController,
-              colorController: _colorController,
-              isIngredient: _isIngredient,
-              currentActivityType: currentActivityType,
-              onSelectExpiry: () => _selectExpiryDate(context),
-              onIsIngredientChanged: (value) {
-                setState(() {
-                  _isIngredient = value ?? false;
-                });
-              },
-            ),
-            bottomSheet: ProductSaveBottomSheet(
-              onSavePressed: () {
-                final state = context.read<AddProductCubit>().state;
-
-                // ✅ استدعاء الهيلبر الخارجي لتنفيذ الحفظ بأسلوب Clean Code
-                ProductFormHelper.handleSaveProcess(
-                  context: context,
+          return BlocBuilder<AddProductCubit, AddProductState>(
+            builder: (context, addProductState) {
+              return Scaffold(
+                backgroundColor: AppColors.scaffoldBg,
+                appBar: AddProductAppBar(
+                  isEditing: _isEditing,
+                  addProductTitle: context.lang.addProduct,
+                ),
+                body: AddProductFormBody(
                   formKey: _formKey,
-                  state: state,
-                  productToEdit: widget.productToEdit,
                   nameController: _nameController,
                   barcodeController: _barcodeController,
                   stockController: _stockController,
+                  reorderLevelController: _reorderLevelController,
                   expiryDateController: _expiryDateController,
                   batchController: _batchController,
                   sizeController: _sizeController,
                   colorController: _colorController,
-                  isIngredient: _isIngredient,
-                  activityType: _getCurrentActivityType(context),
-                );
-              },
-            ),
+                  isIngredient: addProductState.isIngredient,
+                  currentActivityType: currentActivityType,
+                  onSelectExpiry: () => _selectExpiryDate(context),
+                  onIsIngredientChanged: (value) {
+                    cubit.changeIngredientStatus(value ?? false);
+                  },
+                ),
+                bottomSheet: ProductSaveBottomSheet(
+                  onSavePressed: () {
+                    _onSave(context, addProductState, currentActivityType);
+                  },
+                ),
+              );
+            },
           );
         },
       ),
