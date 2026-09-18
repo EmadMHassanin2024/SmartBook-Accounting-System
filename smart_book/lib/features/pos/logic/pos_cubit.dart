@@ -1,14 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/models/product_model.dart';
 import '../../../core/packages.dart';
 
-
 import '../../system_config/data/models/ business_module.dart';
-
 import '../../system_config/data/models/system_settings_model.dart';
+
 import '../business_extension/pharmacy/pharmacy_extension.dart';
 import '../business_extension/restaurant/restaurant_extension.dart';
+
 import '../core/PaymentMethod.dart';
 import '../core/business_extension.dart';
 
@@ -21,82 +20,161 @@ import 'PosState.dart';
 
 class PosCubit extends Cubit<PosState> {
   final PosRepository _posService;
+
+  BusinessExtension? get activeExtension => _currentExtension;
+
   final List<CartItemModel> _currentCart = [];
   List<ProductModel> _allProducts = [];
 
-  // النشاط التجاري النشط حالياً في الـ POS
-  BusinessExtension? activeExtension;
-
   PosCubit(this._posService) : super(PosInitial());
 
-  /// 🎯 التحديد التلقائي للنشاط بناءً على إعدادات النظام المحفوظة
-  void applySettingsExtension(SystemSettingsModel settings) {
+  /// تهيئة نقطة البيع عند فتح الشاشة.
+  Future<void> initialize(SystemSettingsModel settings) async {
+    final extension = _resolveBusinessExtension(settings);
+
+    emit(
+      PosLoadingProducts(
+        extension: extension,
+      ),
+    );
+
+    await fetchInventoryProducts(
+      extension: extension,
+    );
+  }
+
+  /// تحديد النشاط التجاري بناءً على إعدادات النظام.
+  BusinessExtension? _resolveBusinessExtension(
+      SystemSettingsModel settings,
+      ) {
     if (settings.hasBusinessModule(BusinessModule.pharmacy)) {
-      activeExtension = PharmacyExtension();
-    } else if (settings.hasBusinessModule(BusinessModule.restaurant)) {
-      activeExtension = RestaurantExtension();
-    } else {
-      activeExtension = null; // متجر عام أو افتراضي بدون إضافات خاصة
+      return PharmacyExtension();
     }
 
-    // إذا كانت المنتجات محمّلة مسبقاً، نعيد تحديث الحالة لينعكس النشاط على الواجهة
+    if (settings.hasBusinessModule(BusinessModule.restaurant)) {
+      return RestaurantExtension();
+    }
+
+    return null;
+  }
+
+  /// تطبيق إعدادات النشاط التجاري.
+  void applySettingsExtension(SystemSettingsModel settings) {
+    final extension = _resolveBusinessExtension(settings);
+
     if (_allProducts.isNotEmpty || _currentCart.isNotEmpty) {
-      _emitLoaded();
-    } else {
-      emit(PosExtensionChanged(activeExtension));
+      _emitLoaded(
+        extension: extension,
+      );
     }
   }
 
-  // 🎯 تعيين النشاط التجاري يدوياً إذا لزم الأمر
+  /// تعيين النشاط التجاري يدوياً عند الحاجة.
   void setBusinessExtension(BusinessExtension extension) {
-    activeExtension = extension;
-    _emitLoaded();
+    _emitLoaded(
+      extension: extension,
+    );
   }
 
-  // 🎯 Getter للمنتجات المتاحة
+  /// المنتجات المتاحة للبيع فقط.
   List<ProductModel> get availableProducts =>
-      _allProducts.where((p) => p.stock > 0).toList();
+      _allProducts.where((product) => product.stock > 0).toList();
 
-  void _emitLoaded() {
-    emit(PosLoaded(
-      cartItems: List.from(_currentCart),
-      products: List.from(availableProducts),
-      total: _currentCart.fold(0, (sum, item) => sum + (item.product.price * item.quantity)),
-    ));
+  /// حساب الإجمالي النهائي شاملاً الضريبة (15%)
+  double get _calculatedFinalTotal {
+    final subtotal = _currentCart.fold<double>(
+      0.0,
+          (sum, item) => sum + (item.product.price * item.quantity),
+    );
+    return subtotal * 1.15;
   }
 
-  Future<void> fetchInventoryProducts() async {
-    emit(PosLoadingProducts());
+  /// بناء حالة POS الحالية.
+  void _emitLoaded({
+    BusinessExtension? extension,
+  }) {
+    final total = _currentCart.fold<double>(
+      0.0,
+          (sum, item) => sum + (item.product.price * item.quantity),
+    );
+
+    emit(
+      PosLoaded(
+        cartItems: List.from(_currentCart),
+        products: List.from(availableProducts),
+        total: total,
+        extension: extension,
+      ),
+    );
+  }
+
+  /// جلب منتجات المخزون.
+  Future<void> fetchInventoryProducts({
+    BusinessExtension? extension,
+  }) async {
+    emit(
+      PosLoadingProducts(
+        extension: extension,
+      ),
+    );
+
     try {
       _allProducts = await _posService.getAllProducts();
-      _emitLoaded();
+
+      _emitLoaded(
+        extension: extension,
+      );
     } catch (e) {
-      emit(PosError(e.toString()));
+      emit(
+        PosError(
+          e.toString(),
+          extension: extension,
+        ),
+      );
     }
   }
 
+  /// إضافة منتج إلى السلة.
   void addToCart(ProductModel product) {
     if (product.stock <= 0) return;
 
-    final index = _currentCart.indexWhere((i) => i.product.id == product.id);
+    final index = _currentCart.indexWhere(
+          (item) => item.product.id == product.id,
+    );
+
     if (index != -1) {
       _currentCart[index].quantity++;
     } else {
-      _currentCart.add(CartItemModel(product: product, quantity: 1));
-    }
-
-    final productIndex = _allProducts.indexWhere((p) => p.id == product.id);
-    if (productIndex != -1) {
-      _allProducts[productIndex] = _allProducts[productIndex].copyWith(
-        stock: _allProducts[productIndex].stock - 1,
+      _currentCart.add(
+        CartItemModel(
+          product: product,
+          quantity: 1,
+        ),
       );
     }
 
-    _emitLoaded();
+    final productIndex = _allProducts.indexWhere(
+          (item) => item.id == product.id,
+    );
+
+    if (productIndex != -1) {
+      _allProducts[productIndex] =
+          _allProducts[productIndex].copyWith(
+            stock: _allProducts[productIndex].stock - 1,
+          );
+    }
+
+    _emitLoaded(
+      extension: _currentExtension,
+    );
   }
 
+  /// تقليل كمية المنتج في السلة.
   void decreaseCartItem(ProductModel product) {
-    final index = _currentCart.indexWhere((i) => i.product.id == product.id);
+    final index = _currentCart.indexWhere(
+          (item) => item.product.id == product.id,
+    );
+
     if (index == -1) return;
 
     if (_currentCart[index].quantity > 1) {
@@ -105,62 +183,121 @@ class PosCubit extends Cubit<PosState> {
       _currentCart.removeAt(index);
     }
 
-    final productIndex = _allProducts.indexWhere((p) => p.id == product.id);
+    final productIndex = _allProducts.indexWhere(
+          (item) => item.id == product.id,
+    );
+
     if (productIndex != -1) {
-      _allProducts[productIndex] = _allProducts[productIndex].copyWith(
-        stock: _allProducts[productIndex].stock + 1,
-      );
+      _allProducts[productIndex] =
+          _allProducts[productIndex].copyWith(
+            stock: _allProducts[productIndex].stock + 1,
+          );
     }
 
-    _emitLoaded();
+    _emitLoaded(
+      extension: _currentExtension,
+    );
   }
 
+  /// حذف المنتج بالكامل من السلة.
   void removeFromCart(ProductModel product) {
-    final index = _currentCart.indexWhere((i) => i.product.id == product.id);
-    if (index != -1) {
-      final quantityToRemove = _currentCart[index].quantity;
+    final index = _currentCart.indexWhere(
+          (item) => item.product.id == product.id,
+    );
 
-      final productIndex = _allProducts.indexWhere((p) => p.id == product.id);
-      if (productIndex != -1) {
-        _allProducts[productIndex] = _allProducts[productIndex].copyWith(
-          stock: _allProducts[productIndex].stock + quantityToRemove,
-        );
-      }
+    if (index == -1) return;
 
-      _currentCart.removeAt(index);
-      _emitLoaded();
+    final quantityToRemove = _currentCart[index].quantity;
+
+    final productIndex = _allProducts.indexWhere(
+          (item) => item.id == product.id,
+    );
+
+    if (productIndex != -1) {
+      _allProducts[productIndex] =
+          _allProducts[productIndex].copyWith(
+            stock: _allProducts[productIndex].stock + quantityToRemove,
+          );
     }
+
+    _currentCart.removeAt(index);
+
+    _emitLoaded(
+      extension: _currentExtension,
+    );
   }
 
-  /// 🎯 دالة الدفع الحديثة باستخدام PaymentMethod المنبثقة
-  Future<void> checkoutWithMethod(PaymentMethod method) async {
+  /// النشاط الحالي الموجود داخل الـ State.
+  BusinessExtension? get _currentExtension {
+    final currentState = state;
+    if (currentState is PosLoaded) return currentState.extension;
+    if (currentState is PosLoadingProducts) return currentState.extension;
+    if (currentState is PosSubmitting) return currentState.extension;
+    if (currentState is PosSuccess) return currentState.extension;
+    if (currentState is PosError) return currentState.extension;
+    return null;
+  }
+
+  /// تنفيذ الدفع باستخدام طريقة الدفع المحددة.
+  Future<void> checkoutWithMethod(
+      PaymentMethod method,
+      ) async {
     if (_currentCart.isEmpty) return;
 
-    // تحويل الـ Enum إلى نص لكي يتم إرساله للـ Repository وخدمات الطباعة
-    final String paymentTypeStr = method.name; // أو تحويله إلى نص عربي مثل "نقدي" أو "شبكة" حسب الرغبة
+    final paymentType = method.name;
+    final finalTotal = _calculatedFinalTotal;
+    final extension = _currentExtension;
 
-    // حساب الإجمالي النهائي شاملاً الضريبة أو كما هو مخزن
+    emit(
+      PosSubmitting(
+        extension: extension,
+      ),
+    );
 
-    final double finalTotal = _currentCart.fold(0.0, (sum, item) => sum + (item.product.price * item.quantity)) * 1.15;
-
-    emit(PosSubmitting());
     try {
-      final success = await _posService.saveInvoice(_currentCart, paymentTypeStr);
+      final success = await _posService.saveInvoice(
+        _currentCart,
+        paymentType,
+      );
 
-      if (success) {
-        await InvoicePdfHelper.generateAndPrintReceipt(_currentCart, finalTotal, paymentTypeStr);
-        _currentCart.clear();
-        emit(PosSuccess());
-        await fetchInventoryProducts();
-      } else {
-        emit(PosError("فشل حفظ الفاتورة"));
+      if (!success) {
+        emit(
+          PosError(
+            'فشل حفظ الفاتورة',
+            extension: extension,
+          ),
+        );
+        return;
       }
+
+      await InvoicePdfHelper.generateAndPrintReceipt(
+        _currentCart,
+        finalTotal,
+        paymentType,
+      );
+
+      _currentCart.clear();
+
+      emit(
+        PosSuccess(
+          extension: extension,
+        ),
+      );
+
+      await fetchInventoryProducts(
+        extension: extension,
+      );
     } catch (e) {
-      emit(PosError(e.toString()));
+      emit(
+        PosError(
+          e.toString(),
+          extension: extension,
+        ),
+      );
     }
   }
 
-  /// الدالة القديمة للتوافقية (إن كانت مستخدمة في أماكن أخرى)
+  /// الطريقة القديمة للدفع للتوافق مع الاستخدامات القديمة.
   Future<void> checkout({
     required String paymentType,
     required List<dynamic> invoiceItems,
@@ -168,28 +305,67 @@ class PosCubit extends Cubit<PosState> {
   }) async {
     if (_currentCart.isEmpty) return;
 
-    emit(PosSubmitting());
-    try {
-      final success = await _posService.saveInvoice(_currentCart, paymentType);
+    final extension = _currentExtension;
 
-      if (success) {
-        await InvoicePdfHelper.generateAndPrintReceipt(invoiceItems, finalTotal, paymentType);
-        _currentCart.clear();
-        emit(PosSuccess());
-        await fetchInventoryProducts();
-      } else {
-        emit(PosError("فشل حفظ الفاتورة"));
+    emit(
+      PosSubmitting(
+        extension: extension,
+      ),
+    );
+
+    try {
+      final success = await _posService.saveInvoice(
+        _currentCart,
+        paymentType,
+      );
+
+      if (!success) {
+        emit(
+          PosError(
+            'فشل حفظ الفاتورة',
+            extension: extension,
+          ),
+        );
+        return;
       }
+
+      await InvoicePdfHelper.generateAndPrintReceipt(
+        invoiceItems,
+        finalTotal,
+        paymentType,
+      );
+
+      _currentCart.clear();
+
+      emit(
+        PosSuccess(
+          extension: extension,
+        ),
+      );
+
+      await fetchInventoryProducts(
+        extension: extension,
+      );
     } catch (e) {
-      emit(PosError(e.toString()));
+      emit(
+        PosError(
+          e.toString(),
+          extension: extension,
+        ),
+      );
     }
   }
 
+  /// معرفة كمية منتج معين داخل السلة.
   int getQuantityInCart(ProductModel product) {
     final item = _currentCart.firstWhere(
-          (i) => i.product.id == product.id,
-      orElse: () => CartItemModel(product: product, quantity: 0),
+          (item) => item.product.id == product.id,
+      orElse: () => CartItemModel(
+        product: product,
+        quantity: 0,
+      ),
     );
+
     return item.quantity;
   }
 }

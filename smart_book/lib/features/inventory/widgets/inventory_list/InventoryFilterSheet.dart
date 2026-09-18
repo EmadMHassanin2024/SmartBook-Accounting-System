@@ -1,5 +1,7 @@
-
 import 'package:smart_book/features/inventory/auth_exports.dart';
+import '../../../../core/localization/language_keys.dart';
+import '../common/filter_option_tile.dart';
+
 class InventoryFilterSheet extends StatelessWidget {
   final Function(String) onFilterSelected;
 
@@ -26,32 +28,42 @@ class InventoryFilterSheet extends StatelessWidget {
           const SizedBox(height: 10),
           const Divider(),
           const SizedBox(height: 5),
-          _filterOption(context, context.lang.all, Icons.inventory_2_outlined, AppColors.primaryBlue),
-          _filterOption(context, context.lang.lowStock, Icons.warning_amber_rounded, Colors.orange),
-          _filterOption(context, context.lang.outOfStock, Icons.error_outline, Colors.red),
+
+          // خيار الكل
+          FilterOptionTile(
+            displayTitle:LanguageKeys.allCategoryKey,
+            icon: Icons.inventory_2_outlined,
+            color: AppColors.primaryBlue,
+            onTap: () {
+              onFilterSelected(LanguageKeys.allCategoryKey);
+              Navigator.pop(context);
+            },
+          ),
+
+          // خيار قربت تنتهي
+          FilterOptionTile(
+            displayTitle:LanguageKeys.lowStockCategoryKey,
+            icon: Icons.warning_amber_rounded,
+            color: Colors.orange,
+            onTap: () {
+              onFilterSelected(LanguageKeys.lowStockCategoryKey);
+              Navigator.pop(context);
+            },
+          ),
+
+          // خيار منتهية
+          FilterOptionTile(
+            displayTitle: LanguageKeys.expiredCategoryKey,
+            icon: Icons.error_outline,
+            color: Colors.red,
+            onTap: () {
+              onFilterSelected(LanguageKeys.expiredCategoryKey);
+              Navigator.pop(context);
+            },
+          ),
+
           const SizedBox(height: 10),
         ],
-      ),
-    );
-  }
-
-  Widget _filterOption(BuildContext context, String title, IconData icon, Color color) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: color),
-        title: Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.w600, color: color),
-        ),
-        onTap: () {
-          onFilterSelected(title);
-          Navigator.pop(context);
-        },
       ),
     );
   }

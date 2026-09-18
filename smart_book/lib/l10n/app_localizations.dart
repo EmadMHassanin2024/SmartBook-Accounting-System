@@ -931,6 +931,36 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'إضافة وحدة بيع أخرى (جملة)'**
   String get addAnotherUnit;
+
+  /// No description provided for @productName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم المنتج'**
+  String get productName;
+
+  /// No description provided for @activity.
+  ///
+  /// In ar, this message translates to:
+  /// **'النشاط'**
+  String get activity;
+
+  /// No description provided for @pointOfSaleGeneral.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقطة البيع (عام)'**
+  String get pointOfSaleGeneral;
+
+  /// No description provided for @systemSettings.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعدادات النظام'**
+  String get systemSettings;
+
+  /// No description provided for @pleaseEnterInitialStock.
+  ///
+  /// In ar, this message translates to:
+  /// **'اضاقة وحدة مبيعات جد'**
+  String get pleaseEnterInitialStock;
 }
 
 class _AppLocalizationsDelegate

@@ -138,5 +138,13 @@
   "stock": "الرصيد",
   "notifyWhenQuantityReaches": "Notify me when quantity reaches:",
   "unitsAndPrices": "Units and Prices",
-  "addAnotherUnit": "Add another selling unit (Wholesale)"
+  "addAnotherUnit": "Add another selling unit (Wholesale)",
+  "productName": "Product Name",
+  "activity": "Activity",
+    "pointOfSaleGeneral": "Point of Sale (General)",
+    "systemSettings": "System Settings",
+    "productName": "Product Name",
+    "addAnotherUnit": "Add another selling unit (Wholesale)",
+    "pleaseEnterInitialStock": "pleaseEnterInitialStock"
+
 }

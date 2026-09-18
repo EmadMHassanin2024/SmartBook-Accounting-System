@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_book/features/auth/auth_exports.dart';
 
 import '../../../core/routes/app_routes.dart';
 import '../../../core/SnackbarHelper.dart';
-import '../../../core/utils/extensions/localization_extension.dart';
+import '../../../l10n/app_localizations.dart'; // تأكد أن هذا الاستيراد يطابق مسار ملف الترجمة الفعلي في مشروعك
 import 'CustomSubmitButtonWidge.dart';
-
 
 class AuthFormContainerWidget extends StatefulWidget {
   final String title;
@@ -37,7 +38,6 @@ class _AuthFormContainerWidgetState
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       width: double.infinity,
       constraints: const BoxConstraints(
@@ -60,7 +60,6 @@ class _AuthFormContainerWidgetState
         child: Column(
           children: [
             // Login Icon
-
             if (widget.isLogin) ...[
               const Icon(
                 Icons.account_circle,
@@ -70,9 +69,7 @@ class _AuthFormContainerWidgetState
               const SizedBox(height: 16),
             ],
 
-
             // Title
-
             Text(
               widget.title,
               style: TextStyle(
@@ -84,9 +81,7 @@ class _AuthFormContainerWidgetState
               ),
             ),
 
-
             // Subtitle
-
             if (widget.subtitle != null) ...[
               const SizedBox(height: 4),
               Text(
@@ -103,9 +98,8 @@ class _AuthFormContainerWidgetState
             ...widget.children,
 
             const SizedBox(height: 30),
- 
+
             // Authentication State
-           
             BlocListener<AuthCubit, AuthState>(
               // Listener مسؤول فقط عن الـ Side Effects:
               // Navigation + Snackbar
@@ -115,13 +109,13 @@ class _AuthFormContainerWidgetState
                       current.status == AuthStatus.error),
 
               listener: (context, state) {
-              
+                final localizations = AppLocalizations.of(context);
+
                 // Success
-              
                 if (state.status == AuthStatus.success) {
                   if (widget.isLogin) {
                     SnackbarHelper.showSuccess(
-                      context.lang.signIn,
+                      localizations?.signIn ?? 'تم تسجيل الدخول بنجاح',
                     );
 
                     Navigator.pushReplacementNamed(
@@ -130,7 +124,7 @@ class _AuthFormContainerWidgetState
                     );
                   } else {
                     SnackbarHelper.showSuccess(
-                      context.lang.registrationSuccess,
+                      localizations?.registrationSuccess ?? 'تم إنشاء الحساب بنجاح',
                     );
 
                     Navigator.pushReplacementNamed(
@@ -140,22 +134,18 @@ class _AuthFormContainerWidgetState
                   }
                 }
 
-              
                 // Error
-              
                 else if (state.status == AuthStatus.error) {
                   SnackbarHelper.showError(
                     state.errorMessage ??
-                        context.lang.loginError,
+                        localizations?.loginError ??
+                        'حدث خطأ أثناء العملية',
                   );
                 }
               },
 
-              
               // Submit Button Builder
-    
               child: BlocBuilder<AuthCubit, AuthState>(
-
                 buildWhen: (previous, current) =>
                 previous.status == AuthStatus.loading ||
                     current.status == AuthStatus.loading,
@@ -178,7 +168,6 @@ class _AuthFormContainerWidgetState
             const SizedBox(height: 24),
 
             // Auth Footer
-
             AuthFooter(
               isLogin: widget.isLogin,
             ),

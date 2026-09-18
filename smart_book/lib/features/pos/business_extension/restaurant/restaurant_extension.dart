@@ -6,8 +6,10 @@ import '../../data/models/product_model.dart';
 
 class RestaurantExtension extends BusinessExtension {
   @override
-  String get extensionName => "مطعم";
 
+  BusinessModuleType get moduleType => BusinessModuleType.restaurant;
+  @override
+  String get extensionName => 'مطعم';
   @override
   Widget buildProductDetails(ProductModel product) {
     return Column(

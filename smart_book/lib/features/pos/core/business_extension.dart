@@ -1,14 +1,21 @@
-// TODO: [System Configuration] - واجهة التعريف للأنشطة المختلفة
-
 import 'package:flutter/material.dart';
 
 import '../../../core/models/product_model.dart';
 import '../data/models/cart_item_model.dart';
 import '../data/models/product_model.dart';
 
+// 1. تعريف التعداد (Enum) لأنواع الأنشطة
+enum BusinessModuleType {
+  general,
+  pharmacy,
+  restaurant
+}
 
-// TODO: [System Configuration] - هذا الجزء سيتم ربطه لاحقاً بصفحة الإعدادات وتحديد النشاط النشاط.
+// TODO: [System Configuration] - واجهة التعريف للأنشطة المختلفة
 abstract class BusinessExtension {
+  // معرف النشاط البرمجي
+  BusinessModuleType get moduleType;
+
   // اسم النشاط (مثل: "صيدلية"، "مطعم"، "عام")
   String get extensionName;
 
@@ -26,8 +33,6 @@ abstract class BusinessExtension {
     return supportedFeatures.contains(feature);
   }
 }
-
-
 
 // feature_type.dart
 enum FeatureType {

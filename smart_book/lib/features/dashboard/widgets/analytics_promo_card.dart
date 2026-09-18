@@ -7,7 +7,12 @@ class AnalyticsPromoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context)!;
+    final lang = AppLocalizations.of(context);
+
+    // قيم افتراضية آمنة في حال كانت الترجمة null لتفادي الأخطاء
+    final smartAnalyticsText = lang?.smartAnalytics ?? 'Smart Analytics';
+    final viewChartsText = lang?.viewCharts ?? 'View Charts & Reports';
+
     return InkWell(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SalesAnalyticsScreen())),
       child: Container(
@@ -24,8 +29,8 @@ class AnalyticsPromoCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(lang.smartAnalytics, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(lang.viewCharts, style: const TextStyle(color: Colors.white70, fontSize: 11)),
+                  Text(smartAnalyticsText, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(viewChartsText, style: const TextStyle(color: Colors.white70, fontSize: 11)),
                 ],
               ),
             ),

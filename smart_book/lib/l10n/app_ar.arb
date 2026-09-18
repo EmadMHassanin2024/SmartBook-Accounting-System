@@ -138,5 +138,12 @@
      "stock": "الرصيد",
      "notifyWhenQuantityReaches": "نبهني عند وصول الكمية إلى:",
      "unitsAndPrices": "وحدات القياس والأسعار",
-     "addAnotherUnit": "إضافة وحدة بيع أخرى (جملة)"
+     "addAnotherUnit": "إضافة وحدة بيع أخرى (جملة)",
+     "productName": "اسم المنتج",
+     "activity": "النشاط",
+       "pointOfSaleGeneral": "نقطة البيع (عام)",
+       "systemSettings": "إعدادات النظام",
+       "productName": "اسم المنتج",
+       "addAnotherUnit": "إضافة وحدة بيع أخرى (جملة)",
+          "pleaseEnterInitialStock": "اضاقة وحدة مبيعات جد"
  }

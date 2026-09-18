@@ -9,6 +9,8 @@ import 'pharmacy_product_details.dart';
 
 class PharmacyExtension extends BusinessExtension {
   @override
+  BusinessModuleType get moduleType => BusinessModuleType.pharmacy;
+  @override
   String get extensionName => "صيدلية";
 
   /// تفاصيل إضافية تظهر داخل كارت المنتج

@@ -1,4 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
+import '../../../../core/localization/language_keys.dart';
 
 
 class ProductSaveBottomSheet extends StatelessWidget {
@@ -36,9 +37,10 @@ class ProductSaveBottomSheet extends StatelessWidget {
                 strokeWidth: 2,
               ),
             )
-                : Text(
-              context.lang.confirmAndSave,
-              style: const TextStyle(
+                : const Text(
+              LanguageKeys.confirmAndSaveKey,
+
+              style: TextStyle(
                 fontSize: 16,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

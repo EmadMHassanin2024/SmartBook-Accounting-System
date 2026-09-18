@@ -1,38 +1,48 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:smart_book/features/pos/auth_exports.dart';
 import 'package:smart_book/features/pos/presentation/widgets/products/pos_product_card.dart';
 
-import '../../../logic/PosState.dart';
-import '../../../logic/pos_cubit.dart';
-
-class POSProductGrid extends StatelessWidget {
+class POSProductGrid extends StatefulWidget {
   const POSProductGrid({super.key});
+
+  @override
+  State<POSProductGrid> createState() => _POSProductGridState();
+}
+
+class _POSProductGridState extends State<POSProductGrid> {
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PosCubit, PosState>(
       builder: (context, state) {
-        if (state is PosLoadingProducts) return const Center(child: CircularProgressIndicator());
-        if (state is PosError) return Center(child: Text(state.message));
+        if (state is PosLoadingProducts) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is PosError) {
+          return Center(child: Text(state.message));
+        }
         if (state is PosLoaded) {
-          // 💡 تصفية المنتجات بناءً على النشاط النشط حالياً في نقاط البيع
           final activeExtension = context.read<PosCubit>().activeExtension;
           String currentActivityType = 'general';
 
           if (activeExtension != null) {
-            // تحديد نوع النشاط بناءً على الـ Extension المفعل (يمكنك ضبط الاسم حسب نموذج الـ Extension لديك)
-            if (activeExtension.runtimeType.toString().toLowerCase().contains('pharmacy')) {
+            final extensionName = activeExtension.runtimeType.toString().toLowerCase();
+            if (extensionName.contains('pharmacy')) {
               currentActivityType = 'pharmacy';
-            } else if (activeExtension.runtimeType.toString().toLowerCase().contains('restaurant')) {
-              currentActivityType = 'restaurant';
+            } else if (extensionName.contains('restaurant')) {
+              currentActivityType  = 'restaurant';
             }
           }
 
-          // تصفية المنتجات الصارمة
+          // 1. تصفية المنتجات بناءً على النشاط والبحث معاً
           final filteredProducts = state.products.where((product) {
-            // افترضنا أن حقل itemType موجود في الـ ProductModel
-            return product.itemType == currentActivityType;
+            final matchesExtension = currentActivityType == 'general' ||
+                product.itemType == currentActivityType;
+
+            final matchesSearch = product.name.toLowerCase().contains(_searchQuery.toLowerCase());
+
+            return matchesExtension && matchesSearch;
           }).toList();
 
           return Column(
@@ -46,14 +56,15 @@ class POSProductGrid extends StatelessWidget {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                   onChanged: (query) {
-                    // دالة البحث
+                    setState(() {
+                      _searchQuery = query;
+                    });
                   },
                 ),
               ),
-           
               Expanded(
                 child: filteredProducts.isEmpty
-                    ? const Center(child: Text("لا توجد منتجات مسجلة في هذا القسم"))
+                    ? const Center(child: Text("لا توجد منتجات مطابقة للبحث أو القسم"))
                     : GridView.builder(
                   padding: const EdgeInsets.all(12),
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -67,7 +78,9 @@ class POSProductGrid extends StatelessWidget {
                     final product = filteredProducts[index];
                     return POSProductCard(
                       product: product,
-                      onTap: product.stock > 0 ? () => context.read<PosCubit>().addToCart(product) : null,
+                      onTap: product.stock > 0
+                          ? () => context.read<PosCubit>().addToCart(product)
+                          : null,
                     );
                   },
                 ),

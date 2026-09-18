@@ -436,4 +436,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addAnotherUnit => 'إضافة وحدة بيع أخرى (جملة)';
+
+  @override
+  String get productName => 'اسم المنتج';
+
+  @override
+  String get activity => 'النشاط';
+
+  @override
+  String get pointOfSaleGeneral => 'نقطة البيع (عام)';
+
+  @override
+  String get systemSettings => 'إعدادات النظام';
+
+  @override
+  String get pleaseEnterInitialStock => 'اضاقة وحدة مبيعات جد';
 }

@@ -2,8 +2,6 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
 
-
-
 class InventoryListView extends StatelessWidget {
   final InventoryState state;
 

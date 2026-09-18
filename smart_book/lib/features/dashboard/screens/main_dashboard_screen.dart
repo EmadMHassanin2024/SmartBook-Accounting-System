@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../core/localization/app_localizations.dart';
 
 import '../../contacts/screens/contacts_list_screen.dart';
 
@@ -54,8 +54,6 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context)!;
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -98,7 +96,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
           // ============================================================
 
           Text(
-            lang.quickSummary,
+            context.translate('quickSummary'),
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: AppColors.textSecondary,
@@ -116,7 +114,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
           // ============================================================
 
           Text(
-            lang.quickActions,
+            context.translate('quickActions'),
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: AppColors.textSecondary,

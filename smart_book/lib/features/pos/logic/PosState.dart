@@ -11,31 +11,30 @@ abstract class PosState extends Equatable {
   List<Object?> get props => [];
 }
 
-// 1. حالة تبديل النشاط (صيدلية، مطعم، إلخ)
-class PosExtensionChanged extends PosState {
-  final BusinessExtension? extension;
-  const PosExtensionChanged(this.extension);
-
-  @override
-  List<Object?> get props => [extension];
-}
-
 // 2. الحالة الابتدائية
 class PosInitial extends PosState {}
 
 // 3. حالة جاري تحميل المنتجات
-class PosLoadingProducts extends PosState {}
+class PosLoadingProducts extends PosState {
+  final BusinessExtension? extension;
+  const PosLoadingProducts({this.extension});
+
+  @override
+  List<Object?> get props => [extension];
+}
 
 // 4. حالة المنتجات محملة والسلة جاهزة
 class PosLoaded extends PosState {
   final List<CartItemModel> cartItems;
   final List<ProductModel> products;
   final double total;
+  final BusinessExtension? extension;
 
   const PosLoaded({
     required this.cartItems,
     required this.products,
-    required this.total
+    required this.total,
+    this.extension,
   });
 
   // 🎯 حسابات مركزية (Single Source of Truth)
@@ -44,20 +43,34 @@ class PosLoaded extends PosState {
   double get totalAmount => subTotal + vatAmount;
 
   @override
-  List<Object?> get props => [cartItems, products, total];
+  List<Object?> get props => [cartItems, products, total, extension];
 }
 
 // 5. حالة إرسال الفاتورة
-class PosSubmitting extends PosState {}
+class PosSubmitting extends PosState {
+  final BusinessExtension? extension;
+  const PosSubmitting({this.extension});
+
+  @override
+  List<Object?> get props => [extension];
+}
 
 // 6. حالة النجاح
-class PosSuccess extends PosState {}
+class PosSuccess extends PosState {
+  final BusinessExtension? extension;
+  const PosSuccess({this.extension});
+
+  @override
+  List<Object?> get props => [extension];
+}
 
 // 7. حالة الخطأ
 class PosError extends PosState {
   final String message;
-  const PosError(this.message);
+  final BusinessExtension? extension;
+
+  const PosError(this.message, {this.extension});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, extension];
 }

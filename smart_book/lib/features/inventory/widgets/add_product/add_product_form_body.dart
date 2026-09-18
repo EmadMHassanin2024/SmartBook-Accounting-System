@@ -1,38 +1,28 @@
-import 'package:smart_book/features/inventory/auth_exports.dart';
+import 'package:smart_book/features/inventory/widgets/add_product/product_reorder_section.dart';
+import 'package:smart_book/features/inventory/widgets/add_product/product_units_section.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/localization/language_keys.dart';
+import '../../../../core/packages.dart';
+import '../../../../core/utils/extensions/localization_extension.dart';
+
 import '../../extensions/inventory_extension_manager.dart';
-
-
+import '../../logic/add_product_cubit.dart';
+import '../../logic/add_product_state.dart';
+import '../common/custom_text_field_card.dart';
+import '../common/section_header_widget.dart';
 
 class AddProductFormBody extends StatelessWidget {
   final GlobalKey<FormState> formKey;
-  final TextEditingController nameController;
-  final TextEditingController barcodeController;
-  final TextEditingController stockController;
-  final TextEditingController reorderLevelController;
-  final TextEditingController expiryDateController;
-  final TextEditingController batchController;
-  final TextEditingController sizeController;
-  final TextEditingController colorController;
-  final bool isIngredient;
-  final String currentActivityType;
-  final VoidCallback onSelectExpiry;
-  final ValueChanged<bool?> onIsIngredientChanged;
+  final AddProductCubit cubit;
+  final AddProductState addProductState;
+  final String currentActivityType; // إذا احتجتها هنا، أو جلبناها من الـ cubit
 
   const AddProductFormBody({
     super.key,
     required this.formKey,
-    required this.nameController,
-    required this.barcodeController,
-    required this.stockController,
-    required this.reorderLevelController,
-    required this.expiryDateController,
-    required this.batchController,
-    required this.sizeController,
-    required this.colorController,
-    required this.isIngredient,
+    required this.cubit,
+    required this.addProductState,
     required this.currentActivityType,
-    required this.onSelectExpiry,
-    required this.onIsIngredientChanged,
   });
 
   @override
@@ -42,51 +32,74 @@ class AddProductFormBody extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          SectionHeader(
-            title: context.lang.basicInfo,
+          const SectionHeader(
+            titleKey: LanguageKeys.basicInfoKey,
             icon: Icons.inventory_2,
           ),
-          BlocBuilder<AddProductCubit, AddProductState>(
-            buildWhen: (previous, current) => previous.units != current.units,
-            builder: (context, state) {
-              final units = state.units;
-              final baseUnitName = units.isNotEmpty &&
-                  units.first.unitName.trim().isNotEmpty
-                  ? units.first.unitName
-                  : context.lang.baseUnit;
+          const SizedBox(height: 12),
+          // استخدام الـ controllers مباشرة من الـ cubit
+          CustomTextFieldCard(
+            labelTextKey: LanguageKeys.productNameKey,
 
-              return Column(
-                children: [
-                  BasicInfoCard(
-                    nameController: nameController,
-                    barcodeController: barcodeController,
-                    stockController: stockController,
-                    baseUnitName: baseUnitName,
-                  ),
-                  const SizedBox(height: 12),
-                  ProductReorderSection(
-                    reorderLevelController: reorderLevelController,
-                  ),
-                ],
-              );
+            controller: cubit.nameController,
+            icon: Icons.inventory_2_outlined,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return context.translate(LanguageKeys.pleaseEnterItemNameKey);
+              }
+              return null;
             },
           ),
+          const SizedBox(height: 12),
+          CustomTextFieldCard(
+            labelTextKey: LanguageKeys.barcodeKey,
+
+            controller: cubit.barcodeController,
+            icon: Icons.qr_code,
+          ),
+          const SizedBox(height: 12),
+          CustomTextFieldCard(
+            labelTextKey: LanguageKeys.initialStockKey,
+
+            controller: cubit.stockController,
+            icon: Icons.format_list_numbered,
+            keyboardType: TextInputType.number,
+
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return context.lang.pleaseEnterInitialStock; // أو رسالة الحقل المطلوبة
+              }
+              if (double.tryParse(value.trim()) == null) {
+                return context.lang.pleaseEnterValidQuantity;
+              }
+              return null;
+            },
+
+          ),
+          const SizedBox(height: 12),
+          //حد إعادة الطلب
+          ProductReorderSection(
+            reorderLevelController: cubit.reorderLevelController,
+          ),
+
+
           const SizedBox(height: 16),
+
           InventoryExtensionManager.getExtensionWidget(
             activityType: currentActivityType,
-            expiryController: expiryDateController,
-            batchController: batchController,
-            onSelectExpiry: onSelectExpiry,
-            isIngredient: isIngredient,
-            onIsIngredientChanged: onIsIngredientChanged,
-          ),
-          const SizedBox(height: 24),
-          BlocBuilder<AddProductCubit, AddProductState>(
-            buildWhen: (previous, current) => previous.units != current.units,
-            builder: (context, state) {
-              return ProductUnitsSection(units: state.units);
+            expiryController: cubit.expiryDateController,
+            batchController: cubit.batchController,
+            onSelectExpiry: () => cubit.selectExpiryDate(context),
+            isIngredient: addProductState.isIngredient,
+            onIsIngredientChanged: (value) {
+              cubit.changeIngredientStatus(value ?? false);
             },
           ),
+
+
+          const SizedBox(height: 24),
+
+          ProductUnitsSection(units: addProductState.units),
           const SizedBox(height: 120),
         ],
       ),

@@ -75,8 +75,11 @@ Future<void> setupLocator() async {
   sl.registerFactory<InventoryCubit>(
         () => InventoryCubit(
       sl<ProductRepository>(),
+      sl<SystemConfigurationCubit>(),
     ),
   );
+
+
 
   sl.registerFactory<AddProductCubit>(
         () => AddProductCubit(

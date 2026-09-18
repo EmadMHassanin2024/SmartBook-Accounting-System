@@ -1,7 +1,7 @@
 import 'package:smart_book/features/auth/auth_exports.dart';
+import 'package:smart_book/core/localization/app_localizations.dart';
+import 'package:smart_book/core/localization/language_keys.dart';
 import '../../../core/SnackbarHelper.dart';
-import '../../../core/utils/extensions/localization_extension.dart';
-
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -27,8 +27,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       backgroundColor: AppColors.cardBg,
       appBar: const AuthAppBar(primaryColor: AppColors.qiwaBlue),
@@ -38,14 +36,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: AuthFormContainerWidget(
-                title: context.lang.signUp,
+                title: context.translate(LanguageKeys.signUpKey),
                 primaryColor: AppColors.qiwaBlue,
-                submitButtonText: context.lang.createAccount.toUpperCase(),
+                submitButtonText: context.translate('create_account').toUpperCase(),
                 isLogin: false,
                 onSubmitPressed: (formKey) {
                   if (formKey.currentState?.validate() ?? false) {
                     if (_passwordController.text != _confirmPasswordController.text) {
-                      SnackbarHelper.showWarning(context.lang.passwordsNotMatch ?? 'كلمات المرور غير متطابقة');
+                      SnackbarHelper.showWarning(
+                        context.translate('passwords_not_match').isNotEmpty
+                            ? context.translate('passwords_not_match')
+                            : 'كلمات المرور غير متطابقة',
+                      );
                       return;
                     }
 
@@ -59,13 +61,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   }
                 },
                 children: [
-                  CustomInputField(label:context. lang.fullName, controller: _fullNameController),
+                  CustomInputField(
+                    label: context.translate('full_name'),
+                    controller: _fullNameController,
+                  ),
                   const SizedBox(height: 20),
-                  CustomInputField(label: context.lang.username, controller: _usernameController),
+                  CustomInputField(
+                    label: context.translate('username'),
+                    controller: _usernameController,
+                  ),
                   const SizedBox(height: 20),
-                  CustomInputField(label:context. lang.password, controller: _passwordController, isPassword: true),
+                  CustomInputField(
+                    label: context.translate('password'),
+                    controller: _passwordController,
+                    isPassword: true,
+                  ),
                   const SizedBox(height: 20),
-                  CustomInputField(label: context.lang.passwordConfirm, controller: _confirmPasswordController, isPassword: true),
+                  CustomInputField(
+                    label: context.translate('password_confirm'),
+                    controller: _confirmPasswordController,
+                    isPassword: true,
+                  ),
                 ],
               ),
             ),

@@ -1,4 +1,3 @@
-
 import 'package:smart_book/features/inventory/auth_exports.dart';
 import '../../../l10n/app_localizations.dart';
 //يجمع الإحصائيات (المبيعات اليومية، سندات الصرف)
@@ -7,12 +6,17 @@ class QuickStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context)!;
+    final lang = AppLocalizations.of(context);
+
+    // قيم افتراضية آمنة في حال كانت الترجمة null لتفادي الأخطاء
+    final salesTodayText = lang?.salesToday ?? 'Sales Today';
+    final paymentVouchersText = lang?.paymentVouchers ?? 'Payment Vouchers';
+
     return Row(
       children: [
-        _statBox(lang.salesToday, "1,250", Colors.green),
+        _statBox(salesTodayText, "1,250", Colors.green),
         const SizedBox(width: 12),
-        _statBox(lang.paymentVouchers, "400", Colors.red),
+        _statBox(paymentVouchersText, "400", Colors.red),
       ],
     );
   }

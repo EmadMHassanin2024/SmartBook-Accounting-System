@@ -15,11 +15,14 @@ class LoginExtraOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context)!;
+    final lang = AppLocalizations.of(context);
+
+    // Fallback لترجمة النصوص في حال كانت العودة null لمنع تحطم التطبيق
+    final keepMeSignedInText = lang?.keepMeSignedIn ?? 'Keep me signed in';
+    final forgotPasswordText = lang?.forgotPassword.toUpperCase() ?? 'FORGOT PASSWORD?';
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // نرفع القيمة قليلاً لضمان مرونة أكبر
         final isNarrow = constraints.maxWidth < 300;
 
         final keepSignedIn = Row(
@@ -37,9 +40,9 @@ class LoginExtraOptions extends StatelessWidget {
             const SizedBox(width: 8),
             Flexible(
               child: Text(
-                lang.keepMeSignedIn,
+                keepMeSignedInText,
                 style: const TextStyle(fontSize: 12, color: Colors.grey),
-                overflow: TextOverflow.ellipsis, // حل إضافي لمنع النص من الخروج
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -47,9 +50,9 @@ class LoginExtraOptions extends StatelessWidget {
 
         final forgotPassword = TextButton(
           onPressed: () {},
-          style: TextButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 4)),
+          style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4)),
           child: Text(
-            lang.forgotPassword.toUpperCase(),
+            forgotPasswordText,
             style: TextStyle(
               color: primaryColor,
               fontSize: 11,
@@ -65,13 +68,12 @@ class LoginExtraOptions extends StatelessWidget {
           );
         }
 
-        // في الشاشات العريضة، نستخدم Expanded لضمان توزيع المساحة
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(child: keepSignedIn), // يأخذ المساحة المتبقية
-            const SizedBox(width: 8), // مسافة فاصلة
-            forgotPassword, // يأخذ حجمه الطبيعي
+            Expanded(child: keepSignedIn),
+            const SizedBox(width: 8),
+            forgotPassword,
           ],
         );
       },

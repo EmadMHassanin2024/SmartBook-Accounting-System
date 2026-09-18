@@ -436,4 +436,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addAnotherUnit => 'Add another selling unit (Wholesale)';
+
+  @override
+  String get productName => 'Product Name';
+
+  @override
+  String get activity => 'Activity';
+
+  @override
+  String get pointOfSaleGeneral => 'Point of Sale (General)';
+
+  @override
+  String get systemSettings => 'System Settings';
+
+  @override
+  String get pleaseEnterInitialStock => 'pleaseEnterInitialStock';
 }

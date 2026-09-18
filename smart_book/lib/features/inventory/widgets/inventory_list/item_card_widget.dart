@@ -1,7 +1,7 @@
 
-
-
 import 'package:smart_book/features/inventory/auth_exports.dart';
+
+import '../common/action_button_item.dart';
 
 class ItemCardWidget extends StatelessWidget {
   final ProductModel product;
@@ -73,24 +73,20 @@ class ItemCardWidget extends StatelessWidget {
               Row(
                 children: [
                   // 🌟 زر التعديل
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AddProductScreen(productToEdit: product),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Icon(Icons.edit, size: 16, color: Colors.blue),
-                    ),
-                  ),
+
+    ActionButtonItem(
+    icon: Icons.edit,
+    color: Colors.blue,
+    onTap: () {
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+    builder: (_) => AddProductScreen(productToEdit: product),
+    ),
+    );
+    },
+    ),
+
                   const SizedBox(width: 6),
 
                   // 🌟 زر الحذف

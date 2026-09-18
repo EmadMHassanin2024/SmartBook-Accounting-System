@@ -27,7 +27,7 @@ export '../pos/data/models/product_model.dart';
 export '../inventory/logic/add_product_state.dart';
 
 
-export 'widgets/add_product/basic_info_card.dart';
+
 export 'widgets/common/unit_item_card.dart';
 
 export 'widgets/inventory_list/InventoryFilterSheet.dart';
@@ -55,7 +55,7 @@ export '../system_config/logic/system_configuration_state.dart';
 export '../../../core/utils/extensions/localization_extension.dart';
 export '../inventory/widgets/add_product/add_product_app_bar.dart';
 export '../inventory/widgets/add_product/add_product_form_body.dart';
-export '../inventory/widgets/common/product_form_helper.dart';
+
 export '../inventory/widgets/add_product/product_save_bottom_sheet.dart';
 
 

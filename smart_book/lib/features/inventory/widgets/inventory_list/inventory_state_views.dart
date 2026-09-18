@@ -1,9 +1,6 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-
 import '../common/inventory_stats_section.dart';
 import 'inventory_content_view.dart';
-
-
 
 class InventoryStateViews extends StatelessWidget {
   final InventoryState state;
@@ -21,20 +18,6 @@ class InventoryStateViews extends StatelessWidget {
       return const Center(
         child: CircularProgressIndicator(
           color: AppColors.primaryBlue,
-        ),
-      );
-    }
-
-    if (state is InventoryError) {
-      final errorState = state as InventoryError;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        SnackbarHelper.showError(
-          errorState.message,
-        );
-      });
-      return Center(
-        child: Text(
-          context.lang.errorOccurred,
         ),
       );
     }

@@ -1,5 +1,4 @@
-
-import '../../../../core/routes/app_routes.dart'; // تأكد من مسار الـ routes الصحيح
+import '../../../../core/routes/app_routes.dart';
 
 import 'package:smart_book/features/auth/auth_exports.dart'; // أو استيراد ملفات الترجمة
 
@@ -13,16 +12,23 @@ class AuthFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context)!;
+    final lang = AppLocalizations.of(context);
+
+    // استخدام قيم افتراضية آمنة في حال كانت الترجمة null لمنع تحطم التطبيق
+    final textValue = isLogin
+        ? (lang?.dontHaveAccount ?? "Don't have an account?")
+        : (lang?.alreadyHaveAccount ?? "Already have an account?");
+
+    final actionTextValue = isLogin
+        ? (lang?.createAccount ?? "Create Account")
+        : (lang?.signIn ?? "Sign In");
 
     // تحديد النصوص والألوان والمسارات بناءً على الحالة تلقائياً دون تكرار
     final primaryColor = isLogin ? AppColors.primaryBlue : AppColors.qiwaBlue;
-    final text = isLogin ? lang.dontHaveAccount : lang.alreadyHaveAccount;
-    final actionText = isLogin ? lang.createAccount : lang.signIn;
     final targetRoute = isLogin ? AppRoutes.signup : AppRoutes.login;
 
     final description = Text(
-      text,
+      textValue,
       textAlign: TextAlign.center,
       style: const TextStyle(fontSize: 13, color: Colors.grey),
     );
@@ -32,7 +38,7 @@ class AuthFooter extends StatelessWidget {
         Navigator.pushReplacementNamed(context, targetRoute);
       },
       child: Text(
-        actionText,
+        actionTextValue,
         textAlign: TextAlign.center,
         style: TextStyle(
           color: primaryColor,

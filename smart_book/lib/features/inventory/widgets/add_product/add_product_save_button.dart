@@ -7,16 +7,15 @@ class AddProductFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-
     return FloatingActionButton(
       onPressed: () async {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
+            builder: (_) => BlocProvider(
               // استخدام BlocProvider.value لاستخدام الـ Cubit الموجود أو تمريره بشكل نظيف
-              value: sl<AddProductCubit>(),
-              child: const AddProductScreen(),
+           create: (context)=> sl<AddProductCubit>(),
+              child:  const AddProductScreen(),
             ),
           ),
         );
@@ -31,3 +30,4 @@ class AddProductFAB extends StatelessWidget {
     );
   }
 }
+
