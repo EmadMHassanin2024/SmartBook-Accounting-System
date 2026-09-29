@@ -10,14 +10,13 @@ class AddProductCubit extends Cubit<AddProductState> {
   final batchController = TextEditingController();
   final sizeController = TextEditingController();
   final colorController = TextEditingController();
-
   final ProductRepository productService;
 
   // تهيئة الـ Cubit بالوحدة الأساسية الافتراضية (قطعة) من أول ثانية
   AddProductCubit(this.productService)
       : super(AddProductInitial(
     units: [
-      ProductUnitModel(
+      const ProductUnitModel(
         unitName: 'قطعة',
         salePrice: 0.0,
         purchasePrice: 0.0,
@@ -61,7 +60,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     ));
   }
 
-  // معالجة بيانات إضافة المنتج (تستخدم الـ controllers الداخلية مباشرة)
+  // معالجة بيانات إضافة المنتج
   void submitProductData({
     required String itemType,
   }) {
@@ -119,7 +118,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     );
   }
 
-  // 1. دالة إضافة وحدة بيع فرعية جديدة (جملة / كرتونة ..الخ)
+  // 1. دالة إضافة وحدة بيع فرعية جديدة
   void addUnit() {
     final updatedUnits = List<ProductUnitModel>.from(state.units);
     updatedUnits.add(const ProductUnitModel(
@@ -152,7 +151,7 @@ class AddProductCubit extends Cubit<AddProductState> {
   // 3. دالة تعيين الوحدات الأولية عند فتح الشاشة للتعديل
   void setInitialUnits(List<ProductUnitModel> units) {
     emit(AddProductUnitsUpdated(
-      units: units,
+      units: units.isEmpty ? state.units : units,
       isIngredient: state.isIngredient,
       expiryDate: state.expiryDate,
     ));
@@ -266,34 +265,38 @@ class AddProductCubit extends Cubit<AddProductState> {
       ));
     }
   }
-  bool _controllersInitialized = false;
-  // تهيئة المتحكمات باستخدام البيانات المحفوظة داخل الكيوبيت مباشرة
-  void initializeControllers({
 
-    required ProductModel? productToEdit,
-  }) {
-    if (_controllersInitialized) return;
-    _controllersInitialized = true;
+  // تم تصحيح طريقة التهيئة وإزالة متغير الحماية الذي كان يعطل جلب البيانات عند التبديل
+  void initializeControllers({required ProductModel? productToEdit}) {
     final p = productToEdit;
     if (p == null) {
+      nameController.clear();
+      barcodeController.clear();
+      stockController.clear();
       reorderLevelController.text = '5';
+      expiryDateController.clear();
+      batchController.clear();
+      sizeController.clear();
+      colorController.clear();
       return;
     }
-    nameController.text = p.name;
+
+    // تعبئة الحقول بالبيانات القديمة بدقة
+    nameController.text = p.name ?? '';
     barcodeController.text = p.barcode ?? '';
-    stockController.text = p.stock.toString();
-    reorderLevelController.text = '5';
+    stockController.text = p.stock?.toString() ?? '0';
+    reorderLevelController.text =  '5';
     expiryDateController.text = p.expiryDate ?? '';
     batchController.text = p.batchNumber ?? '';
     sizeController.text = p.size ?? '';
     colorController.text = p.color ?? '';
 
-    if (p.units.isNotEmpty) {
-      setInitialUnits(p.units);
-    }
-    if (p.isIngredient) {
-      changeIngredientStatus(true);
-    }
+    // إصدار الحالة فوراً لتحديث الواجهة بالوحدات وحالة المكون القديمة
+    emit(AddProductStateModified(
+      isIngredient: p.isIngredient,
+      units: p.units.isNotEmpty ? p.units : state.units,
+      expiryDate: p.expiryDate,
+    ));
   }
 
   Future<void> selectExpiryDate(BuildContext context) async {
@@ -309,7 +312,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     final formattedDate = '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
     expiryDateController.text = formattedDate;
 
-    // تحديث الحالة داخل الكيوبيت
     setExpiryDate(formattedDate);
   }
 
@@ -350,26 +352,7 @@ class AddProductCubit extends Cubit<AddProductState> {
       );
     }
   }
-/*
-  void handleBlocListenerState(BuildContext context, AddProductState state) {
-    if (state is AddProductLoading) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(
-          child: CircularProgressIndicator(color: AppColors.primaryBlue),
-        ),
-      );
-    } else if (state is AddProductError) {
-      if (Navigator.canPop(context)) Navigator.pop(context);
-      SnackbarHelper.showError(state.message);
-    } else if (state is AddProductSuccess) {
-      if (Navigator.canPop(context)) Navigator.pop(context);
-      SnackbarHelper.showSuccess(context.lang.saveSuccess);
-      Navigator.pop(context, true);
-    }
-  }
- */
+
   // 6. الدالة لتعديل منتج موجود مسبقاً
   Future<void> updateProduct({
     required int productId,
@@ -395,6 +378,11 @@ class AddProductCubit extends Cubit<AddProductState> {
         name: name,
         barcode: barcode,
         totalStockQuantity: totalStockQuantity,
+        expiryDate: expiryDate,     // مضاف حديثاً لتحديث الصلاحية
+        batchNumber: batchNumber,   // مضاف حديثاً لتحديث رقم الباتش
+        isIngredient: isIngredient, // مضاف حديثاً لتحديث حالة المكون
+        size: size,                 // مضاف حديثاً لتحديث المقاس
+        color: color,               // مضاف حديثاً لتحديث اللون
         itemType: itemType,
         productUnits: productUnits,
       );

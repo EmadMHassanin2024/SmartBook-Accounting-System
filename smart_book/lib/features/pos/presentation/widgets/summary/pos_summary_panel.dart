@@ -1,36 +1,32 @@
-
+import 'package:flutter/material.dart';
+import 'package:smart_book/core/localization/language_keys.dart';
 import 'package:smart_book/features/pos/auth_exports.dart';
+import 'pos_checkout_button.dart';
 
-import '../../../core/PaymentMethod.dart';
-
-
-
-///--------------------------------------------------------------
-/// لوحة الملخص العام (تم تعديل زر الدفع ليدعم خيارات الدفع المنبثقة)
-///--------------------------------------------------------------
 class POSSummaryPanel extends StatelessWidget {
-  final double subTotal;       // المجموع قبل الضريبة القادم من السلة
-  final double vatAmount;      // قيمة الضريبة المحسوبة (15%)
-  final double totalAmount;    // الإجمالي النهائي الشامل للضريبة
-  final VoidCallback onConfirm; // الدالة الممررة لحفظ الفاتورة (يمكن استبدالها أو دمجها حسب الحاجة)
+  final double subTotal;
+  final double vatAmount;
+  final double totalAmount;
+  final VoidCallback? onConfirm;
 
   const POSSummaryPanel({
     super.key,
     required this.subTotal,
     required this.vatAmount,
     required this.totalAmount,
-    required this.onConfirm,
+    this.onConfirm,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cardBg, // لون الخلفية الموحد للكروت بالنظام
+        color: AppColors.cardBg,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -2),
           )
@@ -40,54 +36,22 @@ class POSSummaryPanel extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // 1. المجموع قبل الضريبة
-            _rowAmount("المجموع", subTotal.toStringAsFixed(2)),
-
-            // 2. قيمة الضريبة المحسوبة
-            _rowAmount("الضريبة (15%)", vatAmount.toStringAsFixed(2)),
+            _rowAmount(LanguageKeys.subTotal, subTotal.toStringAsFixed(2)),
+            _rowAmount(LanguageKeys.vatTax, vatAmount.toStringAsFixed(2)),
 
             const Divider(color: AppColors.dividerColor, height: 20),
 
-            // 3. الإجمالي النهائي المطلوب سداده
-            _rowAmount("الإجمالي النهائي", totalAmount.toStringAsFixed(2), isTotal: true),
+            _rowAmount(
+              LanguageKeys.finalTotal,
+              totalAmount.toStringAsFixed(2),
+              isTotal: true,
+            ),
 
             const SizedBox(height: 12),
 
-            // 4. زر التأكيد والدفع وإظهار خيارات الدفع
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () {
-                  // إظهار نافذة خيارات الدفع المنبثقة مع تمرير الإجمالي النهائي
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (sheetContext) => PaymentBottomSheet(
-                      totalAmount: totalAmount,
-                      onConfirmPayment: (PaymentMethod method) {
-                        // إرسال طريقة الدفع للـ Cubit لإنهاء الفاتورة وترحيلها
-                        context.read<PosCubit>().checkoutWithMethod(method);
-                      },
-                    ),
-                  );
-                },
-                child: const Text(
-                  "تأكيد ودفع (F10)",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
+            POSCheckoutButton(
+              totalAmount: totalAmount,
+              onConfirm: onConfirm,
             ),
           ],
         ),
@@ -95,7 +59,6 @@ class POSSummaryPanel extends StatelessWidget {
     );
   }
 
-  // أداة بناء أسطر المبالغ المالية المنسقة
   Widget _rowAmount(String label, String value, {bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),

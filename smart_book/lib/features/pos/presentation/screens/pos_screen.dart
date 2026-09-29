@@ -1,103 +1,64 @@
 import 'package:smart_book/features/pos/auth_exports.dart';
+import '../../../../core/SnackbarHelper.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/localization/language_keys.dart';
+import '../../core/business_extension.dart';
+import '../widgets/responsive/pos_responsive_layout.dart';
 
-import '../../../../core/utils/extensions/localization_extension.dart';
-
-class POSScreen extends StatefulWidget {
+class POSScreen extends StatelessWidget {
   const POSScreen({super.key});
 
   @override
-  State<POSScreen> createState() => _POSScreenState();
-}
-
-class _POSScreenState extends State<POSScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-
-      final settings =
-          context.read<SystemConfigurationCubit>().state.settings;
-
-      context.read<PosCubit>().initialize(settings);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PosCubit, PosState>(
-      builder: (context, state) {
-        final activeExtension = state is PosLoaded ? state.extension : null;
+    return BlocListener<PosCubit, PosState>(
+      listenWhen: (_, current) =>
+      current is PosError || current is PosSuccess,
+      listener: (context, state) {
+        if (state is PosError) {
+          SnackbarHelper.showError(state.message);
+        } else if (state is PosSuccess) {
+          SnackbarHelper.showSuccess(
+            context.translate(LanguageKeys.paymentSuccessMessage),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundLight,
+        appBar: AppBar(
+          title: BlocBuilder<PosCubit, PosState>(
+            buildWhen: (previous, current) => previous != current,
+            builder: (context, state) {
+              BusinessExtension? ext;
+              if (state is PosLoadingProducts) ext = state.extension;
+              if (state is PosLoaded) ext = state.extension;
+              if (state is PosSubmitting) ext = state.extension;
+              if (state is PosSuccess) ext = state.extension;
+              if (state is PosError) ext = state.extension;
 
-        return Scaffold(
-          backgroundColor: Colors.grey.shade50,
-          appBar: AppBar(
-            title: Text(
-              activeExtension != null
-                  ? '${context.lang.activity}: '
-                  '${activeExtension.extensionName}'
-                  : context.lang.pointOfSaleGeneral,
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.tune),
-                tooltip: context.lang.systemSettings,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                      const SystemConfigurationScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth > 800) {
-                return Row(
-                  children: [
-                    const Expanded(
-                      flex: 3,
-                      child: POSProductGrid(),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          border: Border(
-                            left: BorderSide(
-                              color: Colors.grey,
-                              width: 0.2,
-                            ),
-                          ),
-                        ),
-                        child: const POSDesktopCartPanel(),
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              return const Stack(
-                children: [
-                  POSProductGrid(),
-                  Positioned(
-                    bottom: 20,
-                    left: 20,
-                    right: 20,
-                    child: POSFloatingCartBar(),
-                  ),
-                ],
+              return Text(
+                ext != null
+                    ? '${LanguageKeys.activity}: ${ext.extensionName}'
+                    : context.translate(LanguageKeys.pointOfSaleGeneral),
               );
             },
           ),
-        );
-      },
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.tune),
+              tooltip: context.translate(LanguageKeys.systemSettings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SystemConfigurationScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        body: const POSResponsiveLayout(),
+      ),
     );
   }
 }

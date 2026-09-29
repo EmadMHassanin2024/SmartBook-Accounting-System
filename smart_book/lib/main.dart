@@ -18,10 +18,11 @@ import 'features/finance/income_statement/logic/income_statement_cubit.dart';
 import 'features/finance/repositories/FinancialReportsRepository.dart';
 
 import 'features/pos/data/Repository/PosRepository.dart';
-import 'features/settings/logic/SettingsCubit.dart';
 
 
-import 'core/localization/app_localizations.dart'; // تأكد من استيراد ملف الترجمة الصحيح
+
+import 'core/localization/app_localizations.dart';
+import 'features/pos/presentation/screens/pos_screen.dart'; // تأكد من استيراد ملف الترجمة الصحيح
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -52,11 +53,18 @@ class SmartBookApp extends StatelessWidget {
         BlocProvider<SystemConfigurationCubit>(
           create: (context) => sl<SystemConfigurationCubit>()..loadConfiguration(),
         ),
-        BlocProvider<InventoryCubit>(create: (_) => sl<InventoryCubit>()),
 
+        // أضف هذا السطر هنا لتوفير الـ InventoryCubit للنظام وجلب المنتجات
+        BlocProvider<InventoryCubit>(
+          create: (context) => sl<InventoryCubit>()..fetchProducts(),
+        ),
+
+
+   /*
         // تم تصحيح AddProductCubit بإزالة الـ child الخاطئ
         BlocProvider<AddProductCubit>(create: (_) => sl<AddProductCubit>()),
 
+    */
         BlocProvider<SettingsCubit>(create: (_) => SettingsCubit()),
         BlocProvider<AuthCubit>(create: (context) => AuthCubit(sl<TokenRepository>())),
         BlocProvider<IncomeStatementCubit>(
@@ -67,7 +75,12 @@ class SmartBookApp extends StatelessWidget {
         BlocProvider<JournalListCubit>(create: (_) => JournalListCubit(sl<JournalRepository>())),
         BlocProvider<LedgerCubit>(create: (_) => LedgerCubit(sl<FinancialReportsRepository>())),
         BlocProvider<AdjustmentCubit>(create: (context) => AdjustmentCubit(sl<FinancialReportsRepository>())),
-        BlocProvider<PosCubit>(create: (context) => PosCubit(sl<PosRepository>())),
+
+        BlocProvider<PosCubit>(create: (context) => PosCubit(sl<PosRepository>(),
+            context.read<SystemConfigurationCubit>(), // تمرير المتطلب الثاني
+          ),
+          child: const POSScreen(),
+        ),
       ],
       child: BlocBuilder<SettingsCubit, Locale>(
         builder: (context, locale) {

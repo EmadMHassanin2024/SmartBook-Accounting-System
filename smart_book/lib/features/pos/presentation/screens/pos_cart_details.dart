@@ -1,7 +1,11 @@
-
 import 'package:smart_book/features/pos/auth_exports.dart';
+import '../../../../core/SnackbarHelper.dart';
+import '../../../../core/localization/language_keys.dart';
+import '../widgets/cart/pos_error_view.dart';
 
-
+import '../widgets/cart/pos_loaded_view.dart';
+import '../widgets/cart/pos_loading_view.dart';
+import 'package:smart_book/features/pos/presentation/widgets/cart/pos_loaded_view.dart';
 
 class POSCartDetailsScreen extends StatelessWidget {
   const POSCartDetailsScreen({super.key});
@@ -10,66 +14,51 @@ class POSCartDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("تفاصيل السلة"),
+        // تم إضافة دالة الترجمة هنا
+        title: const Text(LanguageKeys.pointOfSaleGeneral),
       ),
       body: BlocConsumer<PosCubit, PosState>(
+        listenWhen: (_, current) =>
+        current is PosSuccess || current is PosError,
         listener: (context, state) {
-          // التعامل مع حالة النجاح بعد الطباعة
           if (state is PosSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("تمت العملية بنجاح!"),
-                backgroundColor: Colors.green,
-              ));
-                // 2. تحديث المنتجات في الخلفية قبل الخروج (اختياري لكن مفضل)
-                context.read<PosCubit>().fetchInventoryProducts();
-
-                // 3. العودة التلقائية لشاشة الكاشير
-                Navigator.pop(context);
-
-            // ملاحظة: لا تقم بعمل pop هنا إذا كنت تريد بقاء المستخدم
-            // في الصفحة ليرى رسالة "السلة فارغة"
+            SnackbarHelper.showSuccess(
+              LanguageKeys.paymentSuccessMessage,
+            );
+            if (Navigator.canPop(context)) Navigator.pop(context);
           }
 
           if (state is PosError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-            );
+            SnackbarHelper.showError(state.message);
           }
         },
+        buildWhen: (_, current) =>
+        current is PosInitial ||
+            current is PosLoadingProducts ||
+            current is PosSubmitting ||
+            current is PosLoaded ||
+            current is PosError,
         builder: (context, state) {
-          // حالة التحميل (عند ضغط زر الدفع)
+          if (state is PosInitial || state is PosLoadingProducts) {
+            return const POSLoadingView();
+          }
+
           if (state is PosSubmitting) {
-            return const Center(child: CircularProgressIndicator());
+            return const POSSubmittingView();
           }
 
-          // حالة نجاح العملية (تظهر لثانية واحدة ثم يتم الانتقال التلقائي للبيانات الجديدة)
-          if (state is PosSuccess) {
-            return const Center(child: CircularProgressIndicator()); // أو رسالة نجاح
+          if (state is PosError) {
+            return POSErrorView(message: state.message);
           }
 
-          // الحالة الأهم: عرض البيانات
           if (state is PosLoaded) {
-            if (state.cartItems.isEmpty) {
-              return const Center(child: Text("السلة فارغة، ابدأ فاتورة جديدة"));
-            }
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.cartItems.length,
-                    itemBuilder: (context, index) => POSCartItem(item: state.cartItems[index]),
-                  ),
-                ),
-                POSCartSummarySection(state: state),
-              ],
-            );
+            return POSLoadedView(state: state);
           }
 
-          return const Center(child: CircularProgressIndicator());
+          return const SizedBox.shrink();
         },
       ),
     );
   }
-
 }
+

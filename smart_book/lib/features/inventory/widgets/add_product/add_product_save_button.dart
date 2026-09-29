@@ -1,28 +1,22 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-// زر إضافة منتج محسن بحيث يعتمد على السياق الحالي أو تمرير الـ Cubit دون الحاجة لـ GetIt المتكرر
 class AddProductFAB extends StatelessWidget {
   const AddProductFAB({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return FloatingActionButton(
       onPressed: () async {
+        // الانتقال للشاشة مباشرة دون تغليف إضافي، لأن الشاشة مكتفية ذاتياً (Self-contained)
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              // استخدام BlocProvider.value لاستخدام الـ Cubit الموجود أو تمريره بشكل نظيف
-           create: (context)=> sl<AddProductCubit>(),
-              child:  const AddProductScreen(),
-            ),
+            builder: (_) =>  const AddProductScreen(productToEdit: null),
           ),
         );
 
-        // تحديث البيانات تلقائياً وفوراً إذا نجحت عملية الإضافة وعاد بـ true
+        // تحديث البيانات تلقائياً وفوراً إذا نجحت عملية الإضافة/التعديل وعاد بـ true
         if (result == true && context.mounted) {
-
           context.read<InventoryCubit>().fetchProducts();
         }
       },
@@ -30,4 +24,3 @@ class AddProductFAB extends StatelessWidget {
     );
   }
 }
-

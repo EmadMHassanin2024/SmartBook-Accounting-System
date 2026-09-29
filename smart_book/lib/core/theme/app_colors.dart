@@ -45,4 +45,7 @@ class AppColors {
 
   static final Color successBgLight =
   successGreen.withValues(alpha: 0.1);
+
+
+  static const Color backgroundLight = Color(0xFFF9FAFB);
 }

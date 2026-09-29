@@ -13,7 +13,7 @@ export '../system_config/presentation/screens/system_config_screen.dart';
 
 
 
-export '../pos/presentation/widgets/cart/pos_cart_panel.dart.dart';
+
 export '../pos/presentation/widgets/cart/pos_floating_cart_bar.dart';
 export '../pos/presentation/widgets/products/pos_product_grid.dart';
 

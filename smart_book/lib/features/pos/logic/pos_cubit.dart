@@ -5,6 +5,7 @@ import '../../../core/packages.dart';
 import '../../system_config/data/models/ business_module.dart';
 import '../../system_config/data/models/system_settings_model.dart';
 
+import '../../system_config/logic/system_configuration_cubit.dart';
 import '../business_extension/pharmacy/pharmacy_extension.dart';
 import '../business_extension/restaurant/restaurant_extension.dart';
 
@@ -19,19 +20,33 @@ import '../data/models/product_model.dart';
 import 'PosState.dart';
 
 class PosCubit extends Cubit<PosState> {
+  final SystemConfigurationCubit _systemConfigurationCubit;
   final PosRepository _posService;
 
   BusinessExtension? get activeExtension => _currentExtension;
 
   final List<CartItemModel> _currentCart = [];
   List<ProductModel> _allProducts = [];
+  String _currentSearchQuery = '';
 
-  PosCubit(this._posService) : super(PosInitial());
+  PosCubit(this._posService, this._systemConfigurationCubit) : super(PosInitial()) {
+    initialize();
+  }
 
-  /// تهيئة نقطة البيع عند فتح الشاشة.
-  Future<void> initialize(SystemSettingsModel settings) async {
+  Future<void> initialize() async {
+    // 1. التأكد من انتهاء تحميل الإعدادات أولاً
+    final configCubit = _systemConfigurationCubit;
+    if (configCubit.state.isLoading) {
+      await configCubit.stream.firstWhere(
+            (state) => !state.isLoading,
+      );
+    }
+
+    // 2. جلب الإعدادات وتحديد النشاط
+    final settings = configCubit.state.settings;
     final extension = _resolveBusinessExtension(settings);
 
+    // 3. إصدار الحالة وجلب المنتجات
     emit(
       PosLoadingProducts(
         extension: extension,
@@ -78,7 +93,7 @@ class PosCubit extends Cubit<PosState> {
 
   /// المنتجات المتاحة للبيع فقط.
   List<ProductModel> get availableProducts =>
-      _allProducts.where((product) => product.stock > 0).toList();
+      _allProducts.where((product) => product.stock >= 0).toList();
 
   /// حساب الإجمالي النهائي شاملاً الضريبة (15%)
   double get _calculatedFinalTotal {
@@ -89,19 +104,43 @@ class PosCubit extends Cubit<PosState> {
     return subtotal * 1.15;
   }
 
-  /// بناء حالة POS الحالية.
-  void _emitLoaded({
-    BusinessExtension? extension,
-  }) {
+  /// بناء حالة POS الحالية مع ضمان نسخ القائمة والعناصر لتغيير المراجع.
+  void _emitLoaded({BusinessExtension? extension}) {
     final total = _currentCart.fold<double>(
       0.0,
           (sum, item) => sum + (item.product.price * item.quantity),
     );
 
+    // 🎯 الحل الجذري: إنشاء نسخة جديدة من الكائنات والقائمة تماماً لضمان اكتشاف التغيير في الـ UI
+    final copiedCartItems = _currentCart.map((item) {
+      return CartItemModel(
+        product: item.product,
+        quantity: item.quantity,
+      );
+    }).toList();
+
+    // تطبيق فلترة البحث إن وجدت لكي لا تضيع نتيجة البحث عند تحديث السلة
+    List<ProductModel> productsToEmit = availableProducts;
+    if (_currentSearchQuery.isNotEmpty) {
+      final currentExt = extension ?? _currentExtension;
+      String activityType = 'general';
+      if (currentExt != null) {
+        activityType = _resolveActivityType(currentExt);
+      }
+      productsToEmit = availableProducts.where((product) {
+        final matchesExtension =
+            activityType == 'general' || product.itemType == activityType;
+        final matchesSearch = product.name
+            .toLowerCase()
+            .contains(_currentSearchQuery.toLowerCase());
+        return matchesExtension && matchesSearch;
+      }).toList();
+    }
+
     emit(
       PosLoaded(
-        cartItems: List.from(_currentCart),
-        products: List.from(availableProducts),
+        cartItems: copiedCartItems,
+        products: productsToEmit,
         total: total,
         extension: extension,
       ),
@@ -136,14 +175,19 @@ class PosCubit extends Cubit<PosState> {
 
   /// إضافة منتج إلى السلة.
   void addToCart(ProductModel product) {
-    if (product.stock <= 0) return;
+    if (product.stock < 0) return;
 
     final index = _currentCart.indexWhere(
           (item) => item.product.id == product.id,
     );
 
     if (index != -1) {
-      _currentCart[index].quantity++;
+      // تحديث الكمية بإنشاء عنصر جديد لمنع مشاكل الـ Reference
+      final existing = _currentCart[index];
+      _currentCart[index] = CartItemModel(
+        product: existing.product,
+        quantity: existing.quantity + 1,
+      );
     } else {
       _currentCart.add(
         CartItemModel(
@@ -158,10 +202,9 @@ class PosCubit extends Cubit<PosState> {
     );
 
     if (productIndex != -1) {
-      _allProducts[productIndex] =
-          _allProducts[productIndex].copyWith(
-            stock: _allProducts[productIndex].stock - 1,
-          );
+      _allProducts[productIndex] = _allProducts[productIndex].copyWith(
+        stock: _allProducts[productIndex].stock - 1,
+      );
     }
 
     _emitLoaded(
@@ -178,7 +221,11 @@ class PosCubit extends Cubit<PosState> {
     if (index == -1) return;
 
     if (_currentCart[index].quantity > 1) {
-      _currentCart[index].quantity--;
+      final existing = _currentCart[index];
+      _currentCart[index] = CartItemModel(
+        product: existing.product,
+        quantity: existing.quantity - 1,
+      );
     } else {
       _currentCart.removeAt(index);
     }
@@ -188,10 +235,9 @@ class PosCubit extends Cubit<PosState> {
     );
 
     if (productIndex != -1) {
-      _allProducts[productIndex] =
-          _allProducts[productIndex].copyWith(
-            stock: _allProducts[productIndex].stock + 1,
-          );
+      _allProducts[productIndex] = _allProducts[productIndex].copyWith(
+        stock: _allProducts[productIndex].stock + 1,
+      );
     }
 
     _emitLoaded(
@@ -214,10 +260,9 @@ class PosCubit extends Cubit<PosState> {
     );
 
     if (productIndex != -1) {
-      _allProducts[productIndex] =
-          _allProducts[productIndex].copyWith(
-            stock: _allProducts[productIndex].stock + quantityToRemove,
-          );
+      _allProducts[productIndex] = _allProducts[productIndex].copyWith(
+        stock: _allProducts[productIndex].stock + quantityToRemove,
+      );
     }
 
     _currentCart.removeAt(index);
@@ -239,54 +284,70 @@ class PosCubit extends Cubit<PosState> {
   }
 
   /// تنفيذ الدفع باستخدام طريقة الدفع المحددة.
-  Future<void> checkoutWithMethod(
-      PaymentMethod method,
-      ) async {
-    if (_currentCart.isEmpty) return;
+  bool _isCheckingOut = false;
+
+  /// تنفيذ الدفع مع منع تكرار الطلب من نفس الـ Cubit.
+  Future<void> checkoutWithMethod(PaymentMethod method) async {
+    if (_isCheckingOut || _currentCart.isEmpty) return;
+
+    _isCheckingOut = true;
 
     final paymentType = method.name;
     final finalTotal = _calculatedFinalTotal;
     final extension = _currentExtension;
 
-    emit(
-      PosSubmitting(
-        extension: extension,
-      ),
-    );
+    // نأخذ نسخة من السلة حتى لا تتغير بيانات الفاتورة أثناء التنفيذ.
+    final invoiceItems = List<CartItemModel>.from(_currentCart);
+
+    emit(PosSubmitting(extension: extension));
 
     try {
+      // 1. حفظ الفاتورة على السيرفر.
       final success = await _posService.saveInvoice(
-        _currentCart,
+        invoiceItems,
         paymentType,
       );
 
       if (!success) {
         emit(
           PosError(
-            'فشل حفظ الفاتورة',
+            'فشل حفظ الفاتورة، يرجى المحاولة مجددًا',
             extension: extension,
           ),
         );
+
         return;
       }
 
-      await InvoicePdfHelper.generateAndPrintReceipt(
-        _currentCart,
-        finalTotal,
-        paymentType,
-      );
-
+      // 2. الحفظ نجح: نفرغ السلة فورًا لمنع إعادة إرسال نفس الفاتورة.
       _currentCart.clear();
 
+      // 3. الطباعة عملية منفصلة عن حفظ الفاتورة.
+      var printFailed = false;
+
+      try {
+        await InvoicePdfHelper.generateAndPrintReceipt(
+          invoiceItems,
+          finalTotal,
+          paymentType,
+        );
+      } catch (e) {
+        printFailed = true;
+      }
+
+      // 4. إصدار حالة نجاح الحفظ، مع توضيح فشل الطباعة إن حدث.
       emit(
         PosSuccess(
           extension: extension,
         ),
       );
 
-      await fetchInventoryProducts(
-        extension: extension,
-      );
+      // 5. تحديث المخزون بشكل مستقل.
+      try {
+        await fetchInventoryProducts(extension: extension);
+      } catch (e) {
+        // فشل تحديث المخزون لا يعني فشل حفظ الفاتورة.
+      }
     } catch (e) {
       emit(
         PosError(
@@ -294,6 +355,8 @@ class PosCubit extends Cubit<PosState> {
           extension: extension,
         ),
       );
+    } finally {
+      _isCheckingOut = false;
     }
   }
 
@@ -354,6 +417,22 @@ class PosCubit extends Cubit<PosState> {
         ),
       );
     }
+  }
+
+  void searchProducts(String query) {
+    _currentSearchQuery = query;
+    _emitFilteredProducts();
+  }
+
+  void _emitFilteredProducts() {
+    _emitLoaded(extension: activeExtension);
+  }
+
+  /// دالة لاستخراج نوع النشاط من الـ BusinessExtension
+  String _resolveActivityType(BusinessExtension extension) {
+    if (extension is PharmacyExtension) return 'pharmacy';
+    if (extension is RestaurantExtension) return 'restaurant';
+    return extension.extensionName.toLowerCase();
   }
 
   /// معرفة كمية منتج معين داخل السلة.

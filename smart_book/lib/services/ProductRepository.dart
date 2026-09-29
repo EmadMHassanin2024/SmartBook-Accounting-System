@@ -1,4 +1,3 @@
-// lib/features/pos/data/repositories/product_repository.dart
 import 'dart:convert';
 import '../../../../core/network/base_api_service.dart';
 
@@ -23,13 +22,18 @@ class ProductRepository {
     }
   }
 
-  // 2. إضافة صنف جديد مع دعم الوحدات المتعددة
+  // 2. إضافة صنف جديد مع دعم الوحدات المتعددة والبيانات الإضافية
   Future<bool> addProduct({
     required String name,
     required String barcode,
     required double totalStockQuantity,
     required String itemType,
     required List<ProductUnitModel> productUnits,
+    String? expiryDate,
+    String? batchNumber,
+    bool isIngredient = false,
+    String? size,
+    String? color,
   }) async {
     final String token = await AuthService.getToken();
 
@@ -38,6 +42,11 @@ class ProductRepository {
       "Barcode": barcode.isEmpty ? null : barcode,
       "TotalStockQuantity": totalStockQuantity,
       "ItemType": itemType,
+      "IsIngredient": isIngredient,
+      "ExpiryDate": expiryDate,
+      "BatchNumber": batchNumber,
+      "Size": size,
+      "Color": color,
       "ProductUnits": productUnits.map((unit) => unit.toJson()).toList(),
     };
 
@@ -49,7 +58,7 @@ class ProductRepository {
     }
   }
 
-  // 3. تعديل صنف مع دعم الوحدات المتعددة
+  // 3. تعديل صنف مع دعم الوحدات المتعددة والبيانات الإضافية
   Future<bool> updateProduct({
     required int id,
     required String name,
@@ -57,6 +66,11 @@ class ProductRepository {
     required double totalStockQuantity,
     required String itemType,
     required List<ProductUnitModel> productUnits,
+    String? expiryDate,
+    String? batchNumber,
+    bool isIngredient = false,
+    String? size,
+    String? color,
   }) async {
     final String token = await AuthService.getToken();
 
@@ -66,6 +80,11 @@ class ProductRepository {
       "Barcode": barcode.isEmpty ? null : barcode,
       "TotalStockQuantity": totalStockQuantity,
       "ItemType": itemType,
+      "IsIngredient": isIngredient,
+      "ExpiryDate": expiryDate,
+      "BatchNumber": batchNumber,
+      "Size": size,
+      "Color": color,
       "ProductUnits": productUnits.map((unit) => unit.toJson()).toList(),
     };
 

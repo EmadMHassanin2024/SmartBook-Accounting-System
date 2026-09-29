@@ -11,7 +11,9 @@ class CartItemModel {
   });
 
   // 1. حساب إجمالي السطر الحقيقي (الكمية × سعر الصنف الموحد المستخرج من السيرفر)
-  double get subTotal => product.price * quantity;
+  double get subTotal => (product.price ?? 0.0) * quantity;
+  @override
+  List<Object?> get props => [product, quantity];
 
   // 2. حساب قيمة الضريبة (15%) الخاصة بهذا السطر المحاسبي تلقائياً
   double get vatAmount => subTotal * 0.15;

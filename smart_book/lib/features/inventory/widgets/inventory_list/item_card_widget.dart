@@ -77,13 +77,21 @@ class ItemCardWidget extends StatelessWidget {
     ActionButtonItem(
     icon: Icons.edit,
     color: Colors.blue,
-    onTap: () {
-    Navigator.push(
+    onTap: () async{
+
+   final result = await Navigator.push(
     context,
     MaterialPageRoute(
     builder: (_) => AddProductScreen(productToEdit: product),
     ),
     );
+   // طباعة للتأكد من وصول النتيجة (للتشخيص)
+   print("🔍 نتيجة العودة من التعديل: $result");
+
+   if (result == true && context.mounted) {
+     print("🔄 يتم الآن تحديث القائمة...");
+     context.read<InventoryCubit>().fetchProducts();
+   }
     },
     ),
 

@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/theme/app_colors.dart';
 import '../../../core/localization/app_localizations.dart';
 
 import '../../contacts/screens/contacts_list_screen.dart';
@@ -16,7 +13,7 @@ import '../../finance/Account/screens/AccountsListScreen.dart';
 import '../../finance/TrialBalance/Screans/TrialBalanceScreen.dart';
 
 import '../../inventory/auth_exports.dart';
-import '../../inventory/screens/items_list_screen.dart';
+
 
 import '../../invoices/screens/invoices_list_screen.dart';
 
@@ -25,15 +22,6 @@ import '../widgets/quick_stats_row.dart';
 import '../widgets/stock_alert_widget.dart';
 
 
-///
-/// Dashboard الرئيسي للنظام
-///
-/// مسؤول عن:
-/// 1. عرض تنبيهات المخزون
-/// 2. عرض التحليلات
-/// 3. عرض الإحصائيات السريعة
-/// 4. عرض الاختصارات السريعة
-///
 class MainDashboardScreen extends StatefulWidget {
   const MainDashboardScreen({super.key});
 

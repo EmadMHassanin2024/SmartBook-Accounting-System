@@ -2,7 +2,6 @@
 import 'package:smart_book/features/pos/auth_exports.dart';
 import 'package:smart_book/features/pos/presentation/widgets/summary/pos_summary_panel.dart';
 
-// قسم ملخص السلة الضريبي والحسابي
 
 class POSCartSummarySection extends StatelessWidget {
   final PosLoaded state;
@@ -16,11 +15,28 @@ class POSCartSummarySection extends StatelessWidget {
       vatAmount: state.vatAmount,
       totalAmount: state.totalAmount,
       onConfirm: () {
+        _openPaymentSheet(context);
+      },
+    );
+  }
 
-        context.read<PosCubit>().checkout(
-          paymentType: "نقدي",
-          invoiceItems: state.cartItems,
-          finalTotal: state.totalAmount,
+  void _openPaymentSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return PaymentBottomSheet(
+          totalAmount: state.totalAmount,
+          onConfirmPayment: (method) {
+            context.read<PosCubit>().checkout(
+              paymentType: method.name,
+              invoiceItems: state.cartItems,
+              finalTotal: state.totalAmount,
+            );
+          },
         );
       },
     );

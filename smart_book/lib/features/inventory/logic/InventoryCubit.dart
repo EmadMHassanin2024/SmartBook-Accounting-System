@@ -74,28 +74,32 @@ class InventoryCubit extends Cubit<InventoryState> {
       totalInventoryValue: _calculateTotalInventoryValue(activityProducts),
     );
   }
-
-
   void _applyFilters() {
     print("🔍 [InventoryCubit] تطبيق الفلاتر على عدد منتجات خام: ${_allProducts.length}");
 
-    // 1. فلترة المنتجات بناءً على النشاط الحالي
+    // 1. فلترة مرنة جداً للمنتجات بناءً على النشاط الحالي لتجنب إرجاع قائمة فارغة
     List<ProductModel> activityProducts = _allProducts.where((p) {
       final productType = (p.itemType ?? "").trim().toLowerCase();
       final currentType = _currentActivityType.name.trim().toLowerCase();
 
-      bool isMatch = productType == currentType;
-      if (!isMatch && (productType == 'general' && _currentActivityType == BusinessModule.generalStore)) {
-        isMatch = true;
-      }
+      // إذا كان المنتج عاماً أو يتطابق مع النشاط أو إذا أردت عرض الكل مؤقتاً
+      bool isMatch = productType == currentType ||
+          productType.isEmpty ||
+          productType == 'general' ||
+          currentType.contains(productType);
+
       return isMatch;
     }).toList();
+
+    // إذا كانت النتيجة فارغة بسبب اختلاف مسميات النشاط، نقوم بإرجاع كل المنتجات كاحتياط لتظهر للمستخدم
+    if (activityProducts.isEmpty && _allProducts.isNotEmpty) {
+      activityProducts = List.from(_allProducts);
+    }
 
     // نأخذ نسخة للعمل عليها حتى لا نلعب بالأساسية
     List<ProductModel> results = List.from(activityProducts);
 
     // 2. فلترة حسب الفئة (منتهية أو قربت تنتهي)
-// 2. فلترة حسب الفئة (منتهية أو قربت تنتهي)
     if (_currentCategory == LanguageKeys.expiredCategoryKey) {
       results = results.where((p) => p.stock <= 0).toList();
     } else if (_currentCategory == LanguageKeys.lowStockCategoryKey) {
