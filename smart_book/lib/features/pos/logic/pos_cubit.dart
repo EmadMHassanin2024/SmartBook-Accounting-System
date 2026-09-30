@@ -360,65 +360,6 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
-  /// الطريقة القديمة للدفع للتوافق مع الاستخدامات القديمة.
-  Future<void> checkout({
-    required String paymentType,
-    required List<dynamic> invoiceItems,
-    required double finalTotal,
-  }) async {
-    if (_currentCart.isEmpty) return;
-
-    final extension = _currentExtension;
-
-    emit(
-      PosSubmitting(
-        extension: extension,
-      ),
-    );
-
-    try {
-      final success = await _posService.saveInvoice(
-        _currentCart,
-        paymentType,
-      );
-
-      if (!success) {
-        emit(
-          PosError(
-            'فشل حفظ الفاتورة',
-            extension: extension,
-          ),
-        );
-        return;
-      }
-
-      await InvoicePdfHelper.generateAndPrintReceipt(
-        invoiceItems,
-        finalTotal,
-        paymentType,
-      );
-
-      _currentCart.clear();
-
-      emit(
-        PosSuccess(
-          extension: extension,
-        ),
-      );
-
-      await fetchInventoryProducts(
-        extension: extension,
-      );
-    } catch (e) {
-      emit(
-        PosError(
-          e.toString(),
-          extension: extension,
-        ),
-      );
-    }
-  }
-
   void searchProducts(String query) {
     _currentSearchQuery = query;
     _emitFilteredProducts();

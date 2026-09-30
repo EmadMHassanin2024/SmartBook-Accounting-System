@@ -31,11 +31,8 @@ class POSCartSummarySection extends StatelessWidget {
         return PaymentBottomSheet(
           totalAmount: state.totalAmount,
           onConfirmPayment: (method) {
-            context.read<PosCubit>().checkout(
-              paymentType: method.name,
-              invoiceItems: state.cartItems,
-              finalTotal: state.totalAmount,
-            );
+            context.read<PosCubit>().checkoutWithMethod(method);
+
           },
         );
       },

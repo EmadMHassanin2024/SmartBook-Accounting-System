@@ -1,81 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_book/features/auth/auth_exports.dart';
+import 'package:smart_book/core/theme/app_colors.dart';
 import '../../../../../core/localization/language_keys.dart';
-import '../../../data/models/cart_item_model.dart';
+import '../../../data/models/product_model.dart';
+import '../../../logic/PosState.dart';
 import '../../../logic/pos_cubit.dart';
 
-class POSItemQuantityControls extends StatelessWidget {
-  final CartItemModel item;
+class POSQuantityControls extends StatelessWidget {
+  final ProductModel product;
+  final bool compact;
 
-  const POSItemQuantityControls({super.key, required this.item});
+  const POSQuantityControls({
+    super.key,
+    required this.product,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final canDecrease = item.quantity > 1;
-    final canIncrease = item.product.stock > item.quantity;
+    return BlocSelector<PosCubit, PosState, int>(
+      selector: (state) {
+        if (state is! PosLoaded) return 0;
+        final matchingItems = state.cartItems
+            .where((item) => item.product.id == product.id);
+        if (matchingItems.isEmpty) return 0;
+        return matchingItems.first.quantity;
+      },
+      builder: (context, quantity) {
+        final cubit = context.read<PosCubit>();
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildQuantityBtn(
-          icon: Icons.remove,
-          color: Colors.grey.shade200,
-          iconColor: canDecrease ? Colors.black : Colors.grey,
-          onTap: canDecrease
-              ? () => context.read<PosCubit>().decreaseCartItem(item.product)
-              : null,
-          tooltip: LanguageKeys.increaseQuantity,
-        ),
+        if (quantity > 0) {
+          return SizedBox(
+            height: compact ? 32 : 36,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildBtn(
+                  icon: Icons.remove,
+                  onPressed: quantity > 1
+                      ? () => cubit.decreaseCartItem(product)
+                      : null,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    '$quantity',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                ),
+                _buildBtn(
+                  icon: Icons.add,
+                  onPressed: product.stock > quantity
+                      ? () => cubit.addToCart(product)
+                      : null,
+                ),
+              ],
+            ),
+          );
+        }
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            transitionBuilder: (child, animation) =>
-                ScaleTransition(scale: animation, child: child),
-            child: Text(
-              "${item.quantity}",
-              key: ValueKey(item.quantity),
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        return SizedBox(
+          width: double.infinity,
+          height: 36,
+          child: ElevatedButton(
+            onPressed: product.stock > 0
+                ? () => cubit.addToCart(product)
+                : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text(
+              LanguageKeys.add,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
-        ),
-
-        _buildQuantityBtn(
-          icon: Icons.add,
-          color: AppColors.primaryBlue.withValues(alpha: 0.1),
-          iconColor: canIncrease ? AppColors.primaryBlue : Colors.grey,
-          onTap: canIncrease
-              ? () => context.read<PosCubit>().addToCart(item.product)
-              : null,
-          tooltip:LanguageKeys.decreaseQuantity,
-        ),
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildQuantityBtn({
-    required IconData icon,
-    required Color color,
-    required Color iconColor,
-    required VoidCallback? onTap,
-    required String tooltip,
-  }) {
-    return Tooltip(
-      message: tooltip,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, size: 16, color: iconColor),
-        ),
-      ),
+  Widget _buildBtn({required IconData icon, required VoidCallback? onPressed}) {
+    return IconButton(
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      icon: Icon(icon, size: 16),
+      onPressed: onPressed,
     );
   }
 }

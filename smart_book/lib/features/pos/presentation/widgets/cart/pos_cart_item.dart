@@ -37,7 +37,7 @@ class POSCartItem extends StatelessWidget {
           ),
           Expanded(
             flex: 2,
-            child: POSItemQuantityControls(item: item),
+            child: POSQuantityControls(product: item.product),
           ),
           Expanded(
             flex: 2,
