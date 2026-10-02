@@ -1,3 +1,4 @@
+import 'dart:async'; // تأكد من وجود مكتبة الـ Timer
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/packages.dart';
@@ -23,6 +24,8 @@ class PosCubit extends Cubit<PosState> {
   final SystemConfigurationCubit _systemConfigurationCubit;
   final PosRepository _posService;
 
+  Timer? _searchDebounce;
+
   BusinessExtension? get activeExtension => _currentExtension;
 
   final List<CartItemModel> _currentCart = [];
@@ -31,6 +34,12 @@ class PosCubit extends Cubit<PosState> {
 
   PosCubit(this._posService, this._systemConfigurationCubit) : super(PosInitial()) {
     initialize();
+  }
+
+  @override
+  Future<void> close() {
+    _searchDebounce?.cancel();
+    return super.close();
   }
 
   Future<void> initialize() async {
@@ -360,9 +369,13 @@ class PosCubit extends Cubit<PosState> {
     }
   }
 
+  /// البحث مع تقنية الـ Debounce
   void searchProducts(String query) {
-    _currentSearchQuery = query;
-    _emitFilteredProducts();
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+      _currentSearchQuery = query;
+      _emitFilteredProducts();
+    });
   }
 
   void _emitFilteredProducts() {

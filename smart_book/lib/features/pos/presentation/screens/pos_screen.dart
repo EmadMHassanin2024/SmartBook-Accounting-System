@@ -18,7 +18,7 @@ class POSScreen extends StatelessWidget {
           SnackbarHelper.showError(state.message);
         } else if (state is PosSuccess) {
           SnackbarHelper.showSuccess(
-            context.translate(LanguageKeys.paymentSuccessMessage),
+            LanguageKeys.paymentSuccessMessage,
           );
         }
       },
@@ -38,14 +38,14 @@ class POSScreen extends StatelessWidget {
               return Text(
                 ext != null
                     ? '${LanguageKeys.activity}: ${ext.extensionName}'
-                    : context.translate(LanguageKeys.pointOfSaleGeneral),
+                    : LanguageKeys.pointOfSaleGeneral,
               );
             },
           ),
           actions: [
             IconButton(
               icon: const Icon(Icons.tune),
-              tooltip: context.translate(LanguageKeys.systemSettings),
+              tooltip: LanguageKeys.systemSettings,
               onPressed: () {
                 Navigator.push(
                   context,

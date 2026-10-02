@@ -1,38 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_book/core/localization/language_keys.dart';
 import 'package:smart_book/features/pos/auth_exports.dart';
 import 'package:smart_book/features/pos/presentation/widgets/products/pos_product_card.dart';
-import 'dart:async';
 
-class POSProductGrid extends StatefulWidget {
+class POSProductGrid extends StatelessWidget {
   const POSProductGrid({super.key});
-
-  @override
-  State<POSProductGrid> createState() => _POSProductGridState();
-}
-
-class _POSProductGridState extends State<POSProductGrid> {
-  Timer? _debounce;
-
-  void _onSearchChanged(String query) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      context.read<PosCubit>().searchProducts(query);
-    });
-  }
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // حقل البحث مع Debounce
+        // حقل البحث يرسل مباشرة للكيوبت الذي يتولى الـ Debounce
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
@@ -43,7 +20,9 @@ class _POSProductGridState extends State<POSProductGrid> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onChanged: _onSearchChanged,
+            onChanged: (query) {
+              context.read<PosCubit>().searchProducts(query);
+            },
           ),
         ),
 
