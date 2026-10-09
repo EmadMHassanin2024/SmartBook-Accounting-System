@@ -1,8 +1,6 @@
 
-import 'package:smart_book/core/localization/language_keys.dart';
 import 'package:smart_book/features/pos/auth_exports.dart';
 
-import '../../../core/PaymentMethod.dart';
 
 
 class POSCheckoutButton extends StatelessWidget {
@@ -74,3 +72,4 @@ class POSCheckoutButton extends StatelessWidget {
     );
   }
 }
+

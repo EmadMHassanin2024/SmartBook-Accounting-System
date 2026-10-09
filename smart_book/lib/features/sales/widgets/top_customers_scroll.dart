@@ -1,22 +1,39 @@
-
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 
 class TopCustomersScroll extends StatelessWidget {
-  const TopCustomersScroll({super.key});
+  final List<dynamic> customers; // استقبال قائمة العملاء ديناميكياً
+
+  const TopCustomersScroll({super.key, required this.customers});
 
   @override
   Widget build(BuildContext context) {
+    // التحقق إذا كانت القائمة فارغة لعرض رسالة مناسبة
+    if (customers.isEmpty) {
+      return SizedBox(
+        height: 110,
+        child: Center(
+          child: Text(
+            "لا توجد بيانات عملاء حالياً",
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          ),
+        ),
+      );
+    }
+
     return SizedBox(
       height: 110,
-      child: ListView(
+      child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        children: [
-          _customerCircle("شركة الحلول", "85K"),
-          _customerCircle("مؤسسة الأمل", "60K"),
-          _customerCircle("أحمد علي", "42K"),
-          _customerCircle("توريدات الخليج", "30K"),
-        ],
+        itemCount: customers.length,
+        itemBuilder: (context, index) {
+          final customer = customers[index];
+          // استخراج البيانات بناءً على المفاتيح القادمة من السيرفر أو الـ Repository
+          final name = customer['name'] ?? 'عميل غير معروف';
+          final val = customer['val']?.toString() ?? '0';
+
+          return _customerCircle(name, val);
+        },
       ),
     );
   }
@@ -39,16 +56,26 @@ class TopCustomersScroll extends StatelessWidget {
             child: const Icon(Icons.person, size: 18, color: AppColors.primaryBlue),
           ),
           const SizedBox(height: 5),
-          Text(name,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Text(
+              name,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-          Text(val, style: const TextStyle(fontSize: 11, color: AppColors.successGreen, fontWeight: FontWeight.bold)),
+          Text(
+            val,
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.successGreen,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
   }
 }
-

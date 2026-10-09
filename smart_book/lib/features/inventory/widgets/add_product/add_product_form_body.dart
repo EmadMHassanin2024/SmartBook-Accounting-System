@@ -45,7 +45,7 @@ class AddProductFormBody extends StatelessWidget {
             icon: Icons.inventory_2_outlined,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return context.translate(LanguageKeys.pleaseEnterItemNameKey);
+                return LanguageKeys.pleaseEnterItemNameKey;
               }
               return null;
             },

@@ -1,5 +1,5 @@
 import 'package:smart_book/features/pos/auth_exports.dart';
-import '../../../../../core/localization/language_keys.dart';
+
 
 class POSDesktopCartPanel extends StatelessWidget {
   const POSDesktopCartPanel({super.key});
@@ -9,6 +9,8 @@ class POSDesktopCartPanel extends StatelessWidget {
     return BlocBuilder<PosCubit, PosState>(
       buildWhen: _shouldRebuild,
       builder: (context, state) {
+
+
         if (state is PosInitial || state is PosLoadingProducts) {
           return const Center(child: CircularProgressIndicator());
         }

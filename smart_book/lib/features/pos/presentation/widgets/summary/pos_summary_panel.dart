@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:smart_book/core/localization/language_keys.dart';
+
+
+
 import 'package:smart_book/features/pos/auth_exports.dart';
-import 'pos_checkout_button.dart';
+import 'package:smart_book/features/pos/presentation/widgets/summary/pos_checkout_button.dart';
+
 
 class POSSummaryPanel extends StatelessWidget {
   final double subTotal;
@@ -86,3 +88,5 @@ class POSSummaryPanel extends StatelessWidget {
     );
   }
 }
+
+

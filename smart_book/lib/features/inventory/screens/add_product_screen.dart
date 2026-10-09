@@ -13,8 +13,6 @@ class AddProductScreen extends StatelessWidget {
       child:
           _AddProductView(productToEdit: productToEdit) ,
 
-
-
     );
   }
 }
@@ -85,7 +83,7 @@ class _AddProductViewState extends State<_AddProductView> {
           isEditing: _isEditing,
           addProductTitleKey: LanguageKeys.addProductKey,
           actions: const [
-            InventoryLanguageButton(),
+
             SizedBox(width: 16),
           ],
         ),

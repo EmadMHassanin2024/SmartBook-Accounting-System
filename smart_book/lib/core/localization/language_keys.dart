@@ -56,4 +56,20 @@ class LanguageKeys {
   static const String vatTax = 'VAT (15%)';
   static const String finalTotal = 'Final Total';
   static const String confirmAndPay = 'Confirm & Pay (F10)';
+
+  static const String salesAnalyticsKey = 'Sales Analytics';
+  static const String monthlySalesGrowthKey = 'Monthly Sales Growth';
+  static const String topProductsKey = 'Top Requested Products';
+  static const String topCustomersKey = 'Top 5 Customers';
+  static const String activeActivityKey = 'Active Activity';
+  static const String retryKey = 'Retry';
+  static const String reportPreparingKey = 'report_preparing';
+  static const String noDataToExportKey = 'no_data_to_export';
+  static const String printOrExportReportKey = 'print_or_export_report';
+  static const String activeModuleKey = 'active_module';
+  static const String refreshDataKey = 'refresh_data';
+  static const String totalSalesKey = 'total_sales';
+  static const String vat15Key = 'vat_15';
+  static const String netProfitKey = 'net_profit';
+  static const String totalInvoicesKey = 'total_invoices';
 }

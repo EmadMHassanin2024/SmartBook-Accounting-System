@@ -54,5 +54,28 @@ class LanguageAR {
   static const String vatTax = 'الضريبة (15%)';
   static const String finalTotal = 'الإجمالي النهائي';
   static const String confirmAndPay = 'تأكيد ودفع (F10)';
+  static const String salesAnalytics = 'تحليلات المبيعات';
+  static const String monthlySalesGrowth = 'نمو المبيعات الشهري';
+  static const String topRequestedProducts = 'الأصناف الأكثر طلباً';
+  static const String topCustomers = 'أفضل 5 عملاء';
+  static const String activeActivity = 'النشاط النشط';
+  static const String retry = 'إعادة المحاولة';
+
+  // مفاتيح شاشة تحليلات المبيعات
+
+  static const String reportPreparing = 'جاري تجهيز تقرير تحليلات المبيعات للطباعة...';
+  static const String noDataToExport = 'لا توجد بيانات متاحة للتصدير حالياً';
+  static const String printOrExportReport = 'طباعة أو تصدير التقرير';
+  static const String activeModule = 'النشاط النشط';
+  static const String refreshData = 'تحديث البيانات';
+  static const String totalSales = 'إجمالي المبيعات';
+  static const String vat15 = 'ضريبة القيمة المضافة (15%)';
+  static const String netProfit = 'صافي الأرباح';
+  static const String totalInvoices = 'إجمالي الفواتير';
+
+  static const String topProducts = 'الأصناف الأكثر طلباً';
+
+  static const String noChartData = 'لا توجد بيانات متاحة للرسم البياني';
+  static const String noCustomersData = 'لا توجد بيانات عملاء حالياً';
 
 }
