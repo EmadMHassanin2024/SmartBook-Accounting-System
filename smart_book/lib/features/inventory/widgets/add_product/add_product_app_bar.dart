@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/localization/language.dart';
+import '../../../../core/localization/language_keys.dart';
 
 class AddProductAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isEditing;
@@ -17,7 +17,7 @@ class AddProductAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String titleText = isEditing ? "تعديل صنف" : context.translate(addProductTitleKey);
+    final String titleText = isEditing ? LanguageKeys.editProductKey: context.translate(addProductTitleKey);
     return AppBar(
       actions: actions,
       title: Text(

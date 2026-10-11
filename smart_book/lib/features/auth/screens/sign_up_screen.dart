@@ -1,7 +1,8 @@
 import 'package:smart_book/features/auth/auth_exports.dart';
-import 'package:smart_book/core/localization/app_localizations.dart';
+
 import 'package:smart_book/core/localization/language_keys.dart';
 import '../../../core/SnackbarHelper.dart';
+import '../../../core/localization/language.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

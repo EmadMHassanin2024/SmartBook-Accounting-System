@@ -1,4 +1,5 @@
-import '../../../../core/localization/app_localizations.dart';
+
+import '../../../../core/localization/language.dart';
 import '../../../../core/packages.dart';
 
 class CustomTextFieldCard extends StatelessWidget {

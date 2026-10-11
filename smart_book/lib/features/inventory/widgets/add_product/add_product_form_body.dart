@@ -1,6 +1,6 @@
 import 'package:smart_book/features/inventory/widgets/add_product/product_reorder_section.dart';
 import 'package:smart_book/features/inventory/widgets/add_product/product_units_section.dart';
-import '../../../../core/localization/app_localizations.dart';
+
 import '../../../../core/localization/language_keys.dart';
 import '../../../../core/packages.dart';
 import '../../../../core/utils/extensions/localization_extension.dart';

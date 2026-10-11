@@ -46,7 +46,6 @@ export 'dart:convert';
 
 export 'data/models/inventory_transaction.dart';
 
-export 'data/repository/inventory_repository.dart';
 
 export 'screens/items_list_screen.dart';
 
@@ -68,7 +67,14 @@ export '../inventory/widgets/add_product/product_units_section.dart';
 export '../inventory/widgets/common/section_header_widget.dart';
 
 export '../settings/logic/SettingsCubit.dart';
-export './data/repository/inventory_adjustment_screen.dart';
+export '../settings/inventory_adjustment_screen.dart';
 export '../inventory/widgets/inventory_list/item_card_widget.dart';
 
 export '../../../../core/SnackbarHelper.dart';
+
+ 
+export '../inventory/widgets/common/InventoryNavigationHelper.dart';
+
+export '../../../../core/localization/language_keys.dart';
+export '../inventory/widgets/common/inventory_language_button.dart';
+

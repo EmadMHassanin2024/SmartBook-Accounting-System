@@ -2,9 +2,9 @@
 
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../finance/adjustments/logic/adjustment_cubit.dart';
-import '../../../finance/adjustments/logic/adjustment_state.dart';
-import '../../../finance/adjustments/models/adjustment_entry.dart';
+import '../finance/adjustments/logic/adjustment_cubit.dart';
+import '../finance/adjustments/logic/adjustment_state.dart';
+import '../finance/adjustments/models/adjustment_entry.dart';
 
 
 

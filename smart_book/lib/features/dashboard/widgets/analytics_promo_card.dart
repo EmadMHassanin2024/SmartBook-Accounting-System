@@ -1,17 +1,17 @@
-import 'package:smart_book/features/inventory/auth_exports.dart';
+import 'package:smart_book/features/inventory/auth_exports.dart'  ;
 import 'package:smart_book/features/sales/Screans/sales_analytics_screen.dart';
-import '../../../l10n/app_localizations.dart';
+
 //مسؤول عن عرض كرت التحليلات الذكية
 class AnalyticsPromoCard extends StatelessWidget {
   const AnalyticsPromoCard( {super.key});
 
   @override
   Widget build(BuildContext context) {
-    final lang = AppLocalizations.of(context);
+
 
     // قيم افتراضية آمنة في حال كانت الترجمة null لتفادي الأخطاء
-    final smartAnalyticsText = lang?.smartAnalytics ?? 'Smart Analytics';
-    final viewChartsText = lang?.viewCharts ?? 'View Charts & Reports';
+    const smartAnalyticsText = LanguageKeys.smartAnalytics ?? 'Smart Analytics';
+    const viewChartsText =LanguageKeys.viewCharts ?? 'View Charts & Reports';
 
     return InkWell(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SalesAnalyticsScreen())),

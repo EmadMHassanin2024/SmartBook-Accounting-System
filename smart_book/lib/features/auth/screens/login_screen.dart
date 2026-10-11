@@ -1,6 +1,8 @@
 import 'package:smart_book/features/auth/auth_exports.dart';
-import 'package:smart_book/core/localization/app_localizations.dart';
+
 import 'package:smart_book/core/localization/language_keys.dart';
+
+import '../../../core/localization/language.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

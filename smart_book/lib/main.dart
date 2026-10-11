@@ -1,27 +1,18 @@
-import 'package:smart_book/features/auth/auth_exports.dart' hide AppLocalizations;
+import 'package:smart_book/features/auth/auth_exports.dart';
 import 'package:smart_book/features/inventory/auth_exports.dart';
-
 import 'package:smart_book/features/pos/logic/pos_cubit.dart';
 import 'package:smart_book/features/finance/journals/repositories/JournalRepository.dart';
 import 'package:smart_book/features/finance/journals/logic/JournalListCubit.dart';
 import 'package:smart_book/features/finance/ledger/logic/ledger_cubit.dart';
-
 import 'package:smart_book/features/finance/TrialBalance/logic/TrialBalanceCubit.dart';
 import 'package:smart_book/features/finance/Account/logic/account_cubit.dart';
-
 import 'core/routes/AppRouter.dart';
 import 'core/routes/app_routes.dart';
 import 'core/widgets/main_layout.dart';
-
 import 'features/finance/income_statement/data/repositories/income_statement_repository.dart';
 import 'features/finance/income_statement/logic/income_statement_cubit.dart';
 import 'features/finance/repositories/FinancialReportsRepository.dart';
-
 import 'features/pos/data/Repository/PosRepository.dart';
-
-
-
-import 'core/localization/app_localizations.dart';
 import 'features/pos/presentation/screens/pos_screen.dart'; // تأكد من استيراد ملف الترجمة الصحيح
 
 class MyHttpOverrides extends HttpOverrides {
@@ -59,11 +50,9 @@ class SmartBookApp extends StatelessWidget {
           create: (context) => sl<InventoryCubit>()..fetchProducts(),
         ),
 
-
    /*
         // تم تصحيح AddProductCubit بإزالة الـ child الخاطئ
         BlocProvider<AddProductCubit>(create: (_) => sl<AddProductCubit>()),
-
     */
         BlocProvider<SettingsCubit>(create: (_) => SettingsCubit()),
         BlocProvider<AuthCubit>(create: (context) => AuthCubit(sl<TokenRepository>())),
@@ -75,7 +64,6 @@ class SmartBookApp extends StatelessWidget {
         BlocProvider<JournalListCubit>(create: (_) => JournalListCubit(sl<JournalRepository>())),
         BlocProvider<LedgerCubit>(create: (_) => LedgerCubit(sl<FinancialReportsRepository>())),
         BlocProvider<AdjustmentCubit>(create: (context) => AdjustmentCubit(sl<FinancialReportsRepository>())),
-
         BlocProvider<PosCubit>(create: (context) => PosCubit(sl<PosRepository>(),
             context.read<SystemConfigurationCubit>(), // تمرير المتطلب الثاني
           ),
@@ -84,12 +72,14 @@ class SmartBookApp extends StatelessWidget {
       ],
       child: BlocBuilder<SettingsCubit, Locale>(
         builder: (context, locale) {
+
           return MaterialApp(
             debugShowCheckedModeBanner: false,
+
             title: 'SmartBook',
             initialRoute: AppRoutes.login,
             onGenerateRoute: AppRouter.generateRoute,
-            locale: locale,
+            locale:  locale,
 
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: const [

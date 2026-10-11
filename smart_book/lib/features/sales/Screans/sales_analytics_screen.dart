@@ -45,14 +45,14 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
     if (canExport) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(LanguageKeys.reportPreparingKey),
+          content: Text(LanguageKeys.reportPreparing),
           backgroundColor: Colors.blueGrey,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(LanguageKeys.noDataToExportKey),
+          content: Text(LanguageKeys.noDataToExport),
           backgroundColor: Colors.red,
         ),
       );
@@ -65,7 +65,7 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
       backgroundColor: AppColors.scaffoldBg,
       appBar: AppBar(
         title: const Text(
-          LanguageKeys.salesAnalyticsKey,
+          LanguageKeys.salesAnalytics,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -74,7 +74,7 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.print_outlined, color: AppColors.primaryBlue),
-            tooltip: LanguageKeys.printOrExportReportKey,
+            tooltip: LanguageKeys.printOrExportReport,
             onPressed: _handlePrintOrExport,
           ),
         ],
@@ -105,7 +105,7 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () => cubit.initialize(),
-                    child: const Text(LanguageKeys.retryKey),
+                    child: const Text(LanguageKeys.retry),
                   ),
                 ],
               ),
@@ -134,7 +134,7 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
                             const Icon(Icons.storefront, size: 18, color: AppColors.primaryBlue),
                             const SizedBox(width: 8),
                             Text(
-                              "${LanguageKeys.activeModuleKey}: $activeType",
+                              "${LanguageKeys.activeModule}: $activeType",
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
@@ -147,7 +147,7 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
                       IconButton(
                         icon: const Icon(Icons.refresh, size: 20, color: AppColors.primaryBlue),
                         onPressed: () => cubit.initialize(),
-                        tooltip: LanguageKeys.refreshDataKey,
+                        tooltip: LanguageKeys.refreshData,
                       ),
                     ],
                   ),
@@ -171,10 +171,10 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
                         mainAxisSpacing: 12,
                         childAspectRatio: 2.5,
                         children: [
-                          _buildKpiCard(LanguageKeys.totalSalesKey, '${state.totalSales.toStringAsFixed(2)} ر.س', Icons.trending_up, AppColors.primaryBlue),
-                          _buildKpiCard(LanguageKeys.vat15Key, '${state.totalVat.toStringAsFixed(2)} ر.س', Icons.receipt_long, Colors.orange),
-                          _buildKpiCard(LanguageKeys.netProfitKey, '${state.netProfit.toStringAsFixed(2)} ر.س', Icons.account_balance_wallet, Colors.green),
-                          _buildKpiCard(LanguageKeys.totalInvoicesKey, '${state.totalInvoices}', Icons.format_list_numbered, Colors.purple),
+                          _buildKpiCard(LanguageKeys.totalSales, '${state.totalSales.toStringAsFixed(2)} ر.س', Icons.trending_up, AppColors.primaryBlue),
+                          _buildKpiCard(LanguageKeys.vat15, '${state.totalVat.toStringAsFixed(2)} ر.س', Icons.receipt_long, Colors.orange),
+                          _buildKpiCard(LanguageKeys.netProfit, '${state.netProfit.toStringAsFixed(2)} ر.س', Icons.account_balance_wallet, Colors.green),
+                          _buildKpiCard(LanguageKeys.totalInvoices, '${state.totalInvoices}', Icons.format_list_numbered, Colors.purple),
                         ],
                       );
                     },
@@ -183,7 +183,7 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
 
                   // 3. الرسم البياني لنمو المبيعات
                   const Text(
-                    LanguageKeys.monthlySalesGrowthKey,
+                    LanguageKeys.monthlySalesGrowth,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   const SizedBox(height: 10),
@@ -193,7 +193,7 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
 
                   // 4. الأصناف الأكثر طلباً
                   const Text(
-                    LanguageKeys.topProductsKey,
+                    LanguageKeys.topProducts,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   const SizedBox(height: 10),
@@ -203,7 +203,7 @@ class _SalesAnalyticsViewState extends State<_SalesAnalyticsView> {
 
                   // 5. أفضل العملاء
                   const Text(
-                    LanguageKeys.topCustomersKey,
+                    LanguageKeys.topCustomers,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   const SizedBox(height: 10),

@@ -1,13 +1,20 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import '../widgets/common/InventoryNavigationHelper.dart';
 
 class ItemsListScreen extends StatelessWidget {
   const ItemsListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    final inventoryRepo =ProductRepository();
     return BlocProvider(
-      create: (_)=>sl<InventoryCubit>()..initialize(),
+      create: (_) {
+        return InventoryCubit(
+          inventoryRepo,
+          context.read<SystemConfigurationCubit>(),
+        )
+          ..initialize();
+      },
       child: Scaffold(
             backgroundColor: AppColors.scaffoldBg,
             appBar: ItemsListAppBar(

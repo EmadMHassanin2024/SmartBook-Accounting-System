@@ -1,8 +1,6 @@
 import 'package:smart_book/features/pos/auth_exports.dart';
 import '../../../../core/SnackbarHelper.dart';
-import '../../../../core/localization/app_localizations.dart';
-import '../../../../core/localization/language_keys.dart';
-import '../../core/business_extension.dart';
+
 import '../widgets/responsive/pos_responsive_layout.dart';
 
 class POSScreen extends StatelessWidget {

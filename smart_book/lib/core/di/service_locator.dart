@@ -1,12 +1,11 @@
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
 
 import '../../features/finance/adjustments/logic/adjustment_cubit.dart';
 import '../../features/finance/income_statement/data/repositories/income_statement_repository.dart';
 import '../../features/finance/journals/repositories/JournalRepository.dart';
 import '../../features/finance/repositories/FinancialReportsRepository.dart';
 
-import '../../features/inventory/data/repository/inventory_repository.dart';
+
 import '../../features/inventory/logic/InventoryCubit.dart';
 import '../../features/inventory/logic/add_product_cubit.dart';
 
@@ -39,12 +38,14 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<FinancialReportsRepository>(
         () => FinancialReportsRepository(),
   );
-
+/*
   sl.registerLazySingleton<InventoryRepository>(
         () => InventoryRepository(
       http.Client(),
     ),
   );
+
+ */
 
   sl.registerLazySingleton<IncomeStatementRepository>(
         () => IncomeStatementRepository(),
@@ -80,12 +81,14 @@ Future<void> setupLocator() async {
   );
 
 
-
+/*
   sl.registerFactory<AddProductCubit>(
         () => AddProductCubit(
       sl<ProductRepository>(),
     ),
   );
+
+ */
 
   sl.registerFactory<AdjustmentCubit>(
         () => AdjustmentCubit(

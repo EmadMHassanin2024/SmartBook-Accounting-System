@@ -1,6 +1,9 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
 class AddProductCubit extends Cubit<AddProductState> {
+
+  final ProductRepository productRepository;
+  final ProductModel? productToEdit;
   // تعريف وتضمين جميع الـ Controllers مباشرة داخل الكيوبيت بداخلة لمنع زحمة المعلمات
   final nameController = TextEditingController();
   final barcodeController = TextEditingController();
@@ -13,7 +16,7 @@ class AddProductCubit extends Cubit<AddProductState> {
   final ProductRepository productService;
 
   // تهيئة الـ Cubit بالوحدة الأساسية الافتراضية (قطعة) من أول ثانية
-  AddProductCubit(this.productService)
+  AddProductCubit(this.productService, {required this.productRepository, this.productToEdit})
       : super(AddProductInitial(
     units: [
       const ProductUnitModel(

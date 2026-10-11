@@ -1,6 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import '../../../core/localization/language_keys.dart';
-import '../widgets/common/inventory_language_button.dart';
+
 
 class AddProductScreen extends StatelessWidget {
   final ProductModel? productToEdit;
@@ -8,52 +7,31 @@ class AddProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final inventoryRepo =ProductRepository();
     return BlocProvider(
-      create: (_) => sl<AddProductCubit>(),
-      child:
-          _AddProductView(productToEdit: productToEdit) ,
+      create: (_) => AddProductCubit(
+        inventoryRepo,
+        productRepository: inventoryRepo,
+        productToEdit: productToEdit,
+      ),
+          child:  const _AddProductView() ,
 
     );
   }
 }
-
-class _AddProductView extends StatefulWidget {
+class _AddProductView extends StatelessWidget {
   final ProductModel? productToEdit;
   const _AddProductView({this.productToEdit});
 
-  @override
-  State<_AddProductView> createState() => _AddProductViewState();
-}
-
-class _AddProductViewState extends State<_AddProductView> {
-  final _formKey = GlobalKey<FormState>();
-
-  late final AddProductCubit cubit;
-  late final String currentActivityType;
-  bool get _isEditing => widget.productToEdit != null;
-
-
-  @override
-  void initState() {
-    super.initState();
-
-      cubit = context.read<AddProductCubit>();
-
-      currentActivityType = context.read<SystemConfigurationCubit>()
-          .state.settings.activeBusinessModule.name;
-
-
-    // استدعاء تهيئة الـ Controllers وملء البيانات القديمة في حال التعديل
-
-      cubit.initializeControllers(
-        productToEdit: widget.productToEdit,
-      );
-
-
-  }
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    final cubit = context.read<AddProductCubit>();
+    final currentActivityType = context.read<SystemConfigurationCubit>()
+        .state.settings.activeBusinessModule.name;
+
+    final bool isEditing = productToEdit != null;
     return BlocListener<AddProductCubit, AddProductState>(
       listener: (context, state) {
         if (state is AddProductLoading) {
@@ -80,7 +58,7 @@ class _AddProductViewState extends State<_AddProductView> {
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBg,
         appBar: AddProductAppBar(
-          isEditing: _isEditing,
+          isEditing: isEditing,
           addProductTitleKey: LanguageKeys.addProductKey,
           actions: const [
 
@@ -93,7 +71,7 @@ class _AddProductViewState extends State<_AddProductView> {
               previous.units != current.units,
           builder: (context, addProductState) {
             return AddProductFormBody(
-              formKey: _formKey,
+              formKey: formKey,
               cubit: cubit,
               addProductState: addProductState,
               currentActivityType: currentActivityType,
@@ -104,9 +82,9 @@ class _AddProductViewState extends State<_AddProductView> {
           onSavePressed: () {
             cubit.onSave(
               context: context,
-              formKey: _formKey,
+              formKey: formKey,
               activityType: currentActivityType,
-              productToEdit: widget.productToEdit,
+              productToEdit: productToEdit,
             );
           },
         ),

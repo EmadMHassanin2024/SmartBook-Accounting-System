@@ -1,8 +1,8 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../../core/localization/app_localizations.dart';
-import '../../../../core/localization/language_keys.dart';
-import '../common/inventory_language_button.dart';
+import '../../../../core/localization/language.dart';
+import '../../../../core/widgets/app_text.dart';
+
 //AppBar
 class ItemsListAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onFilterPressed;
@@ -18,10 +18,9 @@ class ItemsListAppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidth: 96,
       leading: const InventoryLanguageButton(),
 
-      title: Text(
-       // context.lang.itemsAndInventory,
-        context.translate(LanguageKeys.appNameKey),
-        style: const TextStyle(
+      title: const AppText(
+      textKey: LanguageKeys.appNameKey,
+        style: TextStyle(
           fontWeight: FontWeight.bold,
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/localization/language.dart';
 import '../../../../core/localization/language_keys.dart';
 
 

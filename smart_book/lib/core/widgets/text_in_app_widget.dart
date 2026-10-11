@@ -1,5 +1,8 @@
+/*
 import 'package:flutter/material.dart';
-import '../localization/app_localizations.dart';
+
+import '../../l10n/app_localizations.dart';
+
 
 class TextInAppWidget extends StatelessWidget {
   final String text; // يستقبل LanguageKeys مباشرة
@@ -55,3 +58,5 @@ class TextInAppWidget extends StatelessWidget {
     }
   }
 }
+
+ */

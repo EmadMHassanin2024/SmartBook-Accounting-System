@@ -1,5 +1,7 @@
+//المحتوى" (ما بداخل الصندوق حسب اللغة).
 class LanguageAR {
   static const String appNameAR = 'سمارت بوك';
+
   static const String appTitleAR = 'سمارت بوك للمحاسبة';
   static const String loginAR = 'تسجيل الدخول';
   static const String signUpAR = 'إنشاء حساب';
@@ -10,7 +12,7 @@ class LanguageAR {
   static const String initialStockAR = 'الكمية الافتتاحية بـ';
   static const String pleaseEnterItemNameAR = 'يرجى إدخال اسم الصنف';
   static const String pleaseEnterValidQuantityAR = 'يرجى إدخال رقم صحيح للكمية';
-  static const String pleaseEnterInitialStockAR = 'اضاقة وحدة مبيعات جد';
+  static const String pleaseEnterInitialStockAR = 'يرجى إدخال الكمية الافتتاحية';
   static const String addAnotherUnitAR = 'إضافة وحدة بيع أخرى (جملة)';
   static const String salePriceAR = 'سعر البيع';
   static const String purchasePriceAR = 'سعر الشراء';
@@ -21,12 +23,12 @@ class LanguageAR {
   static const String expiredAR = "منتهية";
   static const String lowStockAR = "قربت تنتهي";
 
-  static const String saveSuccessKey = 'تم الحفظ بنجاح';
+  static const String saveSuccessAR = 'تم الحفظ بنجاح';
   static const String activityAR = 'النشاط';
   static const String pointOfSaleGeneralAR = 'نقطة البيع العامة';
   static const String systemSettingsAR = 'إعدادات النظام';
 
-  static const String   paymentSuccessMessage= "تمت عملية الدفع بنجاح!";
+  static const String paymentSuccessMessage = "تمت عملية الدفع بنجاح!";
   static const String searchProductHint = "ابحث عن منتج...";
   static const String noProductsFound = "لا توجد منتجات مطابقة للبحث";
   static const String emptyCartMessage = "السلة فارغة";
@@ -43,10 +45,10 @@ class LanguageAR {
   static const String submittingMessage = 'جاري تنفيذ العملية...';
 
   static const String choosePaymentMethod = 'اختر طريقة الدفع';
-
-
   static const String requiredTotal = 'الإجمالي المطلوب';
   static const String cashMethod = 'كاش';
+  static const String cardMethod = 'شبكة';
+  static const String creditMethod = 'آجل';
   static const String addImage = 'أضف صورة';
   static const String remainingStock = 'المتبقي';
   static const String add = 'إضافة';
@@ -54,14 +56,13 @@ class LanguageAR {
   static const String vatTax = 'الضريبة (15%)';
   static const String finalTotal = 'الإجمالي النهائي';
   static const String confirmAndPay = 'تأكيد ودفع (F10)';
+
   static const String salesAnalytics = 'تحليلات المبيعات';
   static const String monthlySalesGrowth = 'نمو المبيعات الشهري';
   static const String topRequestedProducts = 'الأصناف الأكثر طلباً';
   static const String topCustomers = 'أفضل 5 عملاء';
   static const String activeActivity = 'النشاط النشط';
   static const String retry = 'إعادة المحاولة';
-
-  // مفاتيح شاشة تحليلات المبيعات
 
   static const String reportPreparing = 'جاري تجهيز تقرير تحليلات المبيعات للطباعة...';
   static const String noDataToExport = 'لا توجد بيانات متاحة للتصدير حالياً';
@@ -77,5 +78,9 @@ class LanguageAR {
 
   static const String noChartData = 'لا توجد بيانات متاحة للرسم البياني';
   static const String noCustomersData = 'لا توجد بيانات عملاء حالياً';
-
+  static const String smartAnalytics = 'التحليلات الذكية';
+  static const String viewCharts = 'عرض الرسوم البيانية والتقارير';
+  static const String salesToday = 'مبيعات اليوم';
+  static const String paymentVouchers = 'سندات الصرف';
+  static const String editProductAR = 'تعديل صنف';
 }

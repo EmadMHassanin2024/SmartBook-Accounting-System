@@ -1,6 +1,6 @@
 
-import '../../../core/localization/app_localizations.dart';
 
+import '../../../core/localization/language.dart';
 import '../../contacts/screens/contacts_list_screen.dart';
 
 import '../../finance/accounting/models/voucher_model.dart';

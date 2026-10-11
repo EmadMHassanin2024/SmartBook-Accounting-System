@@ -1,6 +1,7 @@
 import 'dart:convert';
 import '../../../../core/network/base_api_service.dart';
 
+import '../features/inventory/data/models/inventory_transaction.dart';
 import '../features/pos/data/models/product_model.dart';
 import '../models/ ProductUnitModel.dart';
 import 'AuthService.dart';
@@ -96,6 +97,19 @@ class ProductRepository {
     }
   }
 
+  Future<bool> saveAdjustment(InventoryTransaction transaction) async {
+    final String token = await AuthService.getToken(); // جلب التوكين بأمان
+    try {
+      final response = await BaseApiService.postRequest(
+        'Products/adjust-stock',
+        transaction.toJson(),
+        token,
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      return false;
+    }
+  }
   // 4. حذف صنف متوافق مع BaseApiService
   Future<void> deleteProduct(int productId) async {
     final String token = await AuthService.getToken();
