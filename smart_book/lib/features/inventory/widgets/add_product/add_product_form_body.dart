@@ -15,7 +15,7 @@ class AddProductFormBody extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final AddProductCubit cubit;
   final AddProductState addProductState;
-  final String currentActivityType; // إذا احتجتها هنا، أو جلبناها من الـ cubit
+  final String currentActivityType;
 
   const AddProductFormBody({
     super.key,
@@ -67,10 +67,11 @@ class AddProductFormBody extends StatelessWidget {
 
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return context.lang.pleaseEnterInitialStock; // أو رسالة الحقل المطلوبة
+                return  LanguageKeys.pleaseEnterInitialStockKey; // أو رسالة الحقل المطلوبة
               }
               if (double.tryParse(value.trim()) == null) {
-                return context.lang.pleaseEnterValidQuantity;
+                return
+                  LanguageKeys.pleaseEnterValidQuantityKey;
               }
               return null;
             },
@@ -78,9 +79,12 @@ class AddProductFormBody extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           //حد إعادة الطلب
+
           ProductReorderSection(
             reorderLevelController: cubit.reorderLevelController,
           ),
+
+
 
 
           const SizedBox(height: 16),
@@ -101,6 +105,10 @@ class AddProductFormBody extends StatelessWidget {
 
           ProductUnitsSection(units: addProductState.units),
           const SizedBox(height: 120),
+
+
+
+
         ],
       ),
     );

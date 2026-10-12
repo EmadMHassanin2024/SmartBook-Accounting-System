@@ -7,7 +7,7 @@ class AddProductFAB extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () async {
-        // الانتقال للشاشة مباشرة دون تغليف إضافي، لأن الشاشة مكتفية ذاتياً (Self-contained)
+
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
@@ -15,7 +15,7 @@ class AddProductFAB extends StatelessWidget {
           ),
         );
 
-        // تحديث البيانات تلقائياً وفوراً إذا نجحت عملية الإضافة/التعديل وعاد بـ true
+
         if (result == true && context.mounted) {
           context.read<InventoryCubit>().fetchProducts();
         }

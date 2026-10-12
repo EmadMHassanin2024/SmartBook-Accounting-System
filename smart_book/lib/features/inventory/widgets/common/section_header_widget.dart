@@ -2,7 +2,6 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
 import '../../../../core/localization/language.dart';
-import '../../../../l10n/app_localizations.dart' hide AppLocalizations;
 
 
 class SectionHeader extends StatelessWidget {

@@ -83,4 +83,5 @@ class LanguageAR {
   static const String salesToday = 'مبيعات اليوم';
   static const String paymentVouchers = 'سندات الصرف';
   static const String editProductAR = 'تعديل صنف';
+
 }

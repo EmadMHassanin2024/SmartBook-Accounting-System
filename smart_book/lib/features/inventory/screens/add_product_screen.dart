@@ -1,6 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-
 class AddProductScreen extends StatelessWidget {
   final ProductModel? productToEdit;
   const AddProductScreen({super.key, this.productToEdit});
@@ -57,6 +56,7 @@ class _AddProductView extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBg,
+
         appBar: AddProductAppBar(
           isEditing: isEditing,
           addProductTitleKey: LanguageKeys.addProductKey,

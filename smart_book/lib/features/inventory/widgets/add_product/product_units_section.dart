@@ -1,9 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../../core/localization/language.dart';
-import '../../../../core/localization/language_keys.dart';
-
-
 class ProductUnitsSection extends StatelessWidget {
   final List<ProductUnitModel> units;
 
@@ -14,7 +10,7 @@ class ProductUnitsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(context.translate(LanguageKeys.unitsAndPricesKey), Icons.sell),
+        _buildSectionHeader( (LanguageKeys.unitsAndPricesKey), Icons.sell),
 
         ...units.asMap().entries.map((entry) {
           final index = entry.key;

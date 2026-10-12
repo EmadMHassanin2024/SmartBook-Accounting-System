@@ -3,7 +3,7 @@ import '../../../../core/localization/language.dart';
 import '../../../../core/packages.dart';
 
 class CustomTextFieldCard extends StatelessWidget {
- final String labelTextKey; //  يستقبل مفتاح الترجمة
+ final String labelTextKey;
   final TextEditingController controller;
   final IconData icon;
   final TextInputType keyboardType;
@@ -20,7 +20,7 @@ class CustomTextFieldCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // التأكد من جلب الترجمة الصحيحة باستخدام المفتاح الممرر
+
     final String translatedLabel = context.translate(labelTextKey);
 
     return Padding(
@@ -30,7 +30,7 @@ class CustomTextFieldCard extends StatelessWidget {
         keyboardType: keyboardType,
         validator: validator,
         decoration: InputDecoration(
-          labelText: translatedLabel,
+          labelText: context.translate(labelTextKey),
           prefixIcon: Icon(icon),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
