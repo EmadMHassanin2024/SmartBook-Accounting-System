@@ -154,6 +154,7 @@ class AppLanguages {
       LanguageKeys.salesToday: LanguageEN.salesToday,
       LanguageKeys.paymentVouchers: LanguageEN.paymentVouchers,
       LanguageKeys.editProductKey: LanguageEN.editProductEN,
+
     },
   };
 }

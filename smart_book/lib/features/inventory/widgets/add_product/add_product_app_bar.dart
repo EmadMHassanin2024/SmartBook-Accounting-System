@@ -18,14 +18,14 @@ class AddProductAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String titleKey = isEditing ? LanguageKeys.editProductKey : addProductTitleKey;
 
-    final String titleText  = isEditing ? LanguageKeys.editProductKey : addProductTitleKey;
     return AppBar(
       leadingWidth: 96,
       leading: const InventoryLanguageButton(),
       actions: actions,
       title: Text(
-        titleText,
+        context.translate(addProductTitleKey),
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       centerTitle: true,

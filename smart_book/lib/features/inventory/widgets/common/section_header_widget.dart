@@ -22,7 +22,8 @@ class SectionHeader extends StatelessWidget {
           Icon(icon, color: AppColors.primaryBlue, size: 20),
           const SizedBox(width: 8),
           Text(
-            displayedTitle,
+            context.translate(titleKey),
+
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

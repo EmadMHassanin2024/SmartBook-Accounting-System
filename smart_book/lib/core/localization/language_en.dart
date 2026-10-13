@@ -79,4 +79,6 @@ class LanguageEN {
   static const String salesToday = 'Sales Today';
   static const String paymentVouchers = 'Payment Vouchers';
   static const String editProductEN = 'Edit Item';
+  static const String addProductKey = 'add_product';
+  static const String basicInfoKey = 'basic_info';
 }

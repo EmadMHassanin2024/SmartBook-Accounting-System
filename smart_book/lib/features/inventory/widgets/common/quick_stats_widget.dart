@@ -28,7 +28,7 @@ class QuickStatsWidget extends StatelessWidget {
         children: [
           // بطاقة كل الأصناف
           StatCardItem(
-            title: LanguageKeys.allCategoryKey,
+            textKey: LanguageKeys.allCategoryKey,
             count: totalCount.toString(),
             color: Colors.blue,
             onTap: onTotalTap,
@@ -37,7 +37,7 @@ class QuickStatsWidget extends StatelessWidget {
 
           // بطاقة قربت تنتهي
           StatCardItem(
-            title: LanguageKeys.lowStockCategoryKey,
+            textKey: LanguageKeys.lowStockCategoryKey,
             count: lowStockCount.toString(),
             color: Colors.orange,
             onTap: onLowStockTap,
@@ -46,7 +46,7 @@ class QuickStatsWidget extends StatelessWidget {
 
           // بطاقة منتهية
           StatCardItem(
-            title: LanguageKeys.expiredCategoryKey,
+            textKey: LanguageKeys.expiredCategoryKey,
             count: outOfStockCount.toString(),
             color: Colors.red,
             onTap: onOutOfStockTap,
