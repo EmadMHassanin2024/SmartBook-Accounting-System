@@ -14,7 +14,7 @@ class IncomeStatementRepository {
 
     final endpoint = 'FinancialReports/income-statement?fromDate=${from.toIso8601String()}&toDate=${to.toIso8601String()}';
 
-    final response = await BaseApiService.getRequest(endpoint, token);
+    final response = await BaseApiService.getRequest(endpoint);
 
     if (response.statusCode == 200) {
       return IncomeStatementModel.fromJson(jsonDecode(response.body));

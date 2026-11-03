@@ -7,7 +7,8 @@ class CustomTextFieldCard extends StatelessWidget {
   final TextEditingController controller;
   final IconData icon;
   final TextInputType keyboardType;
-  final String? Function(String?)? validator;
+  final String? Function(String?S)? validator;
+ final void Function(String)? onChanged;
 
   const CustomTextFieldCard({
     super.key,
@@ -16,6 +17,7 @@ class CustomTextFieldCard extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.validator,
     required this.labelTextKey,
+    this.onChanged,
   });
 
   @override
@@ -29,6 +31,7 @@ class CustomTextFieldCard extends StatelessWidget {
         controller: controller,
         keyboardType: keyboardType,
         validator: validator,
+        onChanged: onChanged,
         decoration: InputDecoration(
           labelText: context.translate(labelTextKey),
           prefixIcon: Icon(icon),

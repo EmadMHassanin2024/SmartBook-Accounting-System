@@ -1,5 +1,4 @@
 
-import 'package:flutter/material.dart';
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
 class InventoryContentView extends StatelessWidget {
@@ -10,6 +9,7 @@ class InventoryContentView extends StatelessWidget {
     super.key,
     required this.state,
     required this.onOpenFilters,
+
   });
 
   @override

@@ -21,6 +21,16 @@ class InventoryStateViews extends StatelessWidget {
         ),
       );
     }
+    if (state is InventoryError) {
+      final errorState = state as InventoryError;
+      return Center(
+        child: Text(
+          'خطأ: ${errorState.message.replaceAll("Exception: ", "")}',
+          style: const TextStyle(color: Colors.red),
+        ),
+      );
+    }
+
 
     if (state is InventoryLoaded) {
       final loadedState = state as InventoryLoaded;

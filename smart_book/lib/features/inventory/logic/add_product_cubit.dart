@@ -1,23 +1,13 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
 class AddProductCubit extends Cubit<AddProductState> {
-
-  final ProductRepository productRepository;
+  final InventoryRepository productRepository;
   final ProductModel? productToEdit;
-  // تعريف وتضمين جميع الـ Controllers مباشرة داخل الكيوبيت بداخلة لمنع زحمة المعلمات
-  final nameController = TextEditingController();
-  final barcodeController = TextEditingController();
-  final stockController = TextEditingController();
-  final reorderLevelController = TextEditingController();
-  final expiryDateController = TextEditingController();
-  final batchController = TextEditingController();
-  final sizeController = TextEditingController();
-  final colorController = TextEditingController();
-  final ProductRepository productService;
 
-  // تهيئة الـ Cubit بالوحدة الأساسية الافتراضية (قطعة) من أول ثانية
-  AddProductCubit(this.productService, {required this.productRepository, this.productToEdit})
-      : super(AddProductInitial(
+  AddProductCubit({
+    required this.productRepository,
+    this.productToEdit,
+  }) : super(AddProductInitial(
     units: [
       const ProductUnitModel(
         unitName: 'قطعة',
@@ -27,101 +17,18 @@ class AddProductCubit extends Cubit<AddProductState> {
         isBaseUnit: true,
       )
     ],
-    isIngredient: false,
     expiryDate: null,
   ));
 
-  @override
-  Future<void> close() {
-    // التخلص من الـ Controllers لمنع تسريب الذاكرة (Memory Leaks)
-    nameController.dispose();
-    barcodeController.dispose();
-    stockController.dispose();
-    reorderLevelController.dispose();
-    expiryDateController.dispose();
-    batchController.dispose();
-    sizeController.dispose();
-    colorController.dispose();
-    return super.close();
-  }
-
-  // تحديث حالة المكون (Ingredient)
-  void changeIngredientStatus(bool value) {
-    emit(AddProductStateModified(
-      isIngredient: value,
-      units: state.units,
-      expiryDate: state.expiryDate,
-    ));
-  }
-
-  // تحديث تاريخ الصلاحية
+  // تحديث تاريخ الصلاحية فقط
   void setExpiryDate(String date) {
     emit(AddProductStateModified(
-      isIngredient: state.isIngredient,
       units: state.units,
       expiryDate: date,
     ));
   }
 
-  // معالجة بيانات إضافة المنتج
-  void submitProductData({
-    required String itemType,
-  }) {
-    final name = nameController.text.trim();
-    final barcode = barcodeController.text.trim();
-    final stock = double.tryParse(stockController.text.trim()) ?? 0.0;
-    final expiry = _getOptionalText(expiryDateController);
-    final batch = _getOptionalText(batchController);
-    final size = _getOptionalText(sizeController);
-    final color = _getOptionalText(colorController);
-
-    submitProduct(
-      name: name,
-      barcode: barcode,
-      stock: stock,
-      expiryDate: expiry,
-      batchNumber: batch,
-      isIngredient: state.isIngredient,
-      size: size,
-      color: color,
-      itemType: itemType,
-    );
-  }
-
-  // معالجة بيانات تعديل المنتج وتحويل الـ ID بأمان
-  void updateProductData({
-    required dynamic productId,
-    required String itemType,
-    required List<ProductUnitModel> units,
-  }) {
-    final parsedId = productId is int
-        ? productId
-        : int.tryParse(productId.toString()) ?? 0;
-
-    final name = nameController.text.trim();
-    final barcode = barcodeController.text.trim();
-    final stock = double.tryParse(stockController.text.trim()) ?? 0.0;
-    final expiry = _getOptionalText(expiryDateController);
-    final batch = _getOptionalText(batchController);
-    final size = _getOptionalText(sizeController);
-    final color = _getOptionalText(colorController);
-
-    updateProduct(
-      productId: parsedId,
-      name: name,
-      barcode: barcode,
-      totalStockQuantity: stock,
-      expiryDate: expiry,
-      batchNumber: batch,
-      isIngredient: state.isIngredient,
-      size: size,
-      color: color,
-      itemType: itemType,
-      productUnits: units,
-    );
-  }
-
-  // 1. دالة إضافة وحدة بيع فرعية جديدة
+  // 1. دالة إضافة وحدة بيع جديدة
   void addUnit() {
     final updatedUnits = List<ProductUnitModel>.from(state.units);
     updatedUnits.add(const ProductUnitModel(
@@ -133,7 +40,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     ));
     emit(AddProductUnitsUpdated(
       units: updatedUnits,
-      isIngredient: state.isIngredient,
       expiryDate: state.expiryDate,
     ));
   }
@@ -145,7 +51,6 @@ class AddProductCubit extends Cubit<AddProductState> {
       updatedUnits.removeAt(index);
       emit(AddProductUnitsUpdated(
         units: updatedUnits,
-        isIngredient: state.isIngredient,
         expiryDate: state.expiryDate,
       ));
     }
@@ -155,43 +60,26 @@ class AddProductCubit extends Cubit<AddProductState> {
   void setInitialUnits(List<ProductUnitModel> units) {
     emit(AddProductUnitsUpdated(
       units: units.isEmpty ? state.units : units,
-      isIngredient: state.isIngredient,
       expiryDate: state.expiryDate,
     ));
   }
 
-  // 4. دالة التحديث الديناميكي والذكاء المحاسبي لاحتساب أسعار الجملة تلقائياً
+  // 4. دالة التحديث المباشر لبيانات الوحدة
   void updateUnitData({
     required int index,
     String? name,
     double? salePrice,
     double? purchasePrice,
-    double? conversionFactor,
   }) {
     final updatedUnits = List<ProductUnitModel>.from(state.units);
     if (index < updatedUnits.length) {
       final unit = updatedUnits[index];
 
-      double newFactor = conversionFactor ?? unit.conversionFactor;
-      double? newSalePrice = salePrice;
-      double? newPurchasePrice = purchasePrice;
-
-      if (index > 0 && conversionFactor != null) {
-        final baseUnit = updatedUnits[0];
-
-        if (baseUnit.salePrice > 0) {
-          newSalePrice = baseUnit.salePrice * newFactor;
-        }
-        if (baseUnit.purchasePrice > 0) {
-          newPurchasePrice = baseUnit.purchasePrice * newFactor;
-        }
-      }
-
       updatedUnits[index] = ProductUnitModel(
         unitName: name ?? unit.unitName,
-        salePrice: newSalePrice ?? unit.salePrice,
-        purchasePrice: newPurchasePrice ?? unit.purchasePrice,
-        conversionFactor: newFactor,
+        salePrice: salePrice ?? unit.salePrice,
+        purchasePrice: purchasePrice ?? unit.purchasePrice,
+        conversionFactor: 1.0,
         isBaseUnit: unit.isBaseUnit,
       );
 
@@ -201,9 +89,9 @@ class AddProductCubit extends Cubit<AddProductState> {
           final currentSubUnit = updatedUnits[i];
           updatedUnits[i] = ProductUnitModel(
             unitName: currentSubUnit.unitName,
-            salePrice: updatedBaseUnit.salePrice * currentSubUnit.conversionFactor,
-            purchasePrice: updatedBaseUnit.purchasePrice * currentSubUnit.conversionFactor,
-            conversionFactor: currentSubUnit.conversionFactor,
+            salePrice: updatedBaseUnit.salePrice,
+            purchasePrice: updatedBaseUnit.purchasePrice,
+            conversionFactor: 1.0,
             isBaseUnit: false,
           );
         }
@@ -211,12 +99,36 @@ class AddProductCubit extends Cubit<AddProductState> {
 
       emit(AddProductUnitsUpdated(
         units: updatedUnits,
-        isIngredient: state.isIngredient,
         expiryDate: state.expiryDate,
       ));
     }
   }
+// 8. دالة إضافية لحساب إجمالي القيمة أو السعر إذا تطلب الأمر
+  double calculateTotalValue() {
+    double total = 0.0;
+    for (var unit in state.units) {
+      total += (unit.salePrice * unit.conversionFactor);
+    }
+    return total;
+  }
 
+  // دالة لاختيار وتنسيق التاريخ
+  Future<void> selectAndSetExpiryDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      // تنسيق التاريخ بالطريقة التي تريدها
+      final formattedDate = '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+
+      // حفظه في حالة الكيوبت
+      setExpiryDate(formattedDate);
+    }
+  }
   // 5. الدالة لإضافة منتج جديد بالسيرفر
   Future<void> submitProduct({
     required String name,
@@ -224,38 +136,34 @@ class AddProductCubit extends Cubit<AddProductState> {
     required double stock,
     String? expiryDate,
     String? batchNumber,
-    bool? isIngredient,
     String? size,
     String? color,
-    String itemType = 'general',
+
   }) async {
     final List<ProductUnitModel> allUnits = state.units;
 
     emit(AddProductLoading(
       units: state.units,
-      isIngredient: state.isIngredient,
       expiryDate: state.expiryDate,
     ));
     try {
-      bool success = await productService.addProduct(
+      bool success = await productRepository.addProduct(
         name: name,
         barcode: barcode,
-        totalStockQuantity: stock.toDouble(),
-        itemType: itemType,
+        totalStockQuantity: stock,
+
         productUnits: allUnits,
       );
 
       if (success) {
         emit(AddProductSuccess(
           units: state.units,
-          isIngredient: state.isIngredient,
           expiryDate: state.expiryDate,
         ));
       } else {
         emit(AddProductError(
           "فشل السيرفر في حفظ بيانات الصنف الجديد",
           units: state.units,
-          isIngredient: state.isIngredient,
           expiryDate: state.expiryDate,
         ));
       }
@@ -263,74 +171,24 @@ class AddProductCubit extends Cubit<AddProductState> {
       emit(AddProductError(
         "حدث خطأ استثنائي: ${e.toString()}",
         units: state.units,
-        isIngredient: state.isIngredient,
         expiryDate: state.expiryDate,
       ));
     }
   }
 
-  // تم تصحيح طريقة التهيئة وإزالة متغير الحماية الذي كان يعطل جلب البيانات عند التبديل
-  void initializeControllers({required ProductModel? productToEdit}) {
-    final p = productToEdit;
-    if (p == null) {
-      nameController.clear();
-      barcodeController.clear();
-      stockController.clear();
-      reorderLevelController.text = '5';
-      expiryDateController.clear();
-      batchController.clear();
-      sizeController.clear();
-      colorController.clear();
-      return;
-    }
-
-    // تعبئة الحقول بالبيانات القديمة بدقة
-    nameController.text = p.name ?? '';
-    barcodeController.text = p.barcode ?? '';
-    stockController.text = p.stock?.toString() ?? '0';
-    reorderLevelController.text =  '5';
-    expiryDateController.text = p.expiryDate ?? '';
-    batchController.text = p.batchNumber ?? '';
-    sizeController.text = p.size ?? '';
-    colorController.text = p.color ?? '';
-
-    // إصدار الحالة فوراً لتحديث الواجهة بالوحدات وحالة المكون القديمة
-    emit(AddProductStateModified(
-      isIngredient: p.isIngredient,
-      units: p.units.isNotEmpty ? p.units : state.units,
-      expiryDate: p.expiryDate,
-    ));
-  }
-
-  Future<void> selectExpiryDate(BuildContext context) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked == null) return;
-
-    final formattedDate = '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
-    expiryDateController.text = formattedDate;
-
-    setExpiryDate(formattedDate);
-  }
-
-  String? _getOptionalText(TextEditingController controller) {
-    final text = controller.text.trim();
-    return text.isEmpty ? null : text;
-  }
-
+  // 6. دالة onSave للتحقق وتوجيه العملية (إضافة أو تعديل)
   void onSave({
     required BuildContext context,
-    required GlobalKey<FormState> formKey,
-    required String activityType,
-    required ProductModel? productToEdit,
-  }) {
-    if (!formKey.currentState!.validate()) return;
 
+    required ProductModel? productToEdit,
+    required String name,
+    required String barcode,
+    required double stock,
+    String? expiryDate,
+    String? batchNumber,
+    String? size,
+    String? color,
+  }) {
     if (state.units.isEmpty) {
       SnackbarHelper.show(context.lang.pleaseAddUnit, const Color(0xFFFFB300), icon: Icons.warning_amber_rounded);
       return;
@@ -344,63 +202,73 @@ class AddProductCubit extends Cubit<AddProductState> {
     final bool isEditing = productToEdit != null;
 
     if (isEditing) {
-      updateProductData(
+      updateProduct(
         productId: productToEdit.id,
-        itemType: activityType,
-        units: state.units,
+
+        name: name,
+        barcode: barcode,
+        totalStockQuantity: stock,
+        expiryDate: expiryDate,
+        batchNumber: batchNumber,
+        size: size,
+        color: color,
+        productUnits: state.units,
       );
     } else {
-      submitProductData(
-        itemType: activityType,
+      submitProduct(
+
+        name: name,
+        barcode: barcode,
+        stock: stock,
+        expiryDate: expiryDate,
+        batchNumber: batchNumber,
+        size: size,
+        color: color,
       );
     }
   }
 
-  // 6. الدالة لتعديل منتج موجود مسبقاً
+  // 7. الدالة لتعديل منتج موجود مسبقاً
   Future<void> updateProduct({
     required int productId,
+
     required String name,
     required String barcode,
     required double totalStockQuantity,
     String? expiryDate,
     String? batchNumber,
-    bool isIngredient = false,
     String? size,
     String? color,
-    required String itemType,
+
     required List<ProductUnitModel> productUnits,
   }) async {
     emit(AddProductLoading(
       units: state.units,
-      isIngredient: state.isIngredient,
       expiryDate: state.expiryDate,
     ));
     try {
-      bool success = await productService.updateProduct(
+      bool success = await productRepository.updateProduct(
         id: productId,
         name: name,
         barcode: barcode,
         totalStockQuantity: totalStockQuantity,
-        expiryDate: expiryDate,     // مضاف حديثاً لتحديث الصلاحية
-        batchNumber: batchNumber,   // مضاف حديثاً لتحديث رقم الباتش
-        isIngredient: isIngredient, // مضاف حديثاً لتحديث حالة المكون
-        size: size,                 // مضاف حديثاً لتحديث المقاس
-        color: color,               // مضاف حديثاً لتحديث اللون
-        itemType: itemType,
+        expiryDate: expiryDate,
+        batchNumber: batchNumber,
+        size: size,
+        color: color,
+
         productUnits: productUnits,
       );
 
       if (success) {
         emit(AddProductSuccess(
           units: state.units,
-          isIngredient: state.isIngredient,
           expiryDate: state.expiryDate,
         ));
       } else {
         emit(AddProductError(
           "فشل تحديث المنتج في الخادم",
           units: state.units,
-          isIngredient: state.isIngredient,
           expiryDate: state.expiryDate,
         ));
       }
@@ -408,7 +276,6 @@ class AddProductCubit extends Cubit<AddProductState> {
       emit(AddProductError(
         "حدث خطأ استثنائي: ${e.toString()}",
         units: state.units,
-        isIngredient: state.isIngredient,
         expiryDate: state.expiryDate,
       ));
     }

@@ -1,3 +1,4 @@
+
 import 'package:smart_book/features/pos/auth_exports.dart';
 import '../../screens/pos_cart_details.dart';
 
@@ -18,13 +19,12 @@ class POSFloatingCartBar extends StatelessWidget {
         if (state is PosLoaded && state.cartItems.isNotEmpty) {
           final totalQuantity = state.cartItems.fold(0, (sum, item) => sum + item.quantity);
 
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
+          return Container(
             height: 60,
             margin: const EdgeInsets.symmetric(horizontal: 20),
             decoration: BoxDecoration(
               color: AppColors.primaryBlue,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15)
             ),
             child: ListTile(
               leading: Stack(
@@ -71,3 +71,5 @@ class POSFloatingCartBar extends StatelessWidget {
     );
   }
 }
+
+

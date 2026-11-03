@@ -1,11 +1,11 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../../core/localization/language_keys.dart';
 
 
 class InventoryStatsSection extends StatelessWidget {
   final InventoryLoaded state;
-  const InventoryStatsSection({super.key, required this.state});
+  const InventoryStatsSection({super.key, required this.state,
+});
 
   @override
   Widget build(BuildContext context) {

@@ -1,48 +1,25 @@
+
 import 'package:smart_book/features/inventory/auth_exports.dart';
+
+import '../widgets/inventory_list/InventoryBodyContainer.dart';
 
 class ItemsListScreen extends StatelessWidget {
   const ItemsListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-
-    final inventoryRepo =ProductRepository();
     return BlocProvider(
-      create: (_) {
-        return InventoryCubit(
-          inventoryRepo,
-          context.read<SystemConfigurationCubit>(),
-        )
-          ..initialize();
-      },
-      child: Scaffold(
-            backgroundColor: AppColors.scaffoldBg,
-            appBar: ItemsListAppBar(
-              onFilterPressed: () => InventoryNavigationHelper.openFilterSheet(context),
-            ),
-            body: BlocListener<AdjustmentCubit, AdjustmentState>(
-              listenWhen: (previous, current) => current is AdjustmentSuccess,
-              listener: (context, state) {
-                context.read<InventoryCubit>().fetchProducts();
-              },
-              child: BlocConsumer<InventoryCubit, InventoryState>(
-                listenWhen: (previous, current) => current is InventoryError,
-                listener: (context, state) {
-                  if (state is InventoryError) {
-                    SnackbarHelper.showError(state.message);
-                  }
-                },
-                builder: (context, state) {
-                  return InventoryStateViews(
-                    state: state,
-                    onOpenFilters: () => InventoryNavigationHelper.openFilterSheet(context),
-                  );
-                },
-              ),
-            ),
-            floatingActionButton: const AddProductFAB(),
+      create: (context) => InventoryCubit(
+        InventoryRepository(),
+        context.read<SystemConfigurationCubit>(),
+      )..initialize(), 
+      child: const Scaffold(
+        backgroundColor: AppColors.scaffoldBg,
+        appBar: ItemsListAppBar(),
 
+        body:InventoryBodyContainer(),
 
+        floatingActionButton: AddProductFAB(),
       ),
     );
   }

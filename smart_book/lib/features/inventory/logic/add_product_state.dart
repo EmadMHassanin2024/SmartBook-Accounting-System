@@ -2,12 +2,12 @@ import 'package:smart_book/features/inventory/auth_exports.dart';
 
 abstract class AddProductState {
   final List<ProductUnitModel> units;
-  final bool isIngredient;
+
   final String? expiryDate;
 
   AddProductState({
     required this.units,
-    this.isIngredient = false,
+
     this.expiryDate,
   });
 }
@@ -16,7 +16,7 @@ abstract class AddProductState {
 class AddProductInitial extends AddProductState {
   AddProductInitial({
     required super.units,
-    super.isIngredient,
+
     super.expiryDate,
   });
 }
@@ -25,7 +25,7 @@ class AddProductInitial extends AddProductState {
 class AddProductStateModified extends AddProductState {
   AddProductStateModified({
     required super.units,
-    required super.isIngredient,
+
     super.expiryDate,
   });
 }
@@ -34,7 +34,7 @@ class AddProductStateModified extends AddProductState {
 class AddProductUnitsUpdated extends AddProductState {
   AddProductUnitsUpdated({
     required super.units,
-    super.isIngredient,
+
     super.expiryDate,
   });
 }
@@ -43,7 +43,7 @@ class AddProductUnitsUpdated extends AddProductState {
 class AddProductLoading extends AddProductState {
   AddProductLoading({
     required super.units,
-    super.isIngredient,
+
     super.expiryDate,
   });
 }
@@ -52,7 +52,7 @@ class AddProductLoading extends AddProductState {
 class AddProductSuccess extends AddProductState {
   AddProductSuccess({
     super.units = const [],
-    super.isIngredient,
+
     super.expiryDate,
   });
 }
@@ -63,7 +63,7 @@ class AddProductError extends AddProductState {
   AddProductError(
       this.message, {
         required super.units,
-        super.isIngredient,
+
         super.expiryDate,
       });
 }

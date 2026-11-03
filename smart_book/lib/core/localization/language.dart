@@ -80,6 +80,7 @@ class AppLanguages {
       LanguageKeys.salesToday: LanguageAR.salesToday,
       LanguageKeys.paymentVouchers: LanguageAR.paymentVouchers,
       LanguageKeys.editProductKey: LanguageAR.editProductAR,
+      LanguageKeys.reorderLevelKey: LanguageAR.reorderLevelAR,
     },
     'en': {
       LanguageKeys.appNameKey: LanguageEN.appNameEN,
@@ -154,6 +155,7 @@ class AppLanguages {
       LanguageKeys.salesToday: LanguageEN.salesToday,
       LanguageKeys.paymentVouchers: LanguageEN.paymentVouchers,
       LanguageKeys.editProductKey: LanguageEN.editProductEN,
+      LanguageKeys.reorderLevelKey: LanguageEN.reorderLevelEN,
 
     },
   };

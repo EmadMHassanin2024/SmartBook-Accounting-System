@@ -1,12 +1,11 @@
 export  '../system_config/data/models/ business_module.dart';
 export  '../system_config/logic/system_configuration_cubit.dart';
 
-
 export  '../../../core/di/service_locator.dart';
 export  '../finance/adjustments/logic/adjustment_cubit.dart';
 export  '../finance/adjustments/logic/adjustment_state.dart';
 export  '../../../models/ ProductUnitModel.dart';
-export  '../../../services/ProductRepository.dart';
+export  '../../../services/InventoryRepository.dart';
 export  'package:equatable/equatable.dart';
 export  './extensions/pharmacy_extension_widget.dart';
 export  './extensions/restaurant_extension_widget.dart'; // 💡 استيراد كلاس المطعم
@@ -62,8 +61,8 @@ export '../inventory/widgets/inventory_list/inventory_state_views.dart';
 export '../inventory/widgets/inventory_list/items_list_app_bar.dart';
 export '../inventory/widgets/inventory_list/inventory_filter_bottom_sheet.dart';
 
-export '../inventory/widgets/add_product/product_reorder_section.dart';
-export '../inventory/widgets/add_product/product_units_section.dart';
+
+
 export '../inventory/widgets/common/section_header_widget.dart';
 
 export '../settings/logic/SettingsCubit.dart';
@@ -78,3 +77,8 @@ export '../inventory/widgets/common/InventoryNavigationHelper.dart';
 export '../../../../core/localization/language_keys.dart';
 export '../inventory/widgets/common/inventory_language_button.dart';
 
+export '../inventory/widgets/add_product/AddProductView.dart';
+
+export '../inventory/extensions/inventory_extension_manager.dart';
+
+export '../inventory/widgets/common/custom_text_field_card.dart';

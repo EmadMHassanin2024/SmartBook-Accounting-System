@@ -1,11 +1,10 @@
+
 import 'package:smart_book/features/inventory/auth_exports.dart';
 import 'dart:async';
 
-import '../../../core/localization/language_keys.dart';
-
 class InventoryCubit extends Cubit<InventoryState> {
   static const int lowStockThreshold = 10;
-  final ProductRepository _productService;
+  final InventoryRepository _productService;
   final SystemConfigurationCubit _systemConfigurationCubit;
   late final StreamSubscription _systemConfigSubscription;
 
@@ -75,7 +74,7 @@ class InventoryCubit extends Cubit<InventoryState> {
     );
   }
   void _applyFilters() {
-    print("🔍 [InventoryCubit] تطبيق الفلاتر على عدد منتجات خام: ${_allProducts.length}");
+
 
     // 1. فلترة مرنة جداً للمنتجات بناءً على النشاط الحالي لتجنب إرجاع قائمة فارغة
     List<ProductModel> activityProducts = _allProducts.where((p) {
@@ -118,7 +117,7 @@ class InventoryCubit extends Cubit<InventoryState> {
       }).toList();
     }
 
-    print("🎯 إجمالي المنتجات بعد الفلترة والبحث: ${results.length}");
+
 
     // إصدار الحالة الجديدة لتحديث واجهة المستخدم
     emit(_buildLoadedState(results, activityProducts));
@@ -139,7 +138,7 @@ class InventoryCubit extends Cubit<InventoryState> {
 
   void changeActivityType(BusinessModule activityType) {
     _currentActivityType = activityType;
-    _currentCategory = "الكل";
+    _currentCategory = LanguageKeys.allCategoryKey;
     _currentQuery = "";
     _applyFilters();
   }
@@ -161,3 +160,4 @@ class InventoryCubit extends Cubit<InventoryState> {
     return super.close();
   }
 }
+

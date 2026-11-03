@@ -1,7 +1,6 @@
-// lib/features/invoices/data/repositories/invoice_repository.dart
 import '../../../../core/network/base_api_service.dart';
 import '../features/invoices/models/invoice_item_model.dart';
-import 'AuthService.dart';
+// تم حذف استيراد AuthService لأنه لم يعد مطلوباً هنا
 
 class InvoiceRepository {
 
@@ -12,16 +11,7 @@ class InvoiceRepository {
     required String paymentMethod,
   }) async {
 
-    // 💡 جلب التوكين داخلياً من خدمة AuthService
-    final String token = await AuthService.getToken();
-
-    if (token.isEmpty) {
-      // يمكنك هنا إطلاق Custom Exception إذا أردت معالجة أفضل للخطأ
-      print("❌ خطأ: لم يتم العثور على توكن للمستخدم.");
-      return false;
-    }
-
-    final endpoint = 'Invoices/save-invoice';
+    const endpoint = 'Invoices/save-invoice';
 
     final Map<String, dynamic> requestBody = {
       "customerName": customerName.isEmpty ? "عميل نقدي" : customerName,
@@ -36,17 +26,15 @@ class InvoiceRepository {
     };
 
     try {
-      final response = await BaseApiService.postRequest(endpoint, requestBody, token);
+      // BaseApiService سيتولى التوكين، وإذا نجح الطلب سيمر بسلام.
+      // وإذا حدث خطأ (مثل 400 أو 500)، BaseApiService سيرمي Exception تلقائياً.
+      await BaseApiService.postRequest(endpoint, requestBody);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
-      } else {
-        print("❌ Server Error: ${response.statusCode} - ${response.body}");
-        return false;
-      }
+      return true; // طالما لم يحدث استثناء، فالعملية تمت بنجاح
+
     } catch (e) {
-      print("❌ Network Error: $e");
-      return false;
+      // التقاط أي خطأ قادم من السيرفر أو الشبكة وتمريره بنظافة
+      throw Exception(e.toString().replaceAll("Exception: ", ""));
     }
   }
 }

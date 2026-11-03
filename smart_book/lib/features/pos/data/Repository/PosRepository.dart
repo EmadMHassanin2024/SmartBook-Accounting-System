@@ -38,7 +38,7 @@ class PosRepository {
     };
 
     try {
-      final response = await BaseApiService.postRequest('Pos/save-invoice', requestBody, token);
+      final response = await BaseApiService.postRequest('Pos/save-invoice', requestBody);
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
       return false;
@@ -49,7 +49,7 @@ class PosRepository {
   Future<List<ProductModel>> getAllProducts() async {
     final String token = await AuthService.getToken(); // 💡 جلب التوكين داخلياً
     try {
-      final response = await BaseApiService.getRequest('Products', token);
+      final response = await BaseApiService.getRequest('Products' );
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         return data.map((json) => ProductModel.fromJson(json)).toList();
@@ -64,7 +64,7 @@ class PosRepository {
   Future<List<dynamic>> getAllInvoices() async {
     final String token = await AuthService.getToken(); // 💡 جلب التوكين داخلياً
     try {
-      final response = await BaseApiService.getRequest('Invoices', token);
+      final response = await BaseApiService.getRequest('Invoices');
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as List<dynamic>;
       }

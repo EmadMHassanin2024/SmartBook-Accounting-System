@@ -15,7 +15,8 @@ import '../../features/pos/data/Repository/PosRepository.dart';
 import '../../features/system_config/data/repositories/SystemConfigurationRepository.dart';
 import '../../features/system_config/data/repositories/system_configuration_repository.dart';
 import '../../features/system_config/logic/system_configuration_cubit.dart';
-import '../../services/ProductRepository.dart';
+import '../../services/InventoryRepository.dart';
+
 
 import '../repositories/token_repository.dart';
 
@@ -51,8 +52,8 @@ Future<void> setupLocator() async {
         () => IncomeStatementRepository(),
   );
 
-  sl.registerLazySingleton<ProductRepository>(
-        () => ProductRepository(),
+  sl.registerLazySingleton< InventoryRepository>(
+        () =>  InventoryRepository(),
   );
 
   sl.registerLazySingleton<PosRepository>(
@@ -75,7 +76,7 @@ Future<void> setupLocator() async {
 
   sl.registerFactory<InventoryCubit>(
         () => InventoryCubit(
-      sl<ProductRepository>(),
+      sl< InventoryRepository>(),
       sl<SystemConfigurationCubit>(),
     ),
   );

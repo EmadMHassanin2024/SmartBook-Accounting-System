@@ -77,5 +77,6 @@ class LanguageKeys {
   static const String salesToday = 'sales_today';
   static const String paymentVouchers = 'payment_vouchers';
   static const String editProductKey = 'edit_product';
+  static const String reorderLevelKey = 'reorder_level';
 
 }

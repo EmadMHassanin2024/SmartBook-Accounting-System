@@ -81,4 +81,5 @@ class LanguageEN {
   static const String editProductEN = 'Edit Item';
   static const String addProductKey = 'add_product';
   static const String basicInfoKey = 'basic_info';
+  static const String reorderLevelEN = 'Reorder Level (Low Stock Alert)';
 }

@@ -5,6 +5,7 @@ import '../common/inventory_language_button.dart';
 
 class AddProductAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isEditing;
+  final String textKey;
   final String addProductTitleKey; //
 
   final List<Widget>? actions;
@@ -13,19 +14,20 @@ class AddProductAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.isEditing,
   this.actions,
-    required this.addProductTitleKey,
+    required this.addProductTitleKey, required this.textKey,
   });
 
   @override
   Widget build(BuildContext context) {
     final String titleKey = isEditing ? LanguageKeys.editProductKey : addProductTitleKey;
 
+
     return AppBar(
       leadingWidth: 96,
       leading: const InventoryLanguageButton(),
       actions: actions,
       title: Text(
-        context.translate(addProductTitleKey),
+        context.translate(titleKey),
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       centerTitle: true,

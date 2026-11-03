@@ -83,5 +83,6 @@ class LanguageAR {
   static const String salesToday = 'مبيعات اليوم';
   static const String paymentVouchers = 'سندات الصرف';
   static const String editProductAR = 'تعديل صنف';
+  static const String reorderLevelAR = 'حد إعادة الطلب (تنبيه انخفاض المخزون)';
 
 }

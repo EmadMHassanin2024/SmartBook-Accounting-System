@@ -12,29 +12,27 @@ class AdjustmentCubit extends Cubit<AdjustmentState> {
 
   AdjustmentCubit(this.repository) : super(const AdjustmentInitial());
 
-  // أضفنا المتغير date للدالة لنتمكن من جلب تسويات فترة محددة
+//جلب قائمة التسويات الخاصة بتاريخ محدد وعرضها.
   Future<void> fetchAdjustments(DateTime date) async {
     try {
       emit(const AdjustmentLoading());
 
-      // استدعاء الـ repository بجلب البيانات بناءً على التاريخ
       final adjustments = await repository.getAdjustments(date);
 
       emit(AdjustmentLoaded(adjustments));
     } catch (e, stackTrace) {
-      debugPrint('❌ AdjustmentCubit Error: $e');
-      debugPrint(stackTrace.toString());
+
 
       emit(AdjustmentError(e.toString()));
     }
   }
 
-  // التحديث يقوم باستدعاء نفس التاريخ الحالي (يمكنك تحسينها بحفظ آخر تاريخ تم طلبه)
+//إعادة تحميل تسويات اليوم الحالي.
   Future<void> refresh() async {
     await fetchAdjustments(DateTime.now());
   }
 
-// في ملف adjustment_cubit.dart
+ //
   Future<void> submitAdjustment(AdjustmentEntry transaction) async {
     try {
       emit(const AdjustmentLoading());

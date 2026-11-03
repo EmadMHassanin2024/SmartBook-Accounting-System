@@ -2,13 +2,11 @@ import 'package:smart_book/features/inventory/auth_exports.dart';
 
 import '../../../../core/widgets/app_text.dart';
 
-//AppBar
 class ItemsListAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final VoidCallback onFilterPressed;
 
   const ItemsListAppBar({
     super.key,
-    required this.onFilterPressed,
+
   });
 
   @override
@@ -16,7 +14,6 @@ class ItemsListAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       leadingWidth: 96,
       leading: const InventoryLanguageButton(),
-
       title: const AppText(
       textKey: LanguageKeys.appNameKey,
         style: TextStyle(
@@ -24,12 +21,7 @@ class ItemsListAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       centerTitle: true,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.filter_list),
-          onPressed: onFilterPressed,
-        ),
-      ],
+
     );
   }
 
