@@ -1,6 +1,5 @@
 
 import 'package:smart_book/features/inventory/auth_exports.dart';
-
 import '../widgets/inventory_list/InventoryBodyContainer.dart';
 
 class ItemsListScreen extends StatelessWidget {

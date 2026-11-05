@@ -1,7 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
-import '../../../../core/utils/input_helper.dart';
-
 class AddProductView extends StatefulWidget {
   final ProductModel? productToEdit;
   const AddProductView({super.key, this.productToEdit});
@@ -58,7 +56,6 @@ class _AddProductViewState extends State<AddProductView> {
   Widget build(BuildContext context) {
     final cubit = context.read<AddProductCubit>();
 
-
     final bool isEditing = widget.productToEdit != null;
 
     return BlocListener<AddProductCubit, AddProductState>(
@@ -95,8 +92,7 @@ class _AddProductViewState extends State<AddProductView> {
         body: AddProductFormBody(
           formKey: formKey,
           cubit: cubit,
-          addProductState: cubit.state, // ✅ الاعتماد على حالة الكيبت الحالية مباشرة بدون const
-
+          addProductState: cubit.state,
           nameController: nameController,
           barcodeController: barcodeController,
           stockController: stockController,

@@ -2,7 +2,6 @@ import 'package:smart_book/features/inventory/auth_exports.dart';
 import '../../../../core/localization/language_keys.dart';
 import '../../../../core/widgets/app_text.dart';
 
-
 class ProductSaveBottomSheet extends StatelessWidget {
   final VoidCallback onSavePressed;
 
@@ -12,7 +11,8 @@ class ProductSaveBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AddProductCubit, AddProductState>(
       buildWhen: (previous, current) =>
-      previous is AddProductLoading != current is AddProductLoading,
+
+      previous.runtimeType != current.runtimeType,
       builder: (context, state) {
         final isLoading = state is AddProductLoading;
         return Container(

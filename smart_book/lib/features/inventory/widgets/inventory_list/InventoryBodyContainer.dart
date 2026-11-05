@@ -5,7 +5,7 @@ class InventoryBodyContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // الـ BlocBuilder هنا موجود في أعمق نقطة ممكنة، بحيث لا يعيد بناء الـ Scaffold أو الـ AppBar أبداً
+
     return BlocBuilder<InventoryCubit, InventoryState>(
       builder: (context, state) {
         return InventoryStateViews(

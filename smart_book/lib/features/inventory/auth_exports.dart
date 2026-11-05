@@ -82,3 +82,5 @@ export '../inventory/widgets/add_product/AddProductView.dart';
 export '../inventory/extensions/inventory_extension_manager.dart';
 
 export '../inventory/widgets/common/custom_text_field_card.dart';
+
+export  '../../../../core/utils/input_helper.dart';
