@@ -88,7 +88,8 @@ class LanguageEN {
   static const String kgEN = 'Kg';
   static const String literEN = 'Liter';
   static const String unitNameEN = 'Unit Name';
-
+  static const String errorOccurredEN = 'An error occurred';
   static const String conversionFactorEN = 'Conversion Factor';
   static const String unitNameHintEN = 'Unit Name (e.g. Carton)';
+  static const String searchByNameOrBarcodeEN = 'Search by name or barcode';
 }

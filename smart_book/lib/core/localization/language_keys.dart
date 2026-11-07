@@ -86,5 +86,7 @@ class LanguageKeys {
   static const String unitNameKey = 'unit_name';
   static const String conversionFactorKey = 'conversion_factor';
   static const String unitNameHintKey = 'unit_name_hint';
+  static const String errorOccurredKey = 'error_occurred';
+  static const String searchByNameOrBarcodeKey = 'search_by_name_or_barcode';
 
 }

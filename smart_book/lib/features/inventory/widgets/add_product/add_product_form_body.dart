@@ -138,7 +138,8 @@ class AddProductFormBody extends StatelessWidget {
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      value: unit.unitName.isNotEmpty ? unit.unitName : null,
+
+                      value: unitKeys.contains(unit.unitName) ? unit.unitName : null,
                       hint: const AppText(textKey: LanguageKeys.unitNameKey),
                       isExpanded: true,
                       icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.primaryBlue),

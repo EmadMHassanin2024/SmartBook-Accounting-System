@@ -91,8 +91,9 @@ class LanguageAR {
   static const String literAR = 'لتر';
   static const String unitNameAR = 'اسم الوحدة';
 
-
+  static const String errorOccurredAR = 'حدث خطأ ما';
   static const String conversionFactorAR = 'معامل التحويل';
+  static const String searchByNameOrBarcodeAR = 'البحث بالاسم أو الباركود';
 
 
 

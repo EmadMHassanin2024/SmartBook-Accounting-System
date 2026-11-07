@@ -87,8 +87,10 @@ class AppLanguages {
       LanguageKeys.kgKey: LanguageAR.kgAR,
       LanguageKeys.literKey: LanguageAR.literAR,
       LanguageKeys.unitNameKey: LanguageAR.unitNameAR,
+      LanguageKeys.searchByNameOrBarcodeKey: LanguageAR.searchByNameOrBarcodeAR,
 
       LanguageKeys.conversionFactorKey: LanguageAR.conversionFactorAR,
+      LanguageKeys.errorOccurredKey: LanguageAR.errorOccurredAR,
 
     },
     'en': {
@@ -171,11 +173,9 @@ class AppLanguages {
       LanguageKeys.kgKey: LanguageEN.kgEN,
       LanguageKeys.literKey: LanguageEN.literEN,
       LanguageKeys.unitNameKey: LanguageEN.unitNameEN,
-
       LanguageKeys.conversionFactorKey: LanguageEN.conversionFactorEN,
-
-
-
+      LanguageKeys.errorOccurredKey: LanguageEN.errorOccurredEN,
+      LanguageKeys.searchByNameOrBarcodeKey: LanguageEN.searchByNameOrBarcodeEN,
 
     },
   };

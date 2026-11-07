@@ -35,7 +35,7 @@ class InventorySearchBar extends StatelessWidget {
                 onChanged: onChanged,
                 style: const TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: context.lang.searchByNameOrBarcode,
+                  hintText: LanguageKeys.searchByNameOrBarcodeKey,
                   hintStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
                   prefixIcon: const Icon(Icons.search, size: 20, color: AppColors.primaryBlue),
                   border: InputBorder.none,

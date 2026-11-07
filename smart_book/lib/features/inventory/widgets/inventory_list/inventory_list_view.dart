@@ -21,17 +21,17 @@ class InventoryListView extends StatelessWidget {
           (state as InventoryError).message,
         );
       });
-      return Center(child: Text(context.lang.errorOccurred));
+      return const Center(child: Text(LanguageKeys.errorOccurredKey));
 
     }
 
     if (state is InventoryLoaded) {
       final loadedState = state as InventoryLoaded;
       if (loadedState.products.isEmpty) {
-        return Center(
+        return const Center(
           child: Text(
-            context.lang.noItemsMatchSelection,
-            style: const TextStyle(fontSize: 14, color: Colors.grey),
+            LanguageKeys.noItemsMatchSelectionKey,
+            style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
         );
       }
