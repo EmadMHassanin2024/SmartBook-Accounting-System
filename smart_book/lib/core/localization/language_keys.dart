@@ -78,5 +78,13 @@ class LanguageKeys {
   static const String paymentVouchers = 'payment_vouchers';
   static const String editProductKey = 'edit_product';
   static const String reorderLevelKey = 'reorder_level';
+  static const String noItemsMatchSelectionKey = 'no_items_match_selection';
+  static const String pieceKey = 'piece';
+  static const String cartonKey = 'carton';
+  static const String kgKey = 'kg';
+  static const String literKey = 'liter';
+  static const String unitNameKey = 'unit_name';
+  static const String conversionFactorKey = 'conversion_factor';
+  static const String unitNameHintKey = 'unit_name_hint';
 
 }

@@ -30,7 +30,7 @@ class _AddProductViewState extends State<AddProductView> {
     nameController = TextEditingController(text: p?.name ?? '');
     barcodeController = TextEditingController(text: p?.barcode ?? '');
     stockController = TextEditingController(text: p?.stock.toString() ?? '0');
-    reorderLevelController = TextEditingController(text: p?.reorderLevel?.toString() ?? '5');
+    reorderLevelController = TextEditingController(text: p?.reorderLevel?.toString() ?? '');
     expiryDateController = TextEditingController(text: p?.expiryDate ?? '');
     batchController = TextEditingController(text: p?.batchNumber ?? '');
     sizeController = TextEditingController(text: p?.size ?? '');
@@ -109,7 +109,7 @@ class _AddProductViewState extends State<AddProductView> {
             cubit.onSave(
 
               context: context,
-              productToEdit: widget.productToEdit,
+
                 name: InputHelper.getCleanText(nameController),
                 barcode: InputHelper.getCleanText(barcodeController),
                 stock: InputHelper.parseDouble(stockController),

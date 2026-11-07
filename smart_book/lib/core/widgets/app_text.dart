@@ -20,7 +20,7 @@ class AppText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      context.translate(textKey), // سيقوم بالترجمة الفورية ومراقبة التغيير تلقائياً
+      context.translate(textKey),
       style: style,
       textAlign: textAlign,
       maxLines: maxLines,

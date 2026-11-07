@@ -1,26 +1,29 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import '../../../../core/localization/language_keys.dart';
+
 import '../../../../core/widgets/app_text.dart';
 
 class ProductSaveBottomSheet extends StatelessWidget {
   final VoidCallback onSavePressed;
 
-  const ProductSaveBottomSheet({super.key, required this.onSavePressed});
+  const ProductSaveBottomSheet({
+    super.key,
+    required this.onSavePressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AddProductCubit, AddProductState>(
-      buildWhen: (previous, current) =>
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+      ),
+      child: BlocBuilder<AddProductCubit, AddProductState>(
+        buildWhen: (previous, current) =>
+        previous.runtimeType != current.runtimeType,
+        builder: (context, state) {
+          final isLoading = state is AddProductLoading;
 
-      previous.runtimeType != current.runtimeType,
-      builder: (context, state) {
-        final isLoading = state is AddProductLoading;
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
-          child: ElevatedButton(
+          return ElevatedButton(
             onPressed: isLoading ? null : onSavePressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
@@ -40,16 +43,15 @@ class ProductSaveBottomSheet extends StatelessWidget {
             )
                 : const AppText(
               textKey: LanguageKeys.confirmAndSaveKey,
-
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

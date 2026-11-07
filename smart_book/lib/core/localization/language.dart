@@ -81,6 +81,15 @@ class AppLanguages {
       LanguageKeys.paymentVouchers: LanguageAR.paymentVouchers,
       LanguageKeys.editProductKey: LanguageAR.editProductAR,
       LanguageKeys.reorderLevelKey: LanguageAR.reorderLevelAR,
+      LanguageKeys.noItemsMatchSelectionKey: LanguageAR.noItemsMatchSelectionAR,
+      LanguageKeys.pieceKey: LanguageAR.pieceAR,
+      LanguageKeys.cartonKey: LanguageAR.cartonAR,
+      LanguageKeys.kgKey: LanguageAR.kgAR,
+      LanguageKeys.literKey: LanguageAR.literAR,
+      LanguageKeys.unitNameKey: LanguageAR.unitNameAR,
+
+      LanguageKeys.conversionFactorKey: LanguageAR.conversionFactorAR,
+
     },
     'en': {
       LanguageKeys.appNameKey: LanguageEN.appNameEN,
@@ -156,6 +165,17 @@ class AppLanguages {
       LanguageKeys.paymentVouchers: LanguageEN.paymentVouchers,
       LanguageKeys.editProductKey: LanguageEN.editProductEN,
       LanguageKeys.reorderLevelKey: LanguageEN.reorderLevelEN,
+      LanguageKeys.noItemsMatchSelectionKey: LanguageEN.noItemsMatchSelectionEN,
+      LanguageKeys.pieceKey: LanguageEN.pieceEN,
+      LanguageKeys.cartonKey: LanguageEN.cartonEN,
+      LanguageKeys.kgKey: LanguageEN.kgEN,
+      LanguageKeys.literKey: LanguageEN.literEN,
+      LanguageKeys.unitNameKey: LanguageEN.unitNameEN,
+
+      LanguageKeys.conversionFactorKey: LanguageEN.conversionFactorEN,
+
+
+
 
     },
   };

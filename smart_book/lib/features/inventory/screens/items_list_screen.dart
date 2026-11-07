@@ -7,11 +7,17 @@ class ItemsListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /*
     return BlocProvider(
       create: (context) => InventoryCubit(
         InventoryRepository(),
         context.read<SystemConfigurationCubit>(),
-      )..initialize(), 
+      )..initialize(),
+
+     */
+    return BlocProvider(
+      create: (context)=> InventoryCubit(
+      )..initialize(),
       child: const Scaffold(
         backgroundColor: AppColors.scaffoldBg,
         appBar: ItemsListAppBar(),

@@ -7,6 +7,7 @@ class AddProductScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inventoryRepo = InventoryRepository();
+    /*
     return BlocProvider(
       create: (_) => AddProductCubit(
 
@@ -14,8 +15,12 @@ class AddProductScreen extends StatelessWidget {
         productToEdit: productToEdit,
       ),
 
-      child: AddProductView(productToEdit: productToEdit),
+     */
+    return BlocProvider(
+      create: (_) => sl<AddProductCubit>()..initProduct(productToEdit),
+      child:AddProductView(productToEdit: productToEdit),
     );
+
   }
 }
 

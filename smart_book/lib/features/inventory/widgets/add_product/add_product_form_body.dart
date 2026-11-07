@@ -1,19 +1,21 @@
-
-
 import 'package:smart_book/features/inventory/auth_exports.dart';
+
+import '../../../../core/localization/language.dart';
+import '../../../../core/widgets/app_text.dart';
+
 class AddProductFormBody extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final AddProductCubit cubit;
   final AddProductState addProductState;
 
-  // استقبال الـ Controllers كـ Parameters قادمة من الـ StatefulWidget
+
   final TextEditingController nameController;
   final TextEditingController barcodeController;
   final TextEditingController stockController;
   final TextEditingController reorderLevelController;
   final TextEditingController expiryDateController;
   final TextEditingController batchController;
-  final ValueNotifier<String?> selectedUnitNotifier;
+  final ValueNotifier<String?>? selectedUnitNotifier;
 
   const AddProductFormBody({
     super.key,
@@ -26,13 +28,19 @@ class AddProductFormBody extends StatelessWidget {
     required this.reorderLevelController,
     required this.expiryDateController,
     required this.batchController,
-    required this.selectedUnitNotifier,
+    this.selectedUnitNotifier,
   });
-
-
 
   @override
   Widget build(BuildContext context) {
+
+    final List<String> unitKeys = [
+      LanguageKeys.pieceKey,
+      LanguageKeys.cartonKey,
+      LanguageKeys.kgKey,
+      LanguageKeys.literKey,
+    ];
+
     return Form(
       key: formKey,
       child: ListView(
@@ -82,9 +90,9 @@ class AddProductFormBody extends StatelessWidget {
           const SizedBox(height: 12),
 
           CustomTextFieldCard(
-            labelTextKey: LanguageKeys.reorderLevelKey, // أو مفتاح الترجمة المناسب لحد إعادة الطلب
+            labelTextKey: LanguageKeys.reorderLevelKey,
             controller: reorderLevelController,
-            icon: Icons.notifications_active_outlined, // أيقونة تنبيه مميزة
+            icon: Icons.notifications_active_outlined,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             validator: (value) {
               if (value != null && value.trim().isNotEmpty) {
@@ -107,14 +115,12 @@ class AddProductFormBody extends StatelessWidget {
           const SizedBox(height: 15),
 
 
-// 1. عنوان القسم كما في الصورة
           const SectionHeader(
             titleKey: LanguageKeys.unitsAndPricesKey,
             icon: Icons.sell,
           ),
           const SizedBox(height: 2),
 
-// 2. تكرار الحقول لكل وحدة بناءً على ما في الـ Cubit
           ...addProductState.units.asMap().entries.map((entry) {
             final index = entry.key;
             final unit = entry.value;
@@ -122,7 +128,7 @@ class AddProductFormBody extends StatelessWidget {
             return Column(
               key: ValueKey('unit_card_$index'),
               children: [
-                // حقل اسم الوحدة كقائمة منسدلة مختارة مسبقاً
+
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
@@ -133,13 +139,14 @@ class AddProductFormBody extends StatelessWidget {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: unit.unitName.isNotEmpty ? unit.unitName : null,
-                      hint: Text("LanguageKeys.unitNameKey"),
+                      hint: const AppText(textKey: LanguageKeys.unitNameKey),
                       isExpanded: true,
                       icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.primaryBlue),
-                      items: ['قطعة', 'كرتون', 'كيلو', 'لتر'].map((String val) {
+                      items: unitKeys.map((String key) {
+                        final translatedName = context.translate(key);
                         return DropdownMenuItem<String>(
-                          value: val,
-                          child: Text(val),
+                          value: translatedName,
+                          child: Text(translatedName),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
@@ -152,7 +159,7 @@ class AddProductFormBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
 
-                // حقل سعر الشراء وسعر البيع جنباً إلى جنب (الثاني والثالث)
+                // حقل سعر الشراء وسعر البيع
                 Row(
                   children: [
                     Expanded(
@@ -189,9 +196,7 @@ class AddProductFormBody extends StatelessWidget {
 
           const SizedBox(height: 120),
         ],
-
       ),
     );
-
   }
 }

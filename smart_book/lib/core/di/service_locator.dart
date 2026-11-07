@@ -73,11 +73,19 @@ Future<void> setupLocator() async {
   //------------------------------------------------------------
   // Cubits
   //------------------------------------------------------------
-
+/*
   sl.registerFactory<InventoryCubit>(
         () => InventoryCubit(
       sl< InventoryRepository>(),
       sl<SystemConfigurationCubit>(),
+    ),
+  );
+
+ */
+  sl.registerLazySingleton<InventoryCubit>(
+        () => InventoryCubit(
+
+
     ),
   );
 
@@ -90,6 +98,10 @@ Future<void> setupLocator() async {
   );
 
  */
+
+  sl.registerLazySingleton(
+        () => AddProductCubit(productRepository: sl<InventoryRepository>()),
+  );
 
   sl.registerFactory<AdjustmentCubit>(
         () => AdjustmentCubit(

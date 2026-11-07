@@ -1,44 +1,25 @@
-
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import 'dart:async';
 
 class InventoryCubit extends Cubit<InventoryState> {
   static const int lowStockThreshold = 10;
-  final InventoryRepository _productService;
-  final SystemConfigurationCubit _systemConfigurationCubit;
-  late final StreamSubscription _systemConfigSubscription;
+
+  // الحقن الذاتي للـ Repository باستخدام GetIt (sl)
+  final InventoryRepository _productService = sl<InventoryRepository>();
 
   List<ProductModel> _allProducts = [];
-  String _currentCategory =  LanguageKeys.allCategoryKey;
+  String _currentCategory = LanguageKeys.allCategoryKey;
   String _currentQuery = "";
-  late BusinessModule _currentActivityType;
 
-  InventoryCubit(this._productService, this._systemConfigurationCubit)
-      : super(InventoryInitial()) {
-    _currentActivityType =
-        _systemConfigurationCubit.state.settings.activeBusinessModule;
-
-    _systemConfigSubscription = _systemConfigurationCubit.stream.listen((state) {
-      final newModule = state.settings.activeBusinessModule;
-      if (_currentActivityType != newModule) {
-        changeActivityType(newModule);
-      }
-    });
-  }
+  // أصبح الـ Constructor خالياً تماماً من البارامترات لتتوافق مع الطريقة الأولى
+  InventoryCubit() : super(InventoryInitial());
 
   Future<void> initialize() async {
-    if (_systemConfigurationCubit.state.isLoading) {
-      await _systemConfigurationCubit.stream.firstWhere(
-            (state) => !state.isLoading,
-      );
+    // التحقق الذكي من الـ Cache (عدم طلب السيرفر إذا كانت البيانات موجودة مسبقاً)
+    if (_allProducts.isNotEmpty) {
+      _applyFilters();
+    } else {
+      await fetchProducts();
     }
-
-    final activeModule =
-        _systemConfigurationCubit.state.settings.activeBusinessModule;
-
-    _currentActivityType = activeModule;
-
-    await fetchProducts();
   }
 
   Future<void> fetchProducts({String? businessModule}) async {
@@ -50,6 +31,7 @@ class InventoryCubit extends Cubit<InventoryState> {
       emit(InventoryError(e.toString()));
     }
   }
+
   double _calculateTotalInventoryValue(List<ProductModel> products) {
     return products.fold(
         0.0, (sum, item) => sum + ((item.stock) * (item.purchasePrice)));
@@ -73,32 +55,13 @@ class InventoryCubit extends Cubit<InventoryState> {
       totalInventoryValue: _calculateTotalInventoryValue(activityProducts),
     );
   }
+
   void _applyFilters() {
+    // نأخذ نسخة كاملة من كل المنتجات للعمل عليها
+    List<ProductModel> activityProducts = List.from(_allProducts);
+    List<ProductModel> results = List.from(_allProducts);
 
-
-    // 1. فلترة مرنة جداً للمنتجات بناءً على النشاط الحالي لتجنب إرجاع قائمة فارغة
-    List<ProductModel> activityProducts = _allProducts.where((p) {
-      final productType = (p.itemType ?? "").trim().toLowerCase();
-      final currentType = _currentActivityType.name.trim().toLowerCase();
-
-      // إذا كان المنتج عاماً أو يتطابق مع النشاط أو إذا أردت عرض الكل مؤقتاً
-      bool isMatch = productType == currentType ||
-          productType.isEmpty ||
-          productType == 'general' ||
-          currentType.contains(productType);
-
-      return isMatch;
-    }).toList();
-
-    // إذا كانت النتيجة فارغة بسبب اختلاف مسميات النشاط، نقوم بإرجاع كل المنتجات كاحتياط لتظهر للمستخدم
-    if (activityProducts.isEmpty && _allProducts.isNotEmpty) {
-      activityProducts = List.from(_allProducts);
-    }
-
-    // نأخذ نسخة للعمل عليها حتى لا نلعب بالأساسية
-    List<ProductModel> results = List.from(activityProducts);
-
-    // 2. فلترة حسب الفئة (منتهية أو قربت تنتهي)
+    // 1. فلترة حسب الفئة (منتهية أو قربت تنتهي)
     if (_currentCategory == LanguageKeys.expiredCategoryKey) {
       results = results.where((p) => p.stock <= 0).toList();
     } else if (_currentCategory == LanguageKeys.lowStockCategoryKey) {
@@ -107,7 +70,7 @@ class InventoryCubit extends Cubit<InventoryState> {
           .toList();
     }
 
-    // 3. فلترة حسب نص البحث (الاسم أو الباركود)
+    // 2. فلترة حسب نص البحث (الاسم أو الباركود)
     if (_currentQuery.isNotEmpty) {
       final searchLabel = _currentQuery.trim().toLowerCase();
       results = results.where((product) {
@@ -117,13 +80,10 @@ class InventoryCubit extends Cubit<InventoryState> {
       }).toList();
     }
 
-
-
     // إصدار الحالة الجديدة لتحديث واجهة المستخدم
     emit(_buildLoadedState(results, activityProducts));
   }
 
-  // تأكد أن دوال الفلترة والبحث تستدعي _applyFilters بشكل صحيح
   void filterProducts(String query) {
     _currentQuery = query;
     _applyFilters();
@@ -134,10 +94,7 @@ class InventoryCubit extends Cubit<InventoryState> {
     _applyFilters();
   }
 
-
-
-  void changeActivityType(BusinessModule activityType) {
-    _currentActivityType = activityType;
+  void changeActivityType(dynamic activityType) {
     _currentCategory = LanguageKeys.allCategoryKey;
     _currentQuery = "";
     _applyFilters();
@@ -149,15 +106,12 @@ class InventoryCubit extends Cubit<InventoryState> {
       _allProducts.removeWhere((p) => p.id == productId);
       _applyFilters();
     } catch (e) {
-      // إرسال خطأ مؤقت أو عام حسب تصميم تطبيقك
       emit(InventoryError(e.toString()));
     }
   }
 
   @override
   Future<void> close() {
-    _systemConfigSubscription.cancel();
     return super.close();
   }
 }
-

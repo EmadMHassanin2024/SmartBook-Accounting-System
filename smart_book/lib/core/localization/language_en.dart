@@ -82,4 +82,13 @@ class LanguageEN {
   static const String addProductKey = 'add_product';
   static const String basicInfoKey = 'basic_info';
   static const String reorderLevelEN = 'Reorder Level (Low Stock Alert)';
+  static const String noItemsMatchSelectionEN = 'No items match your selection';
+  static const String pieceEN = 'Piece';
+  static const String cartonEN = 'Carton';
+  static const String kgEN = 'Kg';
+  static const String literEN = 'Liter';
+  static const String unitNameEN = 'Unit Name';
+
+  static const String conversionFactorEN = 'Conversion Factor';
+  static const String unitNameHintEN = 'Unit Name (e.g. Carton)';
 }

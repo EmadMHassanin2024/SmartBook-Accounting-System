@@ -2,11 +2,12 @@ import 'package:smart_book/features/inventory/auth_exports.dart';
 
 class AddProductCubit extends Cubit<AddProductState> {
   final InventoryRepository productRepository;
-  final ProductModel? productToEdit;
+  ProductModel? productToEdit;
+  ProductModel? currentProduct;
 
+  // تم إزالة productToEdit من هنا ليتوافق مع الـ Singleton في GetIt
   AddProductCubit({
     required this.productRepository,
-    this.productToEdit,
   }) : super(AddProductInitial(
     units: [
       const ProductUnitModel(
@@ -19,6 +20,34 @@ class AddProductCubit extends Cubit<AddProductState> {
     ],
     expiryDate: null,
   ));
+
+  // دالة تهيئة الكيوبت لتمرير المنتج عند فتح الشاشة (سواء للإضافة أو للتعديل)
+  void initProduct(ProductModel? product) {
+    productToEdit = product;
+    currentProduct = product;
+
+    if (product != null) {
+      if (product.units != null && product.units!.isNotEmpty) {
+        setInitialUnits(product.units!);
+      }
+      if (product.expiryDate != null) {
+        setExpiryDate(product.expiryDate!);
+      }
+    } else {
+      emit(AddProductInitial(
+        units: [
+          const ProductUnitModel(
+            unitName: 'قطعة',
+            salePrice: 0.0,
+            purchasePrice: 0.0,
+            conversionFactor: 1.0,
+            isBaseUnit: true,
+          )
+        ],
+        expiryDate: null,
+      ));
+    }
+  }
 
   // تحديث تاريخ الصلاحية فقط
   void setExpiryDate(String date) {
@@ -103,7 +132,8 @@ class AddProductCubit extends Cubit<AddProductState> {
       ));
     }
   }
-// 8. دالة إضافية لحساب إجمالي القيمة أو السعر إذا تطلب الأمر
+
+  // 8. تم تصحيح حساب الإجمالي وإضافة علامة الضرب (*)
   double calculateTotalValue() {
     double total = 0.0;
     for (var unit in state.units) {
@@ -122,13 +152,11 @@ class AddProductCubit extends Cubit<AddProductState> {
     );
 
     if (picked != null) {
-      // تنسيق التاريخ بالطريقة التي تريدها
       final formattedDate = '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
-
-      // حفظه في حالة الكيوبت
       setExpiryDate(formattedDate);
     }
   }
+
   // 5. الدالة لإضافة منتج جديد بالسيرفر
   Future<void> submitProduct({
     required String name,
@@ -138,7 +166,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? batchNumber,
     String? size,
     String? color,
-
   }) async {
     final List<ProductUnitModel> allUnits = state.units;
 
@@ -151,7 +178,6 @@ class AddProductCubit extends Cubit<AddProductState> {
         name: name,
         barcode: barcode,
         totalStockQuantity: stock,
-
         productUnits: allUnits,
       );
 
@@ -176,11 +202,9 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
   }
 
-  // 6. دالة onSave للتحقق وتوجيه العملية (إضافة أو تعديل)
+  // 6. دالة onSave للتحقق وتوجيه العملية (إضافة أو تعديل اعتماداً على المتغير الداخلي)
   void onSave({
     required BuildContext context,
-
-    required ProductModel? productToEdit,
     required String name,
     required String barcode,
     required double stock,
@@ -199,12 +223,12 @@ class AddProductCubit extends Cubit<AddProductState> {
       return;
     }
 
+    // الاعتماد على المتغير الداخلي productToEdit الموجود في الكيوبت
     final bool isEditing = productToEdit != null;
 
     if (isEditing) {
       updateProduct(
-        productId: productToEdit.id,
-
+        productId: productToEdit!.id,
         name: name,
         barcode: barcode,
         totalStockQuantity: stock,
@@ -216,7 +240,6 @@ class AddProductCubit extends Cubit<AddProductState> {
       );
     } else {
       submitProduct(
-
         name: name,
         barcode: barcode,
         stock: stock,
@@ -231,7 +254,6 @@ class AddProductCubit extends Cubit<AddProductState> {
   // 7. الدالة لتعديل منتج موجود مسبقاً
   Future<void> updateProduct({
     required int productId,
-
     required String name,
     required String barcode,
     required double totalStockQuantity,
@@ -239,7 +261,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? batchNumber,
     String? size,
     String? color,
-
     required List<ProductUnitModel> productUnits,
   }) async {
     emit(AddProductLoading(
@@ -256,7 +277,6 @@ class AddProductCubit extends Cubit<AddProductState> {
         batchNumber: batchNumber,
         size: size,
         color: color,
-
         productUnits: productUnits,
       );
 

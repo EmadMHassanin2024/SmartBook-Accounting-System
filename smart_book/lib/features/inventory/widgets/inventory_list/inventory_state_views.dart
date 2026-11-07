@@ -1,3 +1,4 @@
+import 'package:smart_book/core/widgets/app_text.dart';
 import 'package:smart_book/features/inventory/auth_exports.dart';
 import '../common/inventory_stats_section.dart';
 import 'inventory_content_view.dart';
@@ -36,9 +37,9 @@ class InventoryStateViews extends StatelessWidget {
       final loadedState = state as InventoryLoaded;
 
       if (loadedState.products.isEmpty) {
-        return Center(
-          child: Text(
-            context.lang.noItemsMatchSelection,
+        return const Center(
+          child:AppText(
+            textKey: LanguageKeys.noItemsMatchSelectionKey,
           ),
         );
       }

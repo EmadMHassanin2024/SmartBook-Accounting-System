@@ -73,7 +73,8 @@ class _UnitItemCardState extends State<UnitItemCard> {
                 child: TextField(
                   controller: _nameController,
                   onChanged: widget.onNameChanged,
-                  decoration: _inputDecoration(context.lang.unitNameHint),
+
+                  decoration: _inputDecoration(LanguageKeys.unitNameKey),
                 ),
               ),
               if (!isBase)
@@ -91,7 +92,7 @@ class _UnitItemCardState extends State<UnitItemCard> {
                   controller: _salePriceController,
                   keyboardType: TextInputType.number,
                   onChanged: (val) => widget.onSalePriceChanged(double.tryParse(val) ?? 0),
-                  decoration: _inputDecoration(context.lang.salePrice),
+                  decoration: _inputDecoration(LanguageKeys.salePriceKey),
                 ),
               ),
               const SizedBox(width: 10),
@@ -100,7 +101,7 @@ class _UnitItemCardState extends State<UnitItemCard> {
                   controller: _purchasePriceController,
                   keyboardType: TextInputType.number,
                   onChanged: (val) => widget.onPurchasePriceChanged(double.tryParse(val) ?? 0),
-                  decoration: _inputDecoration(context.lang.purchasePrice),
+                  decoration: _inputDecoration(LanguageKeys.purchasePriceKey),
                 ),
               ),
             ],
@@ -111,7 +112,7 @@ class _UnitItemCardState extends State<UnitItemCard> {
               controller: _factorController,
               keyboardType: TextInputType.number,
               onChanged: (val) => widget.onFactorChanged(double.tryParse(val) ?? 0),
-              decoration: _inputDecoration(context.lang.conversionFactor),
+              decoration: _inputDecoration(LanguageKeys.conversionFactorKey),
             ),
           ]
         ],

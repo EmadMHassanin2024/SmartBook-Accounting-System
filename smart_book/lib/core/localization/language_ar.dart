@@ -84,5 +84,16 @@ class LanguageAR {
   static const String paymentVouchers = 'سندات الصرف';
   static const String editProductAR = 'تعديل صنف';
   static const String reorderLevelAR = 'حد إعادة الطلب (تنبيه انخفاض المخزون)';
+  static const String noItemsMatchSelectionAR = 'لا توجد عناصر تطابق بحثك';
+  static const String pieceAR = 'قطعة';
+  static const String cartonAR = 'كرتون';
+  static const String kgAR = 'كيلو';
+  static const String literAR = 'لتر';
+  static const String unitNameAR = 'اسم الوحدة';
+
+
+  static const String conversionFactorAR = 'معامل التحويل';
+
+
 
 }
