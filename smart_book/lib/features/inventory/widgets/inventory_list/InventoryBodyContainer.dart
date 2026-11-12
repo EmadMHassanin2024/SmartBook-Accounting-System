@@ -9,7 +9,7 @@ class InventoryBodyContainer extends StatelessWidget {
     return BlocBuilder<InventoryCubit, InventoryState>(
       builder: (context, state) {
         return InventoryStateViews(
-          state: state,
+
           onOpenFilters: () =>
               InventoryNavigationHelper.openFilterSheet(context),
         );

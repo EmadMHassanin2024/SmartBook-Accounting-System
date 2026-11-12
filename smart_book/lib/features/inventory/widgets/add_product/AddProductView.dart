@@ -58,7 +58,8 @@ class _AddProductViewState extends State<AddProductView> {
 
     final bool isEditing = widget.productToEdit != null;
 
-    return BlocListener<AddProductCubit, AddProductState>(
+    return
+        BlocListener<AddProductCubit, AddProductState>(
       listener: (context, state) {
         if (state is AddProductLoading) {
           showDialog(
@@ -89,10 +90,14 @@ class _AddProductViewState extends State<AddProductView> {
           ],
           textKey: '',
         ),
-        body: AddProductFormBody(
+
+        body:BlocBuilder<AddProductCubit, AddProductState>(
+    builder: (context, state) {
+    final cubit = context.read<AddProductCubit>();
+    return AddProductFormBody(
           formKey: formKey,
           cubit: cubit,
-          addProductState: cubit.state,
+          addProductState: state,
           nameController: nameController,
           barcodeController: barcodeController,
           stockController: stockController,
@@ -101,7 +106,9 @@ class _AddProductViewState extends State<AddProductView> {
           batchController: batchController,
           selectedUnitNotifier: selectedUnitNotifier,
 
-        ),
+    );
+    },
+    ),
         bottomSheet: ProductSaveBottomSheet(
 
           onSavePressed: () {

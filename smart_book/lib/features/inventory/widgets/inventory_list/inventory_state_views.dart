@@ -4,61 +4,66 @@ import '../common/inventory_stats_section.dart';
 import 'inventory_content_view.dart';
 
 class InventoryStateViews extends StatelessWidget {
-  final InventoryState state;
+
   final VoidCallback onOpenFilters;
 
   const InventoryStateViews({
     super.key,
-    required this.state,
     required this.onOpenFilters,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (state is InventoryLoading) {
-      return const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primaryBlue,
-        ),
-      );
-    }
-    if (state is InventoryError) {
-      final errorState = state as InventoryError;
-      return Center(
-        child: Text(
-          'خطأ: ${errorState.message.replaceAll("Exception: ", "")}',
-          style: const TextStyle(color: Colors.red),
-        ),
-      );
-    }
 
+    return Column(
+        children: [
+        const InventoryStatsSection(),
 
-    if (state is InventoryLoaded) {
-      final loadedState = state as InventoryLoaded;
-
-      if (loadedState.products.isEmpty) {
+    Expanded(
+   child:  BlocBuilder<InventoryCubit, InventoryState>(
+        builder: (context, state)
+    {
+      if (state is InventoryLoading) {
         return const Center(
-          child:AppText(
-            textKey: LanguageKeys.noItemsMatchSelectionKey,
+          child: CircularProgressIndicator(
+            color: AppColors.primaryBlue,
+          ),
+        );
+      }
+      if (state is InventoryError) {
+        final errorState = state;
+        return Center(
+          child: Text(
+            'خطأ: ${errorState.message.replaceAll("Exception: ", "")}',
+            style: const TextStyle(color: Colors.red),
           ),
         );
       }
 
-      return Column(
-        children: [
-          InventoryStatsSection(
-            state: loadedState,
-          ),
-          Expanded(
-            child: InventoryContentView(
-              state: loadedState,
-              onOpenFilters: onOpenFilters,
-            ),
-          ),
-        ],
-      );
-    }
 
-    return const SizedBox.shrink();
+      if (state is InventoryLoaded) {
+        final loadedState = state;
+
+        if (loadedState.products.isEmpty) {
+          return const Center(
+            child: AppText(
+              textKey: LanguageKeys.noItemsMatchSelectionKey,
+            ),
+          );
+        }
+
+        return  InventoryContentView(
+                state: loadedState,
+                onOpenFilters: onOpenFilters,
+
+        );
+      }
+
+      return const SizedBox.shrink();
+    },
+   ),
+    ),
+        ],
+    );
   }
 }

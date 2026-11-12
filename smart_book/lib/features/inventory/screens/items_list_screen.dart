@@ -7,14 +7,10 @@ class ItemsListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /*
-    return BlocProvider(
-      create: (context) => InventoryCubit(
-        InventoryRepository(),
-        context.read<SystemConfigurationCubit>(),
-      )..initialize(),
+    if (!sl.isRegistered<InventoryCubit>()) {
+      sl.registerLazySingleton(() =>  InventoryCubit());
 
-     */
+    }
     return BlocProvider(
       create: (context)=> InventoryCubit(
       )..initialize(),

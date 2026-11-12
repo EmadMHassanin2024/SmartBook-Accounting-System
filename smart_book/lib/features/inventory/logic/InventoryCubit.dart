@@ -10,11 +10,10 @@ class InventoryCubit extends Cubit<InventoryState> {
   String _currentCategory = LanguageKeys.allCategoryKey;
   String _currentQuery = "";
 
-  // أصبح الـ Constructor خالياً تماماً من البارامترات لتتوافق مع الطريقة الأولى
   InventoryCubit() : super(InventoryInitial());
 
   Future<void> initialize() async {
-    // التحقق الذكي من الـ Cache (عدم طلب السيرفر إذا كانت البيانات موجودة مسبقاً)
+    // التحقق الذكي من الـ Cache
     if (_allProducts.isNotEmpty) {
       _applyFilters();
     } else {
@@ -56,12 +55,20 @@ class InventoryCubit extends Cubit<InventoryState> {
     );
   }
 
+  /// 💡 دالة مساعدة لتوحيد الحروف العربية وتجاوز مشاكل الهمزات والتاء المربوطة
+  String _normalizeArabic(String text) {
+    return text
+        .toLowerCase()
+        .replaceAll(RegExp(r'[أإآا]'), 'ا')
+        .replaceAll('ة', 'ه')
+        .replaceAll('ى', 'ي');
+  }
+
   void _applyFilters() {
-    // نأخذ نسخة كاملة من كل المنتجات للعمل عليها
     List<ProductModel> activityProducts = List.from(_allProducts);
     List<ProductModel> results = List.from(_allProducts);
 
-    // 1. فلترة حسب الفئة (منتهية أو قربت تنتهي)
+    // 1. فلترة حسب الفئة
     if (_currentCategory == LanguageKeys.expiredCategoryKey) {
       results = results.where((p) => p.stock <= 0).toList();
     } else if (_currentCategory == LanguageKeys.lowStockCategoryKey) {
@@ -70,12 +77,13 @@ class InventoryCubit extends Cubit<InventoryState> {
           .toList();
     }
 
-    // 2. فلترة حسب نص البحث (الاسم أو الباركود)
+    // 2. فلترة حسب نص البحث (مع تطبيق معالجة الهمزات العربية والباركود)
     if (_currentQuery.isNotEmpty) {
-      final searchLabel = _currentQuery.trim().toLowerCase();
+      final searchLabel = _normalizeArabic(_currentQuery.trim());
       results = results.where((product) {
-        final name = (product.name ?? "").toLowerCase();
+        final name = _normalizeArabic(product.name ?? "");
         final barcode = (product.barcode ?? "").toLowerCase();
+
         return name.contains(searchLabel) || barcode.contains(searchLabel);
       }).toList();
     }

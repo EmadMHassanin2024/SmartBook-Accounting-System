@@ -102,11 +102,7 @@ class SystemConfigurationCubit
     final currentModules =
         state.settings.enabledBusinessModules;
 
-    // لا يمكن تعطيل النشاط الحالي.
-    if (module == state.settings.activeBusinessModule &&
-        currentModules.contains(module)) {
-      return;
-    }
+
 
     // يجب أن يبقى نشاط واحد على الأقل.
     if (currentModules.length <= 1 &&

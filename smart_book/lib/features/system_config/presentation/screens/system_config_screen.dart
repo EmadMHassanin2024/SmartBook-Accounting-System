@@ -9,20 +9,42 @@ import '../../extensions/core_module_extension.dart';
 import '../../extensions/feature_module_extension.dart';
 import '../../logic/system_configuration_cubit.dart';
 import '../../logic/system_configuration_state.dart';
-import '../../../pos/logic/pos_cubit.dart'; // (تأكد من تعديل المسار حسب هيكل مشروعك)
+import '../../../pos/logic/pos_cubit.dart';
 
-class SystemConfigurationScreen extends StatelessWidget {
+class SystemConfigurationScreen extends StatefulWidget {
   const SystemConfigurationScreen({super.key});
+
+  @override
+  State<SystemConfigurationScreen> createState() => _SystemConfigurationScreenState();
+}
+
+class _SystemConfigurationScreenState extends State<SystemConfigurationScreen> {
+  late final TextEditingController _companyNameController;
+
+  @override
+  void initState() {
+    super.initState();
+    // تهيئة الـ Controller بالقيم الأولية من الـ Cubit
+    final currentState = context.read<SystemConfigurationCubit>().state;
+    _companyNameController = TextEditingController(text: currentState.settings.companyName);
+  }
+
+  @override
+  void dispose() {
+    _companyNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("إعدادات النظام")),
-      // استخدام BlocConsumer للاستماع لحالات الحفظ والنجاح أو الأخطاء
       body: BlocConsumer<SystemConfigurationCubit, SystemConfigurationState>(
         listener: (context, state) {
-          // يمكنك هنا التحقق إذا تم الحفظ بنجاح (حسب ما يتم تنظيمه في SystemConfigurationState لديك)
-          // مثلاً إذا أردت تطبيقها فور ضغط الحفظ أو عند انتهاء حالة الـ saving:
+          // تحديث النص في الـ Controller إذا تغير من الخارج (مثل التحميل لأول مرة)
+          if (_companyNameController.text != state.settings.companyName) {
+            _companyNameController.text = state.settings.companyName;
+          }
         },
         builder: (context, state) {
           if (state.isLoading) return const Center(child: CircularProgressIndicator());
@@ -30,13 +52,43 @@ class SystemConfigurationScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // اسم الشركة
+              // اسم الشركة (باستخدام الـ Controller المستقر)
               TextField(
+                controller: _companyNameController,
                 decoration: const InputDecoration(labelText: "اسم الشركة"),
                 onChanged: (val) => context.read<SystemConfigurationCubit>().updateCompanyName(val),
               ),
               const SizedBox(height: 20),
-
+              const Text(
+                "النشاط الأساسي للبرنامج",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<BusinessModule>(
+                value: state.settings.activeBusinessModule,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                items: BusinessModule.values.map((module) {
+                  return DropdownMenuItem<BusinessModule>(
+                    value: module,
+                    child: Text(module.arabicName),
+                  );
+                }).toList(),
+                onChanged: (BusinessModule? newModule) {
+                  if (newModule != null) {
+                    final cubit = context.read<SystemConfigurationCubit>();
+                    if (!cubit.isBusinessModuleEnabled(newModule)) {
+                      cubit.enableBusinessModule(newModule);
+                    }
+                    cubit.setActiveBusinessModule(newModule);
+                  }
+                },
+              ),
+              const SizedBox(height: 20),
               // قسم الموديولات الأساسية
               _buildSection(
                 title: "الموديولات الأساسية",
@@ -75,24 +127,17 @@ class SystemConfigurationScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: ElevatedButton(
           onPressed: () async {
-            // 1. التقاط الـ Cubit مسبقاً قبل أي عمليات غير متزامنة لتجنب مشاكل الـ Context
             final configCubit = context.read<SystemConfigurationCubit>();
 
-            // 2. تنفيذ الحفظ في الخلفية
             await configCubit.saveConfiguration();
 
-            // 3. التحقق من أن الـ Widget لا تزال نشطة في الشجرة
             if (!context.mounted) return;
 
-            // 4. تطبيق الإعدادات على الـ POS (تأكد من وجود PosCubit في السياق، أو احذفها إن لم تكن مطلوبة هنا مباشرة)
             try {
               final currentSettings = configCubit.state.settings;
               context.read<PosCubit>().applySettingsExtension(currentSettings);
-            } catch (_) {
-              // لتجنب انهيار التطبيق لو لم يكن الـ PosCubit مُحَقناً في هذه الشاشة
-            }
+            } catch (_) {}
 
-            // 5. إظهار رسالة النجاح والرجوع للصفحة السابقة بأمان
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("تم حفظ وتطبيق الإعدادات بنجاح"),
@@ -103,7 +148,6 @@ class SystemConfigurationScreen extends StatelessWidget {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             } else {
-              // إذا لم تكن هناك صفحة سابقة للرجوع إليها، يمكنك الانتقال للصفحة الرئيسية بدلاً من الانهيار
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const MainScreen()),
