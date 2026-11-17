@@ -93,6 +93,7 @@ class AppLanguages {
       LanguageKeys.errorOccurredKey: LanguageAR.errorOccurredAR,
       LanguageKeys.errorKey: LanguageAR.errorKeyAR,
       LanguageKeys.outOfStockCategoryKey: LanguageAR.outOfStockCategoryAR,
+      LanguageKeys.retryKey: LanguageAR. retryKeyAR,
 
     },
     'en': {
@@ -180,6 +181,7 @@ class AppLanguages {
       LanguageKeys.searchByNameOrBarcodeKey: LanguageEN.searchByNameOrBarcodeEN,
       LanguageKeys.errorKey: LanguageEN.errorKeyEN,
       LanguageKeys.outOfStockCategoryKey: LanguageEN.outOfStockCategoryEN,
+      LanguageKeys.retryKey: LanguageEN. retryKeyEN,
 
     },
   };

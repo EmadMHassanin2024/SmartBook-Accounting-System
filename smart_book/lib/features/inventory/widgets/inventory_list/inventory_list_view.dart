@@ -1,6 +1,4 @@
-
 import 'package:smart_book/features/inventory/auth_exports.dart';
-
 
 class InventoryListView extends StatelessWidget {
   final InventoryState state;
@@ -14,23 +12,36 @@ class InventoryListView extends StatelessWidget {
     }
 
     if (state is InventoryError) {
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        SnackbarHelper.showError(
-
-          (state as InventoryError).message,
-        );
-      });
-      return const Center(child: Text(LanguageKeys.errorOccurredKey));
-
+      final errorState = state as InventoryError;
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 40),
+            const SizedBox(height: 8),
+            Text(
+              errorState.message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: () => context.read<InventoryCubit>().fetchProducts(),
+              icon: const Icon(Icons.refresh),
+              label: const AppText(textKey: LanguageKeys.retryKey), // أو Text("إعادة المحاولة")
+            ),
+          ],
+        ),
+      );
     }
 
     if (state is InventoryLoaded) {
       final loadedState = state as InventoryLoaded;
+
       if (loadedState.products.isEmpty) {
         return const Center(
-          child: Text(
-            LanguageKeys.noItemsMatchSelectionKey,
+          child: AppText(
+            textKey: LanguageKeys.noItemsMatchSelectionKey,
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
         );
@@ -41,22 +52,7 @@ class InventoryListView extends StatelessWidget {
         itemCount: loadedState.products.length,
         itemBuilder: (context, index) {
           final product = loadedState.products[index];
-
-          return ItemCardWidget(
-            product: product,
-            // هنا قمنا بربط الزر بفتح شاشة الجرد
-            onAdjustmentPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BlocProvider.value(
-                    value: context.read<AdjustmentCubit>(),
-                    child: InventoryAdjustmentScreen(product: product),
-                  ),
-                ),
-              );
-            },
-          );
+          return ItemCardWidget(product: product);
         },
       );
     }

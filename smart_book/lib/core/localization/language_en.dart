@@ -95,4 +95,5 @@ class LanguageEN {
 
   static const String errorKeyEN = 'Error';
   static const String outOfStockCategoryEN = 'Out of Stock';
+  static const String retryKeyEN =  'retry_key';
 }

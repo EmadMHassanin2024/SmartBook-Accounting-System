@@ -6,7 +6,20 @@ abstract class InventoryState extends Equatable {
   @override
   List<Object?> get props => [];
 }
+class DeleteProductLoading extends InventoryState {
+  final int productId;
+  const DeleteProductLoading(this.productId);
+}
 
+class DeleteProductSuccess extends InventoryState {
+  final String message;
+  const DeleteProductSuccess(this.message);
+}
+
+class DeleteProductError extends InventoryState {
+  final String error;
+  const DeleteProductError(this.error);
+}
 class InventoryInitial extends InventoryState {}
 
 class InventoryLoading extends InventoryState {}
@@ -60,6 +73,7 @@ class InventoryLoaded extends InventoryState {
       outOfStockCount: outOfStockCount ?? this.outOfStockCount,
       totalInventoryValue: totalInventoryValue ?? this.totalInventoryValue,
     );
+
   }
 
   @override

@@ -95,7 +95,8 @@ class LanguageAR {
   static const String conversionFactorAR = 'معامل التحويل';
   static const String searchByNameOrBarcodeAR = 'البحث بالاسم أو الباركود';
   static const String errorKeyAR = 'خطأ';
-  static const String outOfStockCategoryAR = 'المنتجات النافذة'; // أو 'نفد المخزون'
+  static const String outOfStockCategoryAR = 'المنتجات النافذة';
+  static const String retryKeyAR =  'إعادة المحاولة';
 
 
 

@@ -119,12 +119,16 @@ class InventoryCubit extends Cubit<InventoryState> {
   }
 
   Future<void> deleteProduct(int productId) async {
+    emit(DeleteProductLoading(productId));
     try {
       await _productService.deleteProduct(productId);
       _allProducts.removeWhere((p) => p.id == productId);
-      _applyFilters();
+
+      emit(DeleteProductSuccess("تم حذف الصنف بنجاح"));
+      _applyFilters(); // لإعادة عرض القائمة المحدثة بعد الحذف
     } catch (e) {
-      emit(InventoryError(e.toString()));
+      emit(DeleteProductError(e.toString()));
+      _applyFilters(); // مهم جداً: لإبقاء القائمة معروضة وعدم إخفائها عند فشل الحذف
     }
   }
 

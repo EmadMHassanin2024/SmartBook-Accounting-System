@@ -90,5 +90,6 @@ class LanguageKeys {
   static const String searchByNameOrBarcodeKey = 'search_by_name_or_barcode';
   static const String errorKey = 'error_key';
   static const String outOfStockCategoryKey = 'out_of_stock_category_key';
+  static const String retryKey = 'retry_key';
 
 }
