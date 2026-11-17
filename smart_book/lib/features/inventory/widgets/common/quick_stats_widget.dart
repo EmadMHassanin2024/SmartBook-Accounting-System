@@ -1,5 +1,4 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import '../../../../core/localization/language_keys.dart';
 import 'StatCardItem.dart';
 
 class QuickStatsWidget extends StatelessWidget {
@@ -27,29 +26,35 @@ class QuickStatsWidget extends StatelessWidget {
       child: Row(
         children: [
           // بطاقة كل الأصناف
-          StatCardItem(
-            textKey: LanguageKeys.allCategoryKey,
-            count: totalCount.toString(),
-            color: Colors.blue,
-            onTap: onTotalTap,
+          Expanded(
+            child: StatCardItem(
+              textKey: LanguageKeys.allCategoryKey,
+              count: totalCount.toString(),
+              color: Colors.blue,
+              onTap: onTotalTap,
+            ),
           ),
           const SizedBox(width: 10),
 
           // بطاقة قربت تنتهي
-          StatCardItem(
-            textKey: LanguageKeys.lowStockCategoryKey,
-            count: lowStockCount.toString(),
-            color: Colors.orange,
-            onTap: onLowStockTap,
+          Expanded(
+            child: StatCardItem(
+              textKey: LanguageKeys.lowStockCategoryKey,
+              count: lowStockCount.toString(),
+              color: Colors.orange,
+              onTap: onLowStockTap,
+            ),
           ),
           const SizedBox(width: 10),
 
           // بطاقة منتهية
-          StatCardItem(
-            textKey: LanguageKeys.expiredCategoryKey,
-            count: outOfStockCount.toString(),
-            color: Colors.red,
-            onTap: onOutOfStockTap,
+          Expanded(
+            child: StatCardItem(
+              textKey: LanguageKeys.outOfStockCategoryKey,
+              count: outOfStockCount.toString(),
+              color: Colors.red,
+              onTap: onOutOfStockTap,
+            ),
           ),
         ],
       ),

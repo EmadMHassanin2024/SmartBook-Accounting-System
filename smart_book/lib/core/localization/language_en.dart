@@ -92,4 +92,7 @@ class LanguageEN {
   static const String conversionFactorEN = 'Conversion Factor';
   static const String unitNameHintEN = 'Unit Name (e.g. Carton)';
   static const String searchByNameOrBarcodeEN = 'Search by name or barcode';
+
+  static const String errorKeyEN = 'Error';
+  static const String outOfStockCategoryEN = 'Out of Stock';
 }

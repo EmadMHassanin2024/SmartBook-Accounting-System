@@ -39,14 +39,7 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<FinancialReportsRepository>(
         () => FinancialReportsRepository(),
   );
-/*
-  sl.registerLazySingleton<InventoryRepository>(
-        () => InventoryRepository(
-      http.Client(),
-    ),
-  );
 
- */
 
   sl.registerLazySingleton<IncomeStatementRepository>(
         () => IncomeStatementRepository(),
@@ -73,21 +66,23 @@ Future<void> setupLocator() async {
   //------------------------------------------------------------
   // Cubits
   //------------------------------------------------------------
+  if (!sl.isRegistered<InventoryCubit>()) {
+    sl.registerLazySingleton<InventoryCubit>(
+          () => InventoryCubit(),
+    );
+  }
 
 
-  sl.registerLazySingleton<InventoryCubit>(
-        () => InventoryCubit(
+  if (!sl.isRegistered<AddProductCubit>()) {
+    sl.registerLazySingleton<AddProductCubit>(
+          () => AddProductCubit(productRepository: sl<InventoryRepository>()),
+    );
+  }
 
 
-    ),
-  );
 
 
 
-
-  sl.registerLazySingleton(
-        () => AddProductCubit(productRepository: sl<InventoryRepository>()),
-  );
 
   sl.registerFactory<AdjustmentCubit>(
         () => AdjustmentCubit(

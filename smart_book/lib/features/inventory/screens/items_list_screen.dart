@@ -7,10 +7,16 @@ class ItemsListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /*
+    تم نقلها الى  setupLocator
     if (!sl.isRegistered<InventoryCubit>()) {
       sl.registerLazySingleton(() =>  InventoryCubit());
 
     }
+
+     */
+
+
     return BlocProvider(
       create: (context)=> InventoryCubit(
       )..initialize(),

@@ -6,7 +6,9 @@ class InventoryNavigationHelper {
     InventoryFilterHelper.show(
       context,
       onFilterSelected: (category) {
-        context.read<InventoryCubit>().filterByCategory(category);
+        if (context.mounted) {
+          context.read<InventoryCubit>().filterByCategory(category);
+        }
       },
     );
   }

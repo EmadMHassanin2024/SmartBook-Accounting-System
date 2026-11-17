@@ -6,7 +6,6 @@ class AddProductFormWidget extends StatelessWidget {
   final AddProductState addProductState;
   final String currentActivityType;
 
-  // تمرير الـ Controllers من الخارج لكي يتم التحكم بها من الـ Parent State
   final TextEditingController nameController;
   final TextEditingController barcodeController;
   final TextEditingController stockController;
@@ -15,6 +14,8 @@ class AddProductFormWidget extends StatelessWidget {
   final TextEditingController batchController;
   final TextEditingController sizeController;
   final TextEditingController colorController;
+  final ValueNotifier<String> selectedBusinessModuleNotifier;
+  final ValueNotifier<String?> selectedUnitNotifier; // ✅ تمت إضافته ليتطابق مع الـ Body
 
   const AddProductFormWidget({
     super.key,
@@ -30,25 +31,24 @@ class AddProductFormWidget extends StatelessWidget {
     required this.batchController,
     required this.sizeController,
     required this.colorController,
+    required this.selectedBusinessModuleNotifier,
+    required this.selectedUnitNotifier, // ✅ متطلب إلزامي
   });
 
   @override
   Widget build(BuildContext context) {
-    // ✅ تمرير جميع الـ Controllers واستقبالها بشكل سليم في الـ AddProductFormBody
     return AddProductFormBody(
       formKey: formKey,
       cubit: cubit,
       addProductState: addProductState,
-
       nameController: nameController,
       barcodeController: barcodeController,
       stockController: stockController,
       reorderLevelController: reorderLevelController,
       expiryDateController: expiryDateController,
       batchController: batchController,
-      // إذا كان AddProductFormBody يدعم المقاس واللون أيضاً، يمكنك تمريرهم هكذا:
-      // sizeController: sizeController,
-      // colorController: colorController,
+      selectedBusinessModuleNotifier: selectedBusinessModuleNotifier,
+      selectedUnitNotifier: selectedUnitNotifier, // ✅ تمريره بنجاح
     );
   }
 }

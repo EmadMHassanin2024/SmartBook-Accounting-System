@@ -5,7 +5,6 @@ class AddProductCubit extends Cubit<AddProductState> {
   ProductModel? productToEdit;
   ProductModel? currentProduct;
 
-  // تم إزالة productToEdit من هنا ليتوافق مع الـ Singleton في GetIt
   AddProductCubit({
     required this.productRepository,
   }) : super(AddProductInitial(
@@ -21,14 +20,13 @@ class AddProductCubit extends Cubit<AddProductState> {
     expiryDate: null,
   ));
 
-  // دالة تهيئة الكيوبت لتمرير المنتج عند فتح الشاشة (سواء للإضافة أو للتعديل)
   void initProduct(ProductModel? product) {
     productToEdit = product;
     currentProduct = product;
 
     if (product != null) {
-      if (product.units != null && product.units!.isNotEmpty) {
-        setInitialUnits(product.units!);
+      if (product.units.isNotEmpty) {
+        setInitialUnits(product.units);
       }
       if (product.expiryDate != null) {
         setExpiryDate(product.expiryDate!);
@@ -49,7 +47,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
   }
 
-  // تحديث تاريخ الصلاحية فقط
   void setExpiryDate(String date) {
     emit(AddProductStateModified(
       units: state.units,
@@ -57,7 +54,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     ));
   }
 
-  // 1. دالة إضافة وحدة بيع جديدة
   void addUnit() {
     final updatedUnits = List<ProductUnitModel>.from(state.units);
     updatedUnits.add(const ProductUnitModel(
@@ -73,7 +69,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     ));
   }
 
-  // 2. دالة حذف وحدة بيع فرعية بناءً على الـ index
   void removeUnit(int index) {
     final updatedUnits = List<ProductUnitModel>.from(state.units);
     if (index < updatedUnits.length) {
@@ -85,7 +80,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
   }
 
-  // 3. دالة تعيين الوحدات الأولية عند فتح الشاشة للتعديل
   void setInitialUnits(List<ProductUnitModel> units) {
     emit(AddProductUnitsUpdated(
       units: units.isEmpty ? state.units : units,
@@ -93,7 +87,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     ));
   }
 
-  // 4. دالة التحديث المباشر لبيانات الوحدة
   void updateUnitData({
     required int index,
     String? name,
@@ -133,7 +126,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
   }
 
-  // 8. تم تصحيح حساب الإجمالي وإضافة علامة الضرب (*)
   double calculateTotalValue() {
     double total = 0.0;
     for (var unit in state.units) {
@@ -142,7 +134,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     return total;
   }
 
-  // دالة لاختيار وتنسيق التاريخ
   Future<void> selectAndSetExpiryDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -157,7 +148,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
   }
 
-  // 5. الدالة لإضافة منتج جديد بالسيرفر
+  // 5. إضافة itemType عند إرسال منتج جديد بالسيرفر
   Future<void> submitProduct({
     required String name,
     required String barcode,
@@ -166,6 +157,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? batchNumber,
     String? size,
     String? color,
+    required String itemType, // <-- استقبال النشاط
   }) async {
     final List<ProductUnitModel> allUnits = state.units;
 
@@ -179,6 +171,7 @@ class AddProductCubit extends Cubit<AddProductState> {
         barcode: barcode,
         totalStockQuantity: stock,
         productUnits: allUnits,
+        itemType: itemType, // <-- تمريره للـ Repository
       );
 
       if (success) {
@@ -202,7 +195,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
   }
 
-  // 6. دالة onSave للتحقق وتوجيه العملية (إضافة أو تعديل اعتماداً على المتغير الداخلي)
+  // 6. تمرير itemType في دالة onSave
   void onSave({
     required BuildContext context,
     required String name,
@@ -212,6 +205,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? batchNumber,
     String? size,
     String? color,
+    required String itemType, // <-- استقبال النشاط من الشاشة
   }) {
     if (state.units.isEmpty) {
       SnackbarHelper.show(context.lang.pleaseAddUnit, const Color(0xFFFFB300), icon: Icons.warning_amber_rounded);
@@ -223,7 +217,6 @@ class AddProductCubit extends Cubit<AddProductState> {
       return;
     }
 
-    // الاعتماد على المتغير الداخلي productToEdit الموجود في الكيوبت
     final bool isEditing = productToEdit != null;
 
     if (isEditing) {
@@ -237,6 +230,7 @@ class AddProductCubit extends Cubit<AddProductState> {
         size: size,
         color: color,
         productUnits: state.units,
+        itemType: itemType, // <-- تمريره للتعديل
       );
     } else {
       submitProduct(
@@ -247,11 +241,12 @@ class AddProductCubit extends Cubit<AddProductState> {
         batchNumber: batchNumber,
         size: size,
         color: color,
+        itemType: itemType, // <-- تمريره للإضافة
       );
     }
   }
 
-  // 7. الدالة لتعديل منتج موجود مسبقاً
+  // 7. إضافة itemType عند تعديل منتج
   Future<void> updateProduct({
     required int productId,
     required String name,
@@ -262,6 +257,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? size,
     String? color,
     required List<ProductUnitModel> productUnits,
+    required String itemType, // <-- استقبال النشاط
   }) async {
     emit(AddProductLoading(
       units: state.units,
@@ -278,6 +274,7 @@ class AddProductCubit extends Cubit<AddProductState> {
         size: size,
         color: color,
         productUnits: productUnits,
+        itemType: itemType, // <-- تمريره للـ Repository
       );
 
       if (success) {

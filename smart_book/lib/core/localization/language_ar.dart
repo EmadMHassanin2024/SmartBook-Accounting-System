@@ -94,6 +94,8 @@ class LanguageAR {
   static const String errorOccurredAR = 'حدث خطأ ما';
   static const String conversionFactorAR = 'معامل التحويل';
   static const String searchByNameOrBarcodeAR = 'البحث بالاسم أو الباركود';
+  static const String errorKeyAR = 'خطأ';
+  static const String outOfStockCategoryAR = 'المنتجات النافذة'; // أو 'نفد المخزون'
 
 
 

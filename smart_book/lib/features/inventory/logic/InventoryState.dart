@@ -10,6 +10,7 @@ abstract class InventoryState extends Equatable {
 class InventoryInitial extends InventoryState {}
 
 class InventoryLoading extends InventoryState {}
+class InventoryActivityChanged extends InventoryState {}
 
 class InventoryError extends InventoryState {
   final String message;

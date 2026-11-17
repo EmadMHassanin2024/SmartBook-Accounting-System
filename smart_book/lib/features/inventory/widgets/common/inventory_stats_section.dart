@@ -6,8 +6,21 @@ class InventoryStatsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<InventoryCubit, InventoryState>(
-      builder: (context, state) {
+      buildWhen: (previous, current) {
 
+        return current is InventoryLoaded || current is InventoryLoading;
+      },
+      builder: (context, state) {
+        if (state is InventoryLoading) {
+          return const QuickStatsWidget(
+            totalCount: 0,
+            lowStockCount: 0,
+            outOfStockCount: 0,
+            onTotalTap: null,
+            onLowStockTap: null,
+            onOutOfStockTap: null,
+          );
+        }
         if (state is InventoryLoaded) {
           final cubit = context.read<InventoryCubit>();
           return QuickStatsWidget(
@@ -16,7 +29,8 @@ class InventoryStatsSection extends StatelessWidget {
             outOfStockCount: state.outOfStockCount,
             onTotalTap: () => cubit.filterByCategory(LanguageKeys.allCategoryKey),
             onLowStockTap: () => cubit.filterByCategory(LanguageKeys.lowStockCategoryKey),
-            onOutOfStockTap: () => cubit.filterByCategory(LanguageKeys.expiredCategoryKey),
+
+            onOutOfStockTap: () => cubit.filterByCategory(LanguageKeys.outOfStockCategoryKey),
           );
         }
 

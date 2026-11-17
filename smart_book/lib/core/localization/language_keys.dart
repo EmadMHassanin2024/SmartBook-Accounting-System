@@ -88,5 +88,7 @@ class LanguageKeys {
   static const String unitNameHintKey = 'unit_name_hint';
   static const String errorOccurredKey = 'error_occurred';
   static const String searchByNameOrBarcodeKey = 'search_by_name_or_barcode';
+  static const String errorKey = 'error_key';
+  static const String outOfStockCategoryKey = 'out_of_stock_category_key';
 
 }

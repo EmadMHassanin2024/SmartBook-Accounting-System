@@ -1,19 +1,32 @@
-import 'package:smart_book/features/auth/auth_exports.dart';
-import 'package:smart_book/features/inventory/auth_exports.dart';
+
+import 'dart:io';
+
 import 'package:smart_book/features/pos/logic/pos_cubit.dart';
 import 'package:smart_book/features/finance/journals/repositories/JournalRepository.dart';
 import 'package:smart_book/features/finance/journals/logic/JournalListCubit.dart';
 import 'package:smart_book/features/finance/ledger/logic/ledger_cubit.dart';
 import 'package:smart_book/features/finance/TrialBalance/logic/TrialBalanceCubit.dart';
 import 'package:smart_book/features/finance/Account/logic/account_cubit.dart';
+import 'core/di/service_locator.dart';
+import 'core/localization/language.dart';
+import 'core/packages.dart';
+import 'core/repositories/token_repository.dart';
 import 'core/routes/AppRouter.dart';
 import 'core/routes/app_routes.dart';
+import 'core/theme/app_colors.dart';
 import 'core/widgets/main_layout.dart';
+import 'features/auth/logic/auth_cubit.dart';
+import 'features/auth/screens/login_screen.dart';
+import 'features/auth/screens/sign_up_screen.dart';
+import 'features/finance/adjustments/logic/adjustment_cubit.dart';
 import 'features/finance/income_statement/data/repositories/income_statement_repository.dart';
 import 'features/finance/income_statement/logic/income_statement_cubit.dart';
 import 'features/finance/repositories/FinancialReportsRepository.dart';
+import 'features/inventory/logic/InventoryCubit.dart';
 import 'features/pos/data/Repository/PosRepository.dart';
-import 'features/pos/presentation/screens/pos_screen.dart'; // تأكد من استيراد ملف الترجمة الصحيح
+import 'features/pos/presentation/screens/pos_screen.dart';
+import 'features/settings/logic/SettingsCubit.dart';
+import 'features/system_config/logic/system_configuration_cubit.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override

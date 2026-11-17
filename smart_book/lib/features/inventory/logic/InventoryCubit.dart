@@ -1,5 +1,7 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
 
+import '../../system_config/data/repositories/SystemConfigurationRepository.dart';
+
 class InventoryCubit extends Cubit<InventoryState> {
   static const int lowStockThreshold = 10;
 
@@ -13,18 +15,24 @@ class InventoryCubit extends Cubit<InventoryState> {
   InventoryCubit() : super(InventoryInitial());
 
   Future<void> initialize() async {
-    // التحقق الذكي من الـ Cache
-    if (_allProducts.isNotEmpty) {
-      _applyFilters();
-    } else {
-      await fetchProducts();
-    }
+    try {
+    final configRepo = sl<SystemConfigurationRepository>();
+    final settings = await configRepo.loadConfiguration();
+    final activeModule = settings.activeBusinessModule.name;
+
+    await fetchProducts(businessModule: activeModule);
+
+  } catch (_) {
+
+  await fetchProducts();
   }
+}
 
   Future<void> fetchProducts({String? businessModule}) async {
     emit(InventoryLoading());
     try {
-      _allProducts = await _productService.fetchProducts();
+      // تم تصحيح activeModule إلى businessModule المُتمرر للدالة بنجاح
+      _allProducts = await _productService.fetchProducts(businessModule: businessModule);
       _applyFilters();
     } catch (e) {
       emit(InventoryError(e.toString()));
@@ -64,20 +72,14 @@ class InventoryCubit extends Cubit<InventoryState> {
         .replaceAll('ى', 'ي');
   }
 
+
+
   void _applyFilters() {
     List<ProductModel> activityProducts = List.from(_allProducts);
+    // نبدأ دائماً من القائمة الكاملة عند البحث أو الفلترة
     List<ProductModel> results = List.from(_allProducts);
 
-    // 1. فلترة حسب الفئة
-    if (_currentCategory == LanguageKeys.expiredCategoryKey) {
-      results = results.where((p) => p.stock <= 0).toList();
-    } else if (_currentCategory == LanguageKeys.lowStockCategoryKey) {
-      results = results
-          .where((p) => p.stock > 0 && p.stock <= lowStockThreshold)
-          .toList();
-    }
-
-    // 2. فلترة حسب نص البحث (مع تطبيق معالجة الهمزات العربية والباركود)
+    // 1. أولاً: تطبيق البحث إذا كان هناك نص مدخل (البحث يجب أن يكون شاملاً لكل المنتجات أو ضمن النطاق العام)
     if (_currentQuery.isNotEmpty) {
       final searchLabel = _normalizeArabic(_currentQuery.trim());
       results = results.where((product) {
@@ -88,10 +90,18 @@ class InventoryCubit extends Cubit<InventoryState> {
       }).toList();
     }
 
+    // 2. ثانياً: تطبيق فلترة الفئة على النتائج (سواء كنت تبحث أو تعرض الكل)
+    if (_currentCategory == LanguageKeys.expiredCategoryKey) {
+      results = results.where((p) => p.stock <= 0).toList();
+    } else if (_currentCategory == LanguageKeys.lowStockCategoryKey) {
+      results = results
+          .where((p) => p.stock > 0 && p.stock <= lowStockThreshold)
+          .toList();
+    }
+
     // إصدار الحالة الجديدة لتحديث واجهة المستخدم
     emit(_buildLoadedState(results, activityProducts));
   }
-
   void filterProducts(String query) {
     _currentQuery = query;
     _applyFilters();

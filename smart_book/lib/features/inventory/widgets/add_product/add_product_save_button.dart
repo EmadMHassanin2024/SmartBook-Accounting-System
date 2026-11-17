@@ -8,7 +8,7 @@ class AddProductFAB extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () async {
 
-        final result = await Navigator.push(
+        final result = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
             builder: (_) =>  const AddProductScreen(productToEdit: null),

@@ -84,3 +84,11 @@ export '../inventory/extensions/inventory_extension_manager.dart';
 export '../inventory/widgets/common/custom_text_field_card.dart';
 
 export  '../../../../core/utils/input_helper.dart';
+
+export 'package:smart_book/core/widgets/app_text.dart';
+
+export '../inventory/widgets/common/inventory_stats_section.dart';
+export '../inventory/widgets/inventory_list//inventory_content_view.dart';
+export '../../../../core/localization/language.dart';
+
+export '../system_config/extensions/ business_module_extension.dart';

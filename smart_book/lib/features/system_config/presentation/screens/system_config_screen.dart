@@ -145,14 +145,7 @@ class _SystemConfigurationScreenState extends State<SystemConfigurationScreen> {
               ),
             );
 
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            } else {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const MainScreen()),
-              );
-            }
+
           },
           child: const Text("حفظ الإعدادات"),
         ),

@@ -1,10 +1,6 @@
-import 'package:smart_book/core/widgets/app_text.dart';
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import '../common/inventory_stats_section.dart';
-import 'inventory_content_view.dart';
 
 class InventoryStateViews extends StatelessWidget {
-
   final VoidCallback onOpenFilters;
 
   const InventoryStateViews({
@@ -14,56 +10,62 @@ class InventoryStateViews extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<InventoryCubit>();
 
-    return Column(
-        children: [
-        const InventoryStatsSection(),
-
-    Expanded(
-   child:  BlocBuilder<InventoryCubit, InventoryState>(
-        builder: (context, state)
-    {
-      if (state is InventoryLoading) {
-        return const Center(
-          child: CircularProgressIndicator(
-            color: AppColors.primaryBlue,
-          ),
-        );
-      }
-      if (state is InventoryError) {
-        final errorState = state;
-        return Center(
-          child: Text(
-            'خطأ: ${errorState.message.replaceAll("Exception: ", "")}',
-            style: const TextStyle(color: Colors.red),
-          ),
-        );
-      }
-
-
-      if (state is InventoryLoaded) {
-        final loadedState = state;
-
-        if (loadedState.products.isEmpty) {
+    return BlocBuilder<InventoryCubit, InventoryState>(
+      buildWhen: (previous, current) {
+        return current is InventoryLoading ||
+            current is InventoryLoaded ||
+            current is InventoryError;
+      },
+      builder: (context, state) {
+        if (state is InventoryLoading) {
           return const Center(
-            child: AppText(
-              textKey: LanguageKeys.noItemsMatchSelectionKey,
+            child: CircularProgressIndicator(
+              color: AppColors.primaryBlue,
             ),
           );
         }
 
-        return  InventoryContentView(
-                state: loadedState,
-                onOpenFilters: onOpenFilters,
+        if (state is InventoryError) {
+          return const Center(
+            child: AppText(
+            textKey: LanguageKeys.errorKey,
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
 
-        );
-      }
+            ),
+          );
+        }
 
-      return const SizedBox.shrink();
-    },
-   ),
-    ),
-        ],
+        if (state is InventoryLoaded) {
+          return Column(
+            children: [
+              // 1. قسم الإحصائيات ثابت بالأعلى
+              const InventoryStatsSection(),
+              const SizedBox(height: 8),
+
+              // 2. شريط البحث يظل ظاهراً وثابتاً دائماً لا يختفي أبداً
+              InventorySearchBar(
+                onChanged: (value) => cubit.filterProducts(value),
+                onFilterTap: onOpenFilters,
+              ),
+
+              // 3. الجزء السفلي: إذا كانت المنتجات فارغة نعرض الرسالة في المنتصف، وإلا نعرض القائمة
+              Expanded(
+                child: state.products.isEmpty
+                    ? const Center(
+                  child: AppText(
+                    textKey: LanguageKeys.noItemsMatchSelectionKey,
+                  ),
+                )
+                    : InventoryListView(state: state),
+              ),
+            ],
+          );
+        }
+
+        return const SizedBox.shrink();
+      },
     );
   }
 }

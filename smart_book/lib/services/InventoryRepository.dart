@@ -76,13 +76,26 @@ class InventoryRepository {
     }
   }
 
-  // 3. جلب جميع المنتجات
-  Future<List<ProductModel>> fetchProducts() async {
+  // 3. جلب جميع المنتجات مع فلترة محلية بناءً على النشاط النشط (businessModule)
+  Future<List<ProductModel>> fetchProducts({String? businessModule}) async {
     try {
       final dynamic data = await BaseApiService.getRequest('Products');
 
       if (data is List) {
-        return data.map((item) => ProductModel.fromJson(item)).toList();
+        List<ProductModel> allProducts = data.map((item) => ProductModel.fromJson(item)).toList();
+
+        // إذا تم تمرير نشاط (مثل pharmacy)، نقوم بتصفية المنتجات محلياً
+        if (businessModule != null && businessModule.isNotEmpty) {
+          final normalizedModule = businessModule.trim().toLowerCase();
+
+          allProducts = allProducts.where((product) {
+            final type = product.itemType.trim().toLowerCase();
+            // نعرض المنتجات التي تتطابق مع النشاط الحالي، أو الأصناف العامة (general) إذا أردت ظهورها للكل
+            return type == normalizedModule || type == 'general' || type.isEmpty;
+          }).toList();
+        }
+
+        return allProducts;
       }
       return [];
     } catch (e) {

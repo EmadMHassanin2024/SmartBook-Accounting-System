@@ -6,10 +6,13 @@ class AddProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+/*
+    تم نقلها الى  setupLocator
     if (!sl.isRegistered<AddProductCubit>()) {
       sl.registerLazySingleton(() => AddProductCubit(productRepository: sl<InventoryRepository>()));
     }
+
+ */
     return BlocProvider(
       create: (_) => sl<AddProductCubit>()..initProduct(productToEdit),
       child:AddProductView(productToEdit: productToEdit),

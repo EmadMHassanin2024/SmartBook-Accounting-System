@@ -91,6 +91,8 @@ class AppLanguages {
 
       LanguageKeys.conversionFactorKey: LanguageAR.conversionFactorAR,
       LanguageKeys.errorOccurredKey: LanguageAR.errorOccurredAR,
+      LanguageKeys.errorKey: LanguageAR.errorKeyAR,
+      LanguageKeys.outOfStockCategoryKey: LanguageAR.outOfStockCategoryAR,
 
     },
     'en': {
@@ -176,6 +178,8 @@ class AppLanguages {
       LanguageKeys.conversionFactorKey: LanguageEN.conversionFactorEN,
       LanguageKeys.errorOccurredKey: LanguageEN.errorOccurredEN,
       LanguageKeys.searchByNameOrBarcodeKey: LanguageEN.searchByNameOrBarcodeEN,
+      LanguageKeys.errorKey: LanguageEN.errorKeyEN,
+      LanguageKeys.outOfStockCategoryKey: LanguageEN.outOfStockCategoryEN,
 
     },
   };

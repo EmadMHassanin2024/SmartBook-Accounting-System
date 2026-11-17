@@ -2,6 +2,7 @@ import 'package:smart_book/features/inventory/auth_exports.dart';
 
 class AddProductView extends StatefulWidget {
   final ProductModel? productToEdit;
+
   const AddProductView({super.key, this.productToEdit});
 
   @override
@@ -11,7 +12,6 @@ class AddProductView extends StatefulWidget {
 class _AddProductViewState extends State<AddProductView> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  // تعريف الـ Controllers للحقول النصية
   late final TextEditingController nameController;
   late final TextEditingController barcodeController;
   late final TextEditingController stockController;
@@ -21,6 +21,7 @@ class _AddProductViewState extends State<AddProductView> {
   late final TextEditingController sizeController;
   late final TextEditingController colorController;
   late final ValueNotifier<String?> selectedUnitNotifier;
+  late final ValueNotifier<String> selectedBusinessModuleNotifier;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _AddProductViewState extends State<AddProductView> {
     sizeController = TextEditingController(text: p?.size ?? '');
     colorController = TextEditingController(text: p?.color ?? '');
     selectedUnitNotifier = ValueNotifier<String?>(null);
+    selectedBusinessModuleNotifier = ValueNotifier<String>('pharmacy');
   }
 
   @override
@@ -49,17 +51,16 @@ class _AddProductViewState extends State<AddProductView> {
     sizeController.dispose();
     colorController.dispose();
     selectedUnitNotifier.dispose();
+    selectedBusinessModuleNotifier.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AddProductCubit>();
-
     final bool isEditing = widget.productToEdit != null;
 
-    return
-        BlocListener<AddProductCubit, AddProductState>(
+    return BlocListener<AddProductCubit, AddProductState>(
       listener: (context, state) {
         if (state is AddProductLoading) {
           showDialog(
@@ -90,40 +91,36 @@ class _AddProductViewState extends State<AddProductView> {
           ],
           textKey: '',
         ),
-
-        body:BlocBuilder<AddProductCubit, AddProductState>(
-    builder: (context, state) {
-    final cubit = context.read<AddProductCubit>();
-    return AddProductFormBody(
-          formKey: formKey,
-          cubit: cubit,
-          addProductState: state,
-          nameController: nameController,
-          barcodeController: barcodeController,
-          stockController: stockController,
-          reorderLevelController: reorderLevelController,
-          expiryDateController: expiryDateController,
-          batchController: batchController,
-          selectedUnitNotifier: selectedUnitNotifier,
-
-    );
-    },
-    ),
+        body: BlocBuilder<AddProductCubit, AddProductState>(
+          builder: (context, state) {
+            return AddProductFormBody(
+              formKey: formKey,
+              cubit: cubit,
+              addProductState: state,
+              nameController: nameController,
+              barcodeController: barcodeController,
+              stockController: stockController,
+              reorderLevelController: reorderLevelController,
+              expiryDateController: expiryDateController,
+              batchController: batchController,
+              selectedUnitNotifier: selectedUnitNotifier,
+              selectedBusinessModuleNotifier: selectedBusinessModuleNotifier,
+            );
+          },
+        ),
         bottomSheet: ProductSaveBottomSheet(
-
           onSavePressed: () {
             if (!formKey.currentState!.validate()) return;
             cubit.onSave(
-
               context: context,
-
-                name: InputHelper.getCleanText(nameController),
-                barcode: InputHelper.getCleanText(barcodeController),
-                stock: InputHelper.parseDouble(stockController),
+              name: InputHelper.getCleanText(nameController),
+              barcode: InputHelper.getCleanText(barcodeController),
+              stock: InputHelper.parseDouble(stockController),
               expiryDate: InputHelper.getOptionalText(expiryDateController),
               batchNumber: InputHelper.getOptionalText(batchController),
               size: InputHelper.getOptionalText(sizeController),
               color: InputHelper.getOptionalText(colorController),
+              itemType: selectedBusinessModuleNotifier.value,
             );
           },
         ),
