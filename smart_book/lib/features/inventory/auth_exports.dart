@@ -92,3 +92,5 @@ export '../inventory/widgets/inventory_list//inventory_content_view.dart';
 export '../../../../core/localization/language.dart';
 
 export '../system_config/extensions/ business_module_extension.dart';
+export '../inventory/widgets/inventory_list/item_actions_section.dart';
+export '../inventory/widgets/inventory_list/item_info_section.dart';

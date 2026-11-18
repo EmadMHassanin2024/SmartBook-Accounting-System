@@ -97,6 +97,7 @@ class LanguageAR {
   static const String errorKeyAR = 'خطأ';
   static const String outOfStockCategoryAR = 'المنتجات النافذة';
   static const String retryKeyAR =  'إعادة المحاولة';
+  static const String noBarcodeKeyAR= 'لا يوجد باركود';
 
 
 

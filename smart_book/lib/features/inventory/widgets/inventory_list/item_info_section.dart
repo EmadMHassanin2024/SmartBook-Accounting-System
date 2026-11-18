@@ -38,15 +38,24 @@ class ItemInfoSection extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                //TODO
-                Text(
-                  "${context.lang.barcode}: ${product.barcode.isEmpty ? context.lang.noBarcode : product.barcode}",
+                DefaultTextStyle(
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  child: Row(
+                    children: [
+                      const AppText(textKey: LanguageKeys.barcodeKey),
+                      const Text(": "),
+                      Flexible(
+                        child: product.barcode.isEmpty
+                            ? const AppText(textKey: LanguageKeys.noBarcodeKey)
+                            : Text(product.barcode),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

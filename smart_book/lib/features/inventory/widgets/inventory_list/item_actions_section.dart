@@ -108,28 +108,3 @@ class ItemActionsSection extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, int productId) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text("تأكيد الحذف"),
-        content: Text("هل أنت متأكد من حذف ${product.name}؟"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text("إلغاء"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              if (productId > 0) {
-                context.read<InventoryCubit>().deleteProduct(productId);
-              }
-            },
-            child: const Text("حذف", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -1,6 +1,5 @@
 import 'package:smart_book/features/inventory/auth_exports.dart';
-import 'item_actions_section.dart';
-import 'item_info_section.dart';
+
 
 class ItemCardWidget extends StatelessWidget {
   final ProductModel product;

@@ -22,8 +22,8 @@ class InventoryContentView extends StatelessWidget {
           onChanged: (value) => cubit.filterProducts(value),
           onFilterTap: onOpenFilters,
         ),
-        Expanded(
-          child: InventoryListView(state: state),
+        const Expanded(
+          child: InventoryListView(),
         ),
       ],
     );

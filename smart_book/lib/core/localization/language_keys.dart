@@ -91,5 +91,6 @@ class LanguageKeys {
   static const String errorKey = 'error_key';
   static const String outOfStockCategoryKey = 'out_of_stock_category_key';
   static const String retryKey = 'retry_key';
+  static const String noBarcodeKey = 'no_barcode_key';
 
 }

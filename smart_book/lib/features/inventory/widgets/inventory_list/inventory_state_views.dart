@@ -58,7 +58,7 @@ class InventoryStateViews extends StatelessWidget {
                     textKey: LanguageKeys.noItemsMatchSelectionKey,
                   ),
                 )
-                    : InventoryListView(state: state),
+                    : const InventoryListView(),
               ),
             ],
           );
