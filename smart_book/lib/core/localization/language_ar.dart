@@ -99,6 +99,15 @@ class LanguageAR {
   static const String retryKeyAR =  'إعادة المحاولة';
   static const String noBarcodeKeyAR= 'لا يوجد باركود';
 
+  static const String confirmDeleteKeyAR = 'تأكيد الحذف';
+  static const String areYouSureDeleteKeyAR = 'هل أنت متأكد من حذف';
+  static const String cancelKeyAR = 'إلغاء';
+  static const String deleteKeyAR  = 'حذف';
+  static const String businessModuleKeyAR = 'النشاط التابع له الصنف';
+  static const String  savedSuccessfullyKeyAR = 'تم الحفظ بنجاح';
+
+
+
 
 
 }

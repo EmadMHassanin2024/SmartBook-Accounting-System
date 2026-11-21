@@ -97,4 +97,10 @@ class LanguageEN {
   static const String outOfStockCategoryEN = 'Out of Stock';
   static const String retryKeyEN =  'retry_key';
   static const String noBarcodeKeyEN = 'no_barcode_key';
+  static const String confirmDeleteKeyEN = 'confirm_delete_key';
+  static const String areYouSureDeleteKeyEN = 'are_you_sure_delete_key';
+  static const String cancelKeyEN = 'cancel_key';
+  static const String deleteKeyEN  = 'delete_key';
+  static const String businessModuleKeyEN  = 'business_module_key';
+  static const String  savedSuccessfullyKeyEN = 'savedSuccessfullyKey';
 }

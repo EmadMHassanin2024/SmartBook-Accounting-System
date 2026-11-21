@@ -7,18 +7,20 @@ class AddProductCubit extends Cubit<AddProductState> {
 
   AddProductCubit({
     required this.productRepository,
-  }) : super(AddProductInitial(
-    units: [
-      const ProductUnitModel(
-        unitName: 'قطعة',
-        salePrice: 0.0,
-        purchasePrice: 0.0,
-        conversionFactor: 1.0,
-        isBaseUnit: true,
-      )
-    ],
-    expiryDate: null,
-  ));
+  }) : super(
+    AddProductInitial(
+      units: [
+        const ProductUnitModel(
+          unitName: 'قطعة',
+          salePrice: 0.0,
+          purchasePrice: 0.0,
+          conversionFactor: 1.0,
+          isBaseUnit: true,
+        )
+      ],
+      expiryDate: null,
+    ),
+  );
 
   void initProduct(ProductModel? product) {
     productToEdit = product;
@@ -32,59 +34,76 @@ class AddProductCubit extends Cubit<AddProductState> {
         setExpiryDate(product.expiryDate!);
       }
     } else {
-      emit(AddProductInitial(
-        units: [
-          const ProductUnitModel(
-            unitName: 'قطعة',
-            salePrice: 0.0,
-            purchasePrice: 0.0,
-            conversionFactor: 1.0,
-            isBaseUnit: true,
-          )
-        ],
-        expiryDate: null,
-      ));
+      emit(
+        AddProductInitial(
+          units: [
+            const ProductUnitModel(
+              unitName: 'قطعة',
+              salePrice: 0.0,
+              purchasePrice: 0.0,
+              conversionFactor: 1.0,
+              isBaseUnit: true,
+            )
+          ],
+          expiryDate: null,
+        ),
+      );
     }
   }
 
   void setExpiryDate(String date) {
-    emit(AddProductStateModified(
-      units: state.units,
-      expiryDate: date,
-    ));
+    if (isClosed) return;
+    emit(
+      AddProductStateModified(
+        units: state.units,
+        expiryDate: date,
+      ),
+    );
   }
 
   void addUnit() {
-    final updatedUnits = List<ProductUnitModel>.from(state.units);
-    updatedUnits.add(const ProductUnitModel(
-      unitName: '',
-      salePrice: 0.0,
-      purchasePrice: 0.0,
-      conversionFactor: 1.0,
-      isBaseUnit: false,
-    ));
-    emit(AddProductUnitsUpdated(
-      units: updatedUnits,
-      expiryDate: state.expiryDate,
-    ));
+    if (isClosed) return;
+    final updatedUnits = List<ProductUnitModel>.from(state.units)
+      ..add(
+        const ProductUnitModel(
+          unitName: '',
+          salePrice: 0.0,
+          purchasePrice: 0.0,
+          conversionFactor: 1.0,
+          isBaseUnit: false,
+        ),
+      );
+
+    emit(
+      AddProductUnitsUpdated(
+        units: updatedUnits,
+        expiryDate: state.expiryDate,
+      ),
+    );
   }
 
   void removeUnit(int index) {
+    if (isClosed) return;
     final updatedUnits = List<ProductUnitModel>.from(state.units);
     if (index < updatedUnits.length) {
       updatedUnits.removeAt(index);
-      emit(AddProductUnitsUpdated(
-        units: updatedUnits,
-        expiryDate: state.expiryDate,
-      ));
+      emit(
+        AddProductUnitsUpdated(
+          units: updatedUnits,
+          expiryDate: state.expiryDate,
+        ),
+      );
     }
   }
 
   void setInitialUnits(List<ProductUnitModel> units) {
-    emit(AddProductUnitsUpdated(
-      units: units.isEmpty ? state.units : units,
-      expiryDate: state.expiryDate,
-    ));
+    if (isClosed) return;
+    emit(
+      AddProductUnitsUpdated(
+        units: units.isEmpty ? state.units : units,
+        expiryDate: state.expiryDate,
+      ),
+    );
   }
 
   void updateUnitData({
@@ -93,6 +112,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     double? salePrice,
     double? purchasePrice,
   }) {
+    if (isClosed) return;
     final updatedUnits = List<ProductUnitModel>.from(state.units);
     if (index < updatedUnits.length) {
       final unit = updatedUnits[index];
@@ -119,10 +139,12 @@ class AddProductCubit extends Cubit<AddProductState> {
         }
       }
 
-      emit(AddProductUnitsUpdated(
-        units: updatedUnits,
-        expiryDate: state.expiryDate,
-      ));
+      emit(
+        AddProductUnitsUpdated(
+          units: updatedUnits,
+          expiryDate: state.expiryDate,
+        ),
+      );
     }
   }
 
@@ -142,13 +164,15 @@ class AddProductCubit extends Cubit<AddProductState> {
       lastDate: DateTime(2100),
     );
 
+    if (isClosed) return;
+
     if (picked != null) {
-      final formattedDate = '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
+      final formattedDate =
+          '${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}';
       setExpiryDate(formattedDate);
     }
   }
 
-  // 5. إضافة itemType عند إرسال منتج جديد بالسيرفر
   Future<void> submitProduct({
     required String name,
     required String barcode,
@@ -157,45 +181,57 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? batchNumber,
     String? size,
     String? color,
-    required String itemType, // <-- استقبال النشاط
+    required String itemType,
   }) async {
     final List<ProductUnitModel> allUnits = state.units;
 
-    emit(AddProductLoading(
-      units: state.units,
-      expiryDate: state.expiryDate,
-    ));
+    if (isClosed) return;
+    emit(
+      AddProductLoading(
+        units: state.units,
+        expiryDate: state.expiryDate,
+      ),
+    );
+
     try {
-      bool success = await productRepository.addProduct(
+      final bool success = await productRepository.addProduct(
         name: name,
         barcode: barcode,
         totalStockQuantity: stock,
         productUnits: allUnits,
-        itemType: itemType, // <-- تمريره للـ Repository
+        itemType: itemType,
       );
 
+      if (isClosed) return;
+
       if (success) {
-        emit(AddProductSuccess(
-          units: state.units,
-          expiryDate: state.expiryDate,
-        ));
+        emit(
+          AddProductSuccess(
+            units: state.units,
+            expiryDate: state.expiryDate,
+          ),
+        );
       } else {
-        emit(AddProductError(
-          "فشل السيرفر في حفظ بيانات الصنف الجديد",
-          units: state.units,
-          expiryDate: state.expiryDate,
-        ));
+        emit(
+          AddProductError(
+            "فشل السيرفر في حفظ بيانات الصنف الجديد",
+            units: state.units,
+            expiryDate: state.expiryDate,
+          ),
+        );
       }
     } catch (e) {
-      emit(AddProductError(
-        "حدث خطأ استثنائي: ${e.toString()}",
-        units: state.units,
-        expiryDate: state.expiryDate,
-      ));
+      if (isClosed) return;
+      emit(
+        AddProductError(
+          "حدث خطأ استثنائي: ${e.toString()}",
+          units: state.units,
+          expiryDate: state.expiryDate,
+        ),
+      );
     }
   }
 
-  // 6. تمرير itemType في دالة onSave
   void onSave({
     required BuildContext context,
     required String name,
@@ -205,15 +241,15 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? batchNumber,
     String? size,
     String? color,
-    required String itemType, // <-- استقبال النشاط من الشاشة
+    required String itemType,
   }) {
     if (state.units.isEmpty) {
-      SnackbarHelper.show(context.lang.pleaseAddUnit, const Color(0xFFFFB300), icon: Icons.warning_amber_rounded);
+      SnackbarHelper.showWarning(context.lang.pleaseAddUnit);
       return;
     }
 
     if (state.units.first.salePrice <= 0) {
-      SnackbarHelper.show(context.lang.pleaseSetBaseSalePrice, const Color(0xFFFFB300), icon: Icons.warning_amber_rounded);
+      SnackbarHelper.showWarning(context.lang.pleaseSetBaseSalePrice);
       return;
     }
 
@@ -230,7 +266,7 @@ class AddProductCubit extends Cubit<AddProductState> {
         size: size,
         color: color,
         productUnits: state.units,
-        itemType: itemType, // <-- تمريره للتعديل
+        itemType: itemType,
       );
     } else {
       submitProduct(
@@ -241,12 +277,11 @@ class AddProductCubit extends Cubit<AddProductState> {
         batchNumber: batchNumber,
         size: size,
         color: color,
-        itemType: itemType, // <-- تمريره للإضافة
+        itemType: itemType,
       );
     }
   }
 
-  // 7. إضافة itemType عند تعديل منتج
   Future<void> updateProduct({
     required int productId,
     required String name,
@@ -257,14 +292,18 @@ class AddProductCubit extends Cubit<AddProductState> {
     String? size,
     String? color,
     required List<ProductUnitModel> productUnits,
-    required String itemType, // <-- استقبال النشاط
+    required String itemType,
   }) async {
-    emit(AddProductLoading(
-      units: state.units,
-      expiryDate: state.expiryDate,
-    ));
+    if (isClosed) return;
+    emit(
+      AddProductLoading(
+        units: state.units,
+        expiryDate: state.expiryDate,
+      ),
+    );
+
     try {
-      bool success = await productRepository.updateProduct(
+      final bool success = await productRepository.updateProduct(
         id: productId,
         name: name,
         barcode: barcode,
@@ -274,27 +313,36 @@ class AddProductCubit extends Cubit<AddProductState> {
         size: size,
         color: color,
         productUnits: productUnits,
-        itemType: itemType, // <-- تمريره للـ Repository
+        itemType: itemType,
       );
 
+      if (isClosed) return;
+
       if (success) {
-        emit(AddProductSuccess(
-          units: state.units,
-          expiryDate: state.expiryDate,
-        ));
+        emit(
+          AddProductSuccess(
+            units: state.units,
+            expiryDate: state.expiryDate,
+          ),
+        );
       } else {
-        emit(AddProductError(
-          "فشل تحديث المنتج في الخادم",
-          units: state.units,
-          expiryDate: state.expiryDate,
-        ));
+        emit(
+          AddProductError(
+            "فشل تحديث المنتج في الخادم",
+            units: state.units,
+            expiryDate: state.expiryDate,
+          ),
+        );
       }
     } catch (e) {
-      emit(AddProductError(
-        "حدث خطأ استثنائي: ${e.toString()}",
-        units: state.units,
-        expiryDate: state.expiryDate,
-      ));
+      if (isClosed) return;
+      emit(
+        AddProductError(
+          "حدث خطأ استثنائي: ${e.toString()}",
+          units: state.units,
+          expiryDate: state.expiryDate,
+        ),
+      );
     }
   }
 }

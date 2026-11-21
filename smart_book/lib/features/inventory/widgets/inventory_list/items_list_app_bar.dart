@@ -16,9 +16,7 @@ class ItemsListAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: const InventoryLanguageButton(),
       title: const AppText(
       textKey: LanguageKeys.appNameKey,
-        style: TextStyle(
           fontWeight: FontWeight.bold,
-        ),
       ),
       centerTitle: true,
 

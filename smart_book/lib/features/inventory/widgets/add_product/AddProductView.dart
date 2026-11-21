@@ -61,6 +61,10 @@ class _AddProductViewState extends State<AddProductView> {
     final bool isEditing = widget.productToEdit != null;
 
     return BlocListener<AddProductCubit, AddProductState>(
+      listenWhen: (previous, current) =>
+      current is AddProductLoading ||
+          current is AddProductError ||
+          current is AddProductSuccess,
       listener: (context, state) {
         if (state is AddProductLoading) {
           showDialog(
@@ -78,7 +82,9 @@ class _AddProductViewState extends State<AddProductView> {
             Navigator.pop(context);
           }
           SnackbarHelper.showSuccess(LanguageKeys.saveSuccessKey);
-          Navigator.pop(context, true);
+          if (context.mounted) {
+            Navigator.pop(context, true);
+          }
         }
       },
       child: Scaffold(
@@ -103,7 +109,7 @@ class _AddProductViewState extends State<AddProductView> {
               reorderLevelController: reorderLevelController,
               expiryDateController: expiryDateController,
               batchController: batchController,
-              selectedUnitNotifier: selectedUnitNotifier,
+
               selectedBusinessModuleNotifier: selectedBusinessModuleNotifier,
             );
           },

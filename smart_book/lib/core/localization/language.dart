@@ -95,6 +95,18 @@ class AppLanguages {
       LanguageKeys.outOfStockCategoryKey: LanguageAR.outOfStockCategoryAR,
       LanguageKeys.retryKey: LanguageAR. retryKeyAR,
       LanguageKeys.noBarcodeKey: LanguageAR. noBarcodeKeyAR,
+      LanguageKeys.confirmDeleteKey: LanguageAR.confirmDeleteKeyAR,
+      LanguageKeys.areYouSureDeleteKey: LanguageAR. areYouSureDeleteKeyAR,
+      LanguageKeys.cancelKey: LanguageAR. cancelKeyAR,
+      LanguageKeys. deleteKey : LanguageAR.  deleteKeyAR ,
+      LanguageKeys. businessModuleKey : LanguageAR. businessModuleKeyAR ,
+      LanguageKeys. savedSuccessfullyKey : LanguageAR.savedSuccessfullyKeyAR ,
+
+
+
+
+
+
 
     },
     'en': {
@@ -184,7 +196,12 @@ class AppLanguages {
       LanguageKeys.outOfStockCategoryKey: LanguageEN.outOfStockCategoryEN,
       LanguageKeys.retryKey: LanguageEN. retryKeyEN,
       LanguageKeys.noBarcodeKey: LanguageEN. noBarcodeKeyEN,
-
+      LanguageKeys.confirmDeleteKey: LanguageEN.confirmDeleteKeyEN,
+      LanguageKeys.areYouSureDeleteKey: LanguageEN. areYouSureDeleteKeyEN,
+      LanguageKeys.cancelKey: LanguageEN. cancelKeyEN,
+      LanguageKeys. deleteKey : LanguageEN. deleteKeyEN ,
+      LanguageKeys. businessModuleKey : LanguageEN. businessModuleKeyEN ,
+      LanguageKeys. savedSuccessfullyKey : LanguageEN.savedSuccessfullyKeyEN,
 
 
     },

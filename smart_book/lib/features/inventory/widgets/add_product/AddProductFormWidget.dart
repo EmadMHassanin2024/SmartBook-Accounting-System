@@ -48,7 +48,7 @@ class AddProductFormWidget extends StatelessWidget {
       expiryDateController: expiryDateController,
       batchController: batchController,
       selectedBusinessModuleNotifier: selectedBusinessModuleNotifier,
-      selectedUnitNotifier: selectedUnitNotifier, // ✅ تمريره بنجاح
+
     );
   }
 }

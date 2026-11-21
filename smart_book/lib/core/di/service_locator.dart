@@ -74,7 +74,7 @@ Future<void> setupLocator() async {
 
 
   if (!sl.isRegistered<AddProductCubit>()) {
-    sl.registerLazySingleton<AddProductCubit>(
+    sl.registerFactory<AddProductCubit>(
           () => AddProductCubit(productRepository: sl<InventoryRepository>()),
     );
   }

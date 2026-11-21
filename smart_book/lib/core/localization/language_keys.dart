@@ -92,5 +92,12 @@ class LanguageKeys {
   static const String outOfStockCategoryKey = 'out_of_stock_category_key';
   static const String retryKey = 'retry_key';
   static const String noBarcodeKey = 'no_barcode_key';
+  static const String confirmDeleteKey = 'confirm_delete_key';
+  static const String areYouSureDeleteKey = 'are_you_sure_delete_key';
+  static const String cancelKey = 'cancel_key';
+  static const String deleteKey = 'delete_key';
+  static const String businessModuleKey = 'business_module_key';
+  static const String  savedSuccessfullyKey = 'savedSuccessfullyKey';
+
 
 }

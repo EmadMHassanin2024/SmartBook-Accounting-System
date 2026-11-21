@@ -24,17 +24,33 @@ class ProductSaveBottomSheet extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
-        child: BlocBuilder<AddProductCubit, AddProductState>(
+        child: BlocConsumer<AddProductCubit, AddProductState>(
+          listenWhen: (previous, current) =>
+          current is AddProductSuccess || current is AddProductError,
+          listener: (context, state) {
+            if (state case AddProductSuccess()) {
+              SnackbarHelper.showSuccess(
+                  LanguageKeys.savedSuccessfullyKey
+              );
+              if (context.mounted) Navigator.pop(context, true);
+            } else if (state case AddProductError(:final message)) {
+              SnackbarHelper.showError(message);
+            }
+          },
           buildWhen: (previous, current) =>
-          previous.runtimeType != current.runtimeType,
+          current is AddProductLoading ||
+              current is AddProductSuccess ||
+              current is AddProductError ||
+              current is AddProductInitial,
           builder: (context, state) {
-            final isLoading = state is AddProductLoading;
+            final bool isLoading = state is AddProductLoading;
 
             return ElevatedButton(
               onPressed: isLoading ? null : onSavePressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
-                disabledBackgroundColor: AppColors.primaryBlue.withValues(alpha: 0.6),
+                disabledBackgroundColor:
+                AppColors.primaryBlue.withValues(alpha: 0.6),
                 minimumSize: const Size(double.infinity, 54),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -51,11 +67,9 @@ class ProductSaveBottomSheet extends StatelessWidget {
               )
                   : const AppText(
                 textKey: LanguageKeys.confirmAndSaveKey,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                fontSize: 16,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
             );
           },

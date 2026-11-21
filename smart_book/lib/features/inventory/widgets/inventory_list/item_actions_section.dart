@@ -77,10 +77,11 @@ class ItemActionsSection extends StatelessWidget {
                 return ActionButtonItem(
                   icon: Icons.delete_outline,
                   color: Colors.red,
-                  onTap: () => _showDeleteConfirmationDialog(
-                    context,
-                    currentProductId,
-                  ),
+                  onTap: () =>
+                      _showDeleteConfirmationDialog(
+                        context,
+                        currentProductId,
+                      ),
                 );
               },
             ),
@@ -108,3 +109,46 @@ class ItemActionsSection extends StatelessWidget {
     );
   }
 
+  void _showDeleteConfirmationDialog(BuildContext context, int productId) {
+    showDialog(
+      context: context,
+      builder: (ctx) =>
+          AlertDialog(
+            title: const AppText(textKey: LanguageKeys.confirmDeleteKey),
+            content: Row(
+              children: [
+                const AppText(textKey: LanguageKeys.areYouSureDeleteKey),
+                const Text(' '),
+                Flexible(
+                  child: Text(
+                    '"${product.name}"؟',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const AppText(textKey: LanguageKeys.cancelKey),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  if (productId > 0) {
+                    context.read<InventoryCubit>().deleteProduct(productId);
+                  }
+                },
+                child: const AppText(
+                  textKey: LanguageKeys.deleteKey,
+                  // تأكد من توفر مفتاح الحذف أو استبدله بـ Text عادي ملون
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+}

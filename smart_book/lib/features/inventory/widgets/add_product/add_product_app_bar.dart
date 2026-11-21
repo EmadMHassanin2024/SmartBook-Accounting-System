@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/localization/language.dart';
 import '../../../../core/localization/language_keys.dart';
+import '../../../../core/widgets/app_text.dart';
 import '../common/inventory_language_button.dart';
 
 class AddProductAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -26,8 +27,10 @@ class AddProductAppBar extends StatelessWidget implements PreferredSizeWidget {
       leadingWidth: 96,
       leading: const InventoryLanguageButton(),
       actions: actions,
-      title: Text(
-        context.translate(titleKey),
+      title: AppText(
+        textKey: titleKey,
+        fontWeight: FontWeight.bold,
+
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       centerTitle: true,
